@@ -89,9 +89,9 @@ Security vulnerabilities go to [SECURITY.md](SECURITY.md), never to a public iss
 
 Open Sky Finance is free, has no ads and never will have a premium tier. It is funded only by voluntary donations, and donating unlocks nothing — the app cannot even know you did.
 
-- [GitHub Sponsors](https://github.com/sponsors/[YOUR_GITHUB_USERNAME])
-- [Liberapay](https://liberapay.com/[YOUR_LIBERAPAY_USERNAME])
-- [Ko-fi](https://ko-fi.com/[YOUR_KOFI_USERNAME])
+- [GitHub Sponsors](https://github.com/sponsors/fabbo-repo)
+- [Liberapay](https://liberapay.com/fabbo-master])
+- [Ko-fi](https://ko-fi.com/fabbomaster)
 
 You can also help by starring the repository, translating or reporting bugs.
 
