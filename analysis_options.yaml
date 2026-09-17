@@ -1,0 +1,31 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.drift.dart"
+    - "**/*.freezed.dart"
+    - "**/*.mocks.dart"
+    - build/**
+    - android/**
+    - ios/**
+  errors:
+    # Missing translations must not be a silent warning.
+    missing_required_param: error
+    missing_return: error
+    invalid_annotation_target: ignore # riverpod_generator / json_serializable
+  language:
+    strict-casts: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_print # never print financial data; use core/logging.dart
+    - prefer_single_quotes
+    - prefer_final_locals
+    - unawaited_futures
+    - use_super_parameters
+    - require_trailing_commas
+    - sort_child_properties_last
+    - avoid_dynamic_calls

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1254" height="1254" viewBox="0 0 1254 1254" role="img" aria-labelledby="title desc">
+  <title id="title">Open Sky Finance — Light Master</title>
+  <desc id="desc">A pine green semicircular arc above two centered dark ink ledger rules, on a uniform warm paper background.</desc>
+  <rect id="background" width="1254" height="1254" fill="#FAF7F0"/>
+  <path id="sky-arc" d="M326 645 A301 304 0 0 1 928 645 L872 645 A245 248 0 0 0 382 645 Z" fill="#0F5C4D"/>
+  <g id="ledger-rules" fill="#1C1814">
+    <rect id="upper-rule" x="266" y="701" width="722" height="50"/>
+    <rect id="lower-rule" x="340" y="802" width="574" height="50"/>
+  </g>
+</svg>

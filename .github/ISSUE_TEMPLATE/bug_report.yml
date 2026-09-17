@@ -1,0 +1,112 @@
+name: Bug report
+description: Something in the app does not work as expected
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never attach real financial data.** No backups (`.json`), no Bluecoins files
+        (`.fydb`), no databases, no screenshots showing real amounts, assets account names
+        or notes. Describe the data by structure and counts instead.
+
+        Found a security or privacy problem? Do not open an issue — see
+        [SECURITY.md](https://github.com/ravens-forge/open-sky-finance/blob/main/SECURITY.md).
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before you start
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
+        - label: This report contains no real financial data
+          required: true
+
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened
+      description: What went wrong, and what did you expect instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the Transactions page
+        2. Create a transfer between two assets accounts in different currencies
+        3. Save
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Home / charts
+        - Transactions
+        - Reminders
+        - Assets accounts
+        - Categories or labels
+        - Budgets
+        - Balance sheet / net income
+        - Calendar
+        - Trash
+        - Backups (export / restore)
+        - Bluecoins import
+        - Settings / onboarding
+        - Translations
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: app_version
+    attributes:
+      label: App version and build
+      description: Settings → About. The app can pre-fill this for you (Settings → Report a bug).
+      placeholder: 1.0.0 (12)
+    validations:
+      required: true
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform and OS version
+      placeholder: Android 15 (Pixel 7) / iOS 18.4 (iPhone 13)
+    validations:
+      required: true
+
+  - type: input
+    id: language
+    attributes:
+      label: App language
+      placeholder: en / es / fr
+    validations:
+      required: true
+
+  - type: input
+    id: schema_version
+    attributes:
+      label: Database schema version
+      description: Settings → About. Leave empty if the app does not start.
+      placeholder: "3"
+
+  - type: textarea
+    id: data_shape
+    attributes:
+      label: Data shape (optional)
+      description: >
+        Counts and structure only — e.g. "4 assets accounts, 2 currencies, ~6000
+        transactions, 3 scheduled reminders". No names, no amounts.
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else (optional)
+      description: >
+        Screenshots are welcome only if they show synthetic data or the amounts are
+        covered.

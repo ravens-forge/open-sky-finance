@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1254" height="1254" viewBox="0 0 1254 1254" role="img" aria-labelledby="title desc">
+  <title id="title">Open Sky Finance — Dark Master</title>
+  <desc id="desc">A mint green semicircular arc above two centered warm ivory ledger rules, on a uniform dark background.</desc>
+  <rect id="background" width="1254" height="1254" fill="#16130F"/>
+  <path id="sky-arc" d="M326 645 A301 304 0 0 1 928 645 L872 645 A245 248 0 0 0 382 645 Z" fill="#5FC2A8"/>
+  <g id="ledger-rules" fill="#F3EDE2">
+    <rect id="upper-rule" x="266" y="701" width="722" height="50"/>
+    <rect id="lower-rule" x="340" y="802" width="574" height="50"/>
+  </g>
+</svg>

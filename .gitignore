@@ -117,3 +117,47 @@ app.*.symbols
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
+
+# This is an application, not a package: the lockfile is committed
+# (it is caught by the `*.lock` rule above).
+!pubspec.lock
+
+# FVM — the pin (.fvmrc) is committed, the SDK copy is not
+.fvm/
+
+# Generated code (regenerate with build_runner / gen-l10n, see AGENTS.md)
+l10n_untranslated.txt
+*.g.dart
+*.freezed.dart
+*.drift.dart
+*.mocks.dart
+lib/l10n/generated/
+
+# User data — never commit (see SECURITY.md)
+*.fydb
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+open-sky-finance-backup-*.json
+/local_samples/
+/private/
+
+# Signing material
+*.keystore
+*.p12
+*.mobileprovision
+**/android/key.properties
+
+# Secrets (the app needs none)
+.env
+.env.*
+
+# Editors / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "appTitle": "Open Sky Finance",
+  "@appTitle": {
+    "description": "Application name, shown in the task switcher and the about screen"
+  }
+}

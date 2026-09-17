@@ -1,0 +1,50 @@
+name: Feature request
+description: Suggest a feature or an improvement
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Some things are deliberately out of scope and will be declined: network access of
+        any kind, cloud sync, analytics, accounts or logins, ads, paywalls, "premium"
+        features and any limit on the number of assets accounts, categories, labels,
+        transactions or budgets. See
+        [CONTRIBUTING.md](https://github.com/ravens-forge/open-sky-finance/blob/main/CONTRIBUTING.md#scope-what-will-not-be-merged).
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before you start
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
+        - label: My idea does not require network access, an account, ads or a paid tier
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do today, and what makes it hard?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should the app do? Where in the app would it live?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered (optional)
+
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Would you like to help?
+      options:
+        - label: I would be willing to open a pull request for this

@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-and-test:
+    name: Analyze and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reads the Flutter version pinned in .fvmrc
+      - uses: kuhnroyal/flutter-fvm-config-action@v3
+        id: fvm
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvm.outputs.FLUTTER_VERSION }}
+          channel: ${{ steps.fvm.outputs.FLUTTER_CHANNEL }}
+          cache: true
+
+      - run: flutter pub get
+
+      # Generated code is not committed (see AGENTS.md)
+      - run: flutter gen-l10n
+      - run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+  no-internet-permission:
+    name: No INTERNET permission in release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Android release manifest
+        run: |
+          manifest=android/app/src/main/AndroidManifest.xml
+          if [ ! -f "$manifest" ]; then
+            echo "No Android project yet, skipping."
+            exit 0
+          fi
+          if grep -q 'android.permission.INTERNET' "$manifest"; then
+            echo "::error file=$manifest::The release manifest must not declare INTERNET."
+            exit 1
+          fi
+          echo "OK: no INTERNET permission in the release manifest."
