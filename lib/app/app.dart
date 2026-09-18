@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:open_sky_finance/l10n/generated/app_localizations.dart';
+import 'package:open_sky_finance/core/finance_colors.dart';
+import 'package:open_sky_finance/core/l10n.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -7,13 +8,17 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+      onGenerateTitle: (context) => context.l10n.appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      theme: ThemeData(extensions: const [FinanceColors.light]),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        extensions: const [FinanceColors.dark],
+      ),
       home: Builder(
-        builder: (context) => Scaffold(
-          body: Center(child: Text(AppLocalizations.of(context).appTitle)),
-        ),
+        builder: (context) =>
+            Scaffold(body: Center(child: Text(context.l10n.appTitle))),
       ),
     );
   }
