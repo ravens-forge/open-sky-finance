@@ -91,5 +91,15 @@
   "themeModeDark": "Sombre",
   "errorLoadFailed": "Impossible de charger cette page. Rien n'a été modifié ni supprimé.",
   "errorSaveFailed": "Enregistrement impossible. Vos modifications sont conservées.",
-  "errorInvalidAmount": "Saisissez un montant valide."
+  "errorInvalidAmount": "Saisissez un montant valide.",
+  "seedAssetsAccountCash": "Espèces",
+  "seedCategoryGroupHousing": "Logement",
+  "seedCategoryGroupFood": "Alimentation",
+  "seedCategoryGroupTransport": "Transport",
+  "seedCategoryGroupUtilities": "Charges",
+  "seedCategoryGroupEntertainment": "Loisirs",
+  "seedCategoryGroupHealth": "Santé",
+  "seedCategoryGroupOther": "Autres",
+  "seedCategoryGroupSalary": "Salaire",
+  "seedCategoryGroupOtherIncome": "Autres revenus"
 }

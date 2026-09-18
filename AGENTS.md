@@ -44,12 +44,13 @@ A financial account the user tracks (bank, cash, credit card, loan…) is called
 
 | Context                | Name |
 | ---------------------- | ---- |
-| Dart class / Drift row | `AssetsAccount` |
+| Domain class           | `AssetsAccount` (`data/models/`) |
+| Drift row class        | `AssetsAccountTableRow` (`toDomain()` / `fromDomain()`) |
 | Type enum              | `AssetsAccountType` |
-| Drift table            | `assets_accounts` (Dart: `AssetsAccounts`) |
+| Drift table            | `assets_accounts` (Dart: `AssetsAccountsTable`) |
 | Foreign keys           | `assets_account_id`, `to_assets_account_id` |
 | JSON / Dart fields     | `assetsAccountId`, `toAssetsAccountId`, `assetsAccounts` |
-| DAO / repository       | `AssetsAccountsDao`, `AssetsAccountsRepository` |
+| Repository             | `AssetsAccountsRepository` (Drift accessor) |
 | Providers              | `assetsAccounts…Provider` |
 | Feature folder         | `features/assets_accounts/` |
 | Routes                 | `/assets-accounts`, `:assetsAccountId` |
@@ -89,6 +90,7 @@ packages that are actively maintained and have no network behaviour.
 fvm flutter pub get
 fvm dart run build_runner build --delete-conflicting-outputs   # Drift + Riverpod codegen
 fvm dart run build_runner watch --delete-conflicting-outputs   # during development
+fvm dart run drift_dev make-migrations                          # after bumping schemaVersion
 fvm flutter gen-l10n
 fvm flutter analyze
 fvm flutter test
@@ -103,8 +105,10 @@ lib/
   app/                      # App widget, router, theme
   core/                     # money, dates, ids, result/error types, shared widgets
   data/
-    database/               # Drift tables, DAOs, migrations
-    repositories/           # validation, invariants, transactions
+    database/
+      tables/               # one `…Table` per file + its `…TableRow` class
+    models/                 # domain objects, value objects, drafts, query results
+    repositories/           # one Drift accessor per file: queries, rules, mapping
   services/
     backup/                 # JSON export / restore
     bluecoins/              # .fydb reader and mapper
@@ -123,11 +127,12 @@ presentation → providers → services/repositories → Drift.
 ## Conventions
 
 - Feature-first folders. Widgets never talk to Drift directly: widget → provider →
-  repository → DAO.
+  repository. Repositories are the only data-access type: each is a Drift accessor
+  (`@DriftAccessor`) holding its queries, writes, invariants and row ↔ domain mapping.
 - Providers that read data expose Drift `Stream`s (`@riverpod Stream<...>`) so the UI
   updates automatically after writes.
 - Mutations live in `AsyncNotifier` classes or repository methods called from them.
-- Aggregations (balances, totals) are computed in SQL inside DAOs, not by loading all rows
+- Aggregations (balances, totals) are computed in SQL inside repositories, not by loading all rows
   into Dart.
 - Writes touching more than one table run inside `db.transaction(...)`;
   `PRAGMA foreign_keys = ON`.
@@ -145,11 +150,21 @@ presentation → providers → services/repositories → Drift.
 - Fonts are bundled assets; never fetch them at runtime (`google_fonts` is not allowed —
   the app has no network access).
 - Heavy work (large file parsing, JSON encoding/decoding) runs in a background isolate.
+- Drift tables are `…Table` classes (`TransactionsTable`, SQL name set with `tableName`);
+  their rows are `…TableRow` classes (`TransactionTableRow`) and never leave `data/database`:
+  repositories map them to domain objects (`Transaction`) with `toDomain()`, and
+  `…TableRow.fromDomain(…)` maps back. Domain objects group related columns into value objects (`Money`,
+  `TransferDestination`, `ReminderSchedule`, `Timestamps`); rows stay flat. Aggregations sum money **per currency**; convert
+  totals with `CurrencyConverter` (`core/money/`).
+- Schema history lives in `drift_schemas/`; `make-migrations` also regenerates
+  `test/drift/` (committed, since CI only runs `build_runner`).
 - **Generated files are not committed.** `*.g.dart`, `*.drift.dart` and generated
   localizations are ignored; run `build_runner` after cloning and after pulling changes to
   annotated files. CI regenerates them before analysing.
 - Keep widgets small; extract anything longer than ~150 lines.
 - Use `sealed` classes for results/errors of import and restore operations.
+- Prefer classes over `typedef` (no record or type aliases for data); one public class per
+  file in `data/models/` (domain objects, drafts, query results).
 
 ## Definition of done for a change
 
@@ -168,7 +183,7 @@ presentation → providers → services/repositories → Drift.
 | ------------- | ------------- | ----- |
 | core/money    | unit          | Parsing edge cases, rounding, negatives, in en/es/fr |
 | l10n          | unit          | Same keys and placeholders in all ARB files |
-| DAOs / repos  | unit          | In-memory Drift database |
+| Repositories  | unit          | In-memory Drift database |
 | Migrations    | unit          | Drift schema verifier |
 | Backup codec  | unit          | Round-trip: snapshot → JSON → snapshot is identical |
 | Bluecoins     | unit          | Synthetic `.fydb` built at test time from a committed SQL script |

@@ -407,5 +407,45 @@
   "errorInvalidAmount": "Enter a valid amount.",
   "@errorInvalidAmount": {
     "description": "Field error under an amount field whose text is not a number (or is ambiguous, like 1.234 in French)"
+  },
+  "seedAssetsAccountCash": "Cash",
+  "@seedAssetsAccountCash": {
+    "description": "Name of the cash assets account created on first launch"
+  },
+  "seedCategoryGroupHousing": "Housing",
+  "@seedCategoryGroupHousing": {
+    "description": "Default expense category group created on first launch (rent, mortgage, repairs)"
+  },
+  "seedCategoryGroupFood": "Food",
+  "@seedCategoryGroupFood": {
+    "description": "Default expense category group created on first launch (groceries, restaurants)"
+  },
+  "seedCategoryGroupTransport": "Transport",
+  "@seedCategoryGroupTransport": {
+    "description": "Default expense category group created on first launch (car, fuel, public transport)"
+  },
+  "seedCategoryGroupUtilities": "Utilities",
+  "@seedCategoryGroupUtilities": {
+    "description": "Default expense category group created on first launch (electricity, water, internet, phone)"
+  },
+  "seedCategoryGroupEntertainment": "Entertainment",
+  "@seedCategoryGroupEntertainment": {
+    "description": "Default expense category group created on first launch (films, games, outings)"
+  },
+  "seedCategoryGroupHealth": "Health",
+  "@seedCategoryGroupHealth": {
+    "description": "Default expense category group created on first launch (doctor, pharmacy)"
+  },
+  "seedCategoryGroupOther": "Other",
+  "@seedCategoryGroupOther": {
+    "description": "Default expense category group created on first launch for anything else"
+  },
+  "seedCategoryGroupSalary": "Salary",
+  "@seedCategoryGroupSalary": {
+    "description": "Default income category group created on first launch"
+  },
+  "seedCategoryGroupOtherIncome": "Other income",
+  "@seedCategoryGroupOtherIncome": {
+    "description": "Default income category group created on first launch for any other income"
   }
 }

@@ -91,5 +91,15 @@
   "themeModeDark": "Oscuro",
   "errorLoadFailed": "No se ha podido cargar esta página. No se ha cambiado ni borrado nada.",
   "errorSaveFailed": "No se ha podido guardar. Tus cambios siguen aquí.",
-  "errorInvalidAmount": "Introduce un importe válido."
+  "errorInvalidAmount": "Introduce un importe válido.",
+  "seedAssetsAccountCash": "Efectivo",
+  "seedCategoryGroupHousing": "Vivienda",
+  "seedCategoryGroupFood": "Comida",
+  "seedCategoryGroupTransport": "Transporte",
+  "seedCategoryGroupUtilities": "Suministros",
+  "seedCategoryGroupEntertainment": "Ocio",
+  "seedCategoryGroupHealth": "Salud",
+  "seedCategoryGroupOther": "Otros",
+  "seedCategoryGroupSalary": "Salario",
+  "seedCategoryGroupOtherIncome": "Otros ingresos"
 }
