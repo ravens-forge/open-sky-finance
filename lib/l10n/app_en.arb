@@ -3,5 +3,209 @@
   "appTitle": "Open Sky Finance",
   "@appTitle": {
     "description": "Application name, shown in the task switcher and the about screen"
+  },
+  "amountIncomeSemantic": "income, {amount}",
+  "@amountIncomeSemantic": {
+    "description": "Screen reader label of a positive income or refund amount. {amount} is the formatted amount, e.g. €12.50",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "amountExpenseSemantic": "expense, {amount}",
+  "@amountExpenseSemantic": {
+    "description": "Screen reader label of an expense amount (shown with a minus sign). {amount} is the formatted amount without sign",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "amountTransferSemantic": "transfer, {amount}",
+  "@amountTransferSemantic": {
+    "description": "Screen reader label of a transfer amount. {amount} is the formatted amount",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "amountNegativeSemantic": "minus {amount}",
+  "@amountNegativeSemantic": {
+    "description": "Screen reader label of a negative balance or total. {amount} is the formatted amount without sign",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryIconHome": "Home",
+  "@categoryIconHome": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconGroceries": "Groceries",
+  "@categoryIconGroceries": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconRestaurant": "Restaurants",
+  "@categoryIconRestaurant": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconCafe": "Coffee",
+  "@categoryIconCafe": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconShopping": "Shopping",
+  "@categoryIconShopping": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconClothing": "Clothing",
+  "@categoryIconClothing": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconCar": "Car",
+  "@categoryIconCar": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconFuel": "Fuel",
+  "@categoryIconFuel": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconPublicTransport": "Public transport",
+  "@categoryIconPublicTransport": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconFlights": "Flights",
+  "@categoryIconFlights": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconElectricity": "Electricity",
+  "@categoryIconElectricity": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconWater": "Water",
+  "@categoryIconWater": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconInternet": "Internet",
+  "@categoryIconInternet": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconPhone": "Phone",
+  "@categoryIconPhone": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconBills": "Bills",
+  "@categoryIconBills": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconRepairs": "Repairs",
+  "@categoryIconRepairs": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconEntertainment": "Entertainment",
+  "@categoryIconEntertainment": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconCinema": "Cinema",
+  "@categoryIconCinema": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconGames": "Games",
+  "@categoryIconGames": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconFitness": "Fitness",
+  "@categoryIconFitness": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconHealth": "Health",
+  "@categoryIconHealth": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconPharmacy": "Pharmacy",
+  "@categoryIconPharmacy": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconPets": "Pets",
+  "@categoryIconPets": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconChildren": "Children",
+  "@categoryIconChildren": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconEducation": "Education",
+  "@categoryIconEducation": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconBooks": "Books",
+  "@categoryIconBooks": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconGifts": "Gifts",
+  "@categoryIconGifts": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconDonations": "Donations",
+  "@categoryIconDonations": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconSalary": "Salary",
+  "@categoryIconSalary": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconCash": "Cash",
+  "@categoryIconCash": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconSavings": "Savings",
+  "@categoryIconSavings": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconInvestments": "Investments",
+  "@categoryIconInvestments": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconBank": "Bank",
+  "@categoryIconBank": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryIconOther": "Other",
+  "@categoryIconOther": {
+    "description": "Spoken label and tooltip of a category icon in the icon picker"
+  },
+  "categoryColorGroup": "Group",
+  "@categoryColorGroup": {
+    "description": "Colour option in the category colour picker that follows the category group's colour"
+  },
+  "categoryColorPine": "Pine green",
+  "@categoryColorPine": {
+    "description": "Colour option in the category colour picker (spoken label and tooltip)"
+  },
+  "categoryColorOchre": "Ochre",
+  "@categoryColorOchre": {
+    "description": "Colour option in the category colour picker (spoken label and tooltip)"
+  },
+  "categoryColorRed": "Red",
+  "@categoryColorRed": {
+    "description": "Colour option in the category colour picker (spoken label and tooltip)"
+  },
+  "categoryColorPurple": "Purple",
+  "@categoryColorPurple": {
+    "description": "Colour option in the category colour picker (spoken label and tooltip)"
+  },
+  "categoryColorTeal": "Teal",
+  "@categoryColorTeal": {
+    "description": "Colour option in the category colour picker (spoken label and tooltip)"
+  },
+  "categoryColorBlue": "Blue",
+  "@categoryColorBlue": {
+    "description": "Colour option in the category colour picker (spoken label and tooltip)"
+  },
+  "categoryColorStone": "Stone",
+  "@categoryColorStone": {
+    "description": "Colour option in the category colour picker (spoken label and tooltip)"
   }
 }
