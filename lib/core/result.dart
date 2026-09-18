@@ -24,3 +24,6 @@ final class Err<T, E extends Object> extends Result<T, E> {
 
   final E error;
 }
+
+/// Failures any screen can show; services declare their own codes for the rest.
+enum AppError { loadFailed, saveFailed, invalidAmount }
