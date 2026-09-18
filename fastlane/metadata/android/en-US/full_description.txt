@@ -1,0 +1,17 @@
+Open Sky Finance is a free and open-source personal finance app. Track your money in a clear, paper-ledger style, with no limits, no ads and no sign-up.
+
+Everything stays on your device: the app has no internet access, no accounts, no analytics and no tracking.
+
+Features:
+• Unlimited assets accounts: bank, cash, credit cards, loans, investments, crypto, property…
+• Income, expenses and transfers with categories, subcategories and labels
+• Configurable home page with cash flow, budget, net income and net worth charts
+• Balance sheet, net income statement, label totals and calendar
+• Monthly budgets per category
+• Reminders for recurring bills and income, and scheduled transactions
+• Trash to restore deleted transactions
+• Backups in an open, documented JSON format
+• Import from Bluecoins backups
+• English, Spanish and French
+
+Open Sky Finance is free and funded only by donations; donating unlocks nothing. Learn more at https://github.com/ravens-forge/open-sky-finance#support-the-project

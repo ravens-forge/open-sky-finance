@@ -41,9 +41,15 @@ void main() {
           ),
         );
         final amount = formatMoney(12500000, currency: 'EUR', locale: locale);
+        final number = formatMoney(
+          12500000,
+          currency: 'EUR',
+          locale: locale,
+          symbol: false,
+        );
         final text = textOf(tester);
         expect(text.data, '−$amount');
-        expect(text.semanticsLabel, '$expense, $amount');
+        expect(text.semanticsLabel, '$expense, $number euros');
         expect(text.style!.color, _colors.expense);
       });
     }
@@ -56,7 +62,7 @@ void main() {
 
       var text = await pump(const AmountText(2000000, currency: 'EUR'));
       expect(text.data, '+€2.00');
-      expect(text.semanticsLabel, 'income, €2.00');
+      expect(text.semanticsLabel, 'income, 2.00 euros');
       expect(text.style!.color, _colors.income);
 
       text = await pump(
@@ -77,7 +83,7 @@ void main() {
         ),
       );
       expect(text.data, '€2.00');
-      expect(text.semanticsLabel, isNull);
+      expect(text.semanticsLabel, '2.00 euros');
 
       text = await pump(
         const AmountText(
@@ -87,10 +93,16 @@ void main() {
         ),
       );
       expect(text.data, '−€2.00');
-      expect(text.semanticsLabel, 'minus €2.00');
+      expect(text.semanticsLabel, 'minus 2.00 euros');
 
       text = await pump(const AmountText(0, currency: 'EUR'));
       expect(text.data, '€0.00');
+    });
+
+    test('spoken currency names fall back to the ISO code', () {
+      final es = lookupAppLocalizations(const Locale('es'));
+      expect(spokenMoney(1500000, 'USD', es), '1,50 dólares estadounidenses');
+      expect(spokenMoney(1500000, 'SEK', es), '1,50 SEK');
     });
   });
 

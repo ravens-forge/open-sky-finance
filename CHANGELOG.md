@@ -14,5 +14,7 @@ Two other version numbers exist and are **not** the app version: the Drift datab
 - App icon and launch screen based on the logo, in light and dark mode.
 - App language selectable from Android system settings (Android 13+).
 - "Ledger" look in light and dark mode, with the Newsreader and Public Sans fonts bundled in the app (no downloads).
+- Screen readers say amounts with the currency name ("12.50 euros") in English, Spanish and French.
+- Store listing in English, Spanish and French.
 
 [Unreleased]: https://github.com/ravens-forge/open-sky-finance/commits/main

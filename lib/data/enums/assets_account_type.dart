@@ -1,0 +1,17 @@
+enum AssetsAccountType {
+  bank,
+  cash,
+  investment,
+  crypto,
+  receivable,
+  property,
+  externalAsset,
+  virtual,
+  otherAsset,
+  creditCard,
+  loan,
+  payable,
+  mortgage,
+  externalLiability,
+  otherLiability,
+}

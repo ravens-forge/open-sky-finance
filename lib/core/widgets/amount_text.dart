@@ -16,8 +16,21 @@ enum AmountStyle {
   balance,
 }
 
+/// [micros] read aloud with the currency name.
+/// Unknown currencies fall back to the ISO code.
+String spokenMoney(int micros, String currency, AppLocalizations l10n) =>
+    l10n.moneySpoken(
+      formatMoney(
+        micros,
+        currency: currency,
+        locale: l10n.localeName,
+        symbol: false,
+      ),
+      currency,
+    );
+
 /// A money amount with its sign or symbol, semantic colour and a spoken label
-/// ("expense, €12.50").
+/// ("expense, 12.50 euros").
 class AmountText extends StatelessWidget {
   const AmountText(
     this.micros, {
@@ -41,26 +54,27 @@ class AmountText extends StatelessWidget {
       currency: currency,
       locale: l10n.localeName,
     );
+    final spoken = spokenMoney(micros.abs(), currency, l10n);
 
-    final (String text, Color? color, String? label) = switch (amountStyle) {
+    final (String text, Color? color, String label) = switch (amountStyle) {
       AmountStyle.transfer => (
         '⇄ $amount',
         colors.transfer,
-        l10n.amountTransferSemantic(amount),
+        l10n.amountTransferSemantic(spoken),
       ),
       _ when micros < 0 => (
         '−$amount',
         colors.expense,
         amountStyle == AmountStyle.signed
-            ? l10n.amountExpenseSemantic(amount)
-            : l10n.amountNegativeSemantic(amount),
+            ? l10n.amountExpenseSemantic(spoken)
+            : l10n.amountNegativeSemantic(spoken),
       ),
       AmountStyle.signed when micros > 0 => (
         '+$amount',
         colors.income,
-        l10n.amountIncomeSemantic(amount),
+        l10n.amountIncomeSemantic(spoken),
       ),
-      _ => (amount, null, null),
+      _ => (amount, null, spoken),
     };
 
     return Text(

@@ -6,7 +6,7 @@
   },
   "amountIncomeSemantic": "income, {amount}",
   "@amountIncomeSemantic": {
-    "description": "Screen reader label of a positive income or refund amount. {amount} is the formatted amount, e.g. €12.50",
+    "description": "Screen reader label of a positive income or refund amount. {amount} is the spoken amount (moneySpoken), e.g. 12.50 euros",
     "placeholders": {
       "amount": {
         "type": "String"
@@ -15,7 +15,7 @@
   },
   "amountExpenseSemantic": "expense, {amount}",
   "@amountExpenseSemantic": {
-    "description": "Screen reader label of an expense amount (shown with a minus sign). {amount} is the formatted amount without sign",
+    "description": "Screen reader label of an expense amount (shown with a minus sign). {amount} is the spoken amount (moneySpoken), e.g. 12.50 euros without sign",
     "placeholders": {
       "amount": {
         "type": "String"
@@ -24,7 +24,7 @@
   },
   "amountTransferSemantic": "transfer, {amount}",
   "@amountTransferSemantic": {
-    "description": "Screen reader label of a transfer amount. {amount} is the formatted amount",
+    "description": "Screen reader label of a transfer amount. {amount} is the spoken amount (moneySpoken), e.g. 12.50 euros",
     "placeholders": {
       "amount": {
         "type": "String"
@@ -33,7 +33,7 @@
   },
   "amountNegativeSemantic": "minus {amount}",
   "@amountNegativeSemantic": {
-    "description": "Screen reader label of a negative balance or total. {amount} is the formatted amount without sign",
+    "description": "Screen reader label of a negative balance or total. {amount} is the spoken amount (moneySpoken), e.g. 12.50 euros without sign",
     "placeholders": {
       "amount": {
         "type": "String"
@@ -281,5 +281,131 @@
   "formNothingSaved": "Nothing was saved.",
   "@formNothingSaved": {
     "description": "Follows formErrorSummary in the form error summary"
+  },
+  "moneySpoken": "{amount} {currency, select, EUR{euros} USD{US dollars} GBP{pounds sterling} CHF{Swiss francs} CAD{Canadian dollars} AUD{Australian dollars} JPY{Japanese yen} CNY{Chinese yuan} MXN{Mexican pesos} ARS{Argentine pesos} COP{Colombian pesos} CLP{Chilean pesos} BRL{Brazilian reais} other{{currency}}}",
+  "@moneySpoken": {
+    "description": "Screen reader form of a money amount. {amount} is the number without currency symbol (e.g. 12.50), {currency} the ISO 4217 code, read as the plural currency name; unknown codes are read as the code itself",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "12.50"
+      },
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      }
+    }
+  },
+  "assetsAccountTypeBank": "Bank",
+  "@assetsAccountTypeBank": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet"
+  },
+  "assetsAccountTypeCash": "Cash",
+  "@assetsAccountTypeCash": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet"
+  },
+  "assetsAccountTypeInvestment": "Investment",
+  "@assetsAccountTypeInvestment": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet"
+  },
+  "assetsAccountTypeCrypto": "Crypto",
+  "@assetsAccountTypeCrypto": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet"
+  },
+  "assetsAccountTypeReceivable": "Receivable",
+  "@assetsAccountTypeReceivable": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet"
+  },
+  "assetsAccountTypeProperty": "Property",
+  "@assetsAccountTypeProperty": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet (a house, a car…)"
+  },
+  "assetsAccountTypeExternalAsset": "External asset",
+  "@assetsAccountTypeExternalAsset": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet"
+  },
+  "assetsAccountTypeVirtual": "Virtual",
+  "@assetsAccountTypeVirtual": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet (money set aside, not a real account)"
+  },
+  "assetsAccountTypeOtherAsset": "Other asset",
+  "@assetsAccountTypeOtherAsset": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet"
+  },
+  "assetsAccountTypeCreditCard": "Credit card",
+  "@assetsAccountTypeCreditCard": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet"
+  },
+  "assetsAccountTypeLoan": "Loan",
+  "@assetsAccountTypeLoan": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet"
+  },
+  "assetsAccountTypePayable": "Payable",
+  "@assetsAccountTypePayable": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet (money the user owes someone)"
+  },
+  "assetsAccountTypeMortgage": "Mortgage",
+  "@assetsAccountTypeMortgage": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet"
+  },
+  "assetsAccountTypeExternalLiability": "External liability",
+  "@assetsAccountTypeExternalLiability": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet"
+  },
+  "assetsAccountTypeOtherLiability": "Other liability",
+  "@assetsAccountTypeOtherLiability": {
+    "description": "Assets account type, shown in the assets account editor type picker and as a group heading on the Assets accounts page and the balance sheet"
+  },
+  "transactionTypeExpense": "Expense",
+  "@transactionTypeExpense": {
+    "description": "Transaction type, e.g. in filters and the transaction editor tabs"
+  },
+  "transactionTypeIncome": "Income",
+  "@transactionTypeIncome": {
+    "description": "Transaction type, e.g. in filters and the transaction editor tabs"
+  },
+  "transactionTypeTransfer": "Transfer",
+  "@transactionTypeTransfer": {
+    "description": "Transaction type, e.g. in filters and the transaction editor tabs"
+  },
+  "transactionTypeOpeningBalance": "Opening balance",
+  "@transactionTypeOpeningBalance": {
+    "description": "Transaction type of the starting balance of an assets account"
+  },
+  "categoryKindExpense": "Expenses",
+  "@categoryKindExpense": {
+    "description": "Category type: tab on the Categories page and option in the category group editor"
+  },
+  "categoryKindIncome": "Income",
+  "@categoryKindIncome": {
+    "description": "Category type: tab on the Categories page and option in the category group editor"
+  },
+  "budgetPeriodMonthly": "Monthly",
+  "@budgetPeriodMonthly": {
+    "description": "Budget period shown in the budget editor"
+  },
+  "themeModeSystem": "System",
+  "@themeModeSystem": {
+    "description": "Settings → Theme option that follows the device's light/dark setting"
+  },
+  "themeModeLight": "Light",
+  "@themeModeLight": {
+    "description": "Settings → Theme option"
+  },
+  "themeModeDark": "Dark",
+  "@themeModeDark": {
+    "description": "Settings → Theme option"
+  },
+  "errorLoadFailed": "This page couldn't load. Nothing was changed or deleted.",
+  "@errorLoadFailed": {
+    "description": "Message of the in-page error when a page fails to load"
+  },
+  "errorSaveFailed": "Couldn't save. Your changes are still here.",
+  "@errorSaveFailed": {
+    "description": "Snackbar when saving fails; the form keeps the user's input"
+  },
+  "errorInvalidAmount": "Enter a valid amount.",
+  "@errorInvalidAmount": {
+    "description": "Field error under an amount field whose text is not a number (or is ambiguous, like 1.234 in French)"
   }
 }
