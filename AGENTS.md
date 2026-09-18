@@ -107,7 +107,7 @@ lib/
   data/
     database/
       tables/               # one `…Table` per file + its `…TableRow` class
-    models/                 # domain objects (AssetsAccount, Transaction, Money…)
+    models/                 # domain objects, value objects, drafts, query results
     repositories/           # one Drift accessor per file: queries, rules, mapping
   services/
     backup/                 # JSON export / restore
@@ -163,6 +163,8 @@ presentation → providers → services/repositories → Drift.
   annotated files. CI regenerates them before analysing.
 - Keep widgets small; extract anything longer than ~150 lines.
 - Use `sealed` classes for results/errors of import and restore operations.
+- Prefer classes over `typedef` (no record or type aliases for data); one public class per
+  file in `data/models/` (domain objects, drafts, query results).
 
 ## Definition of done for a change
 
