@@ -48,6 +48,11 @@ dev_dependencies:
   drift_dev: ^2.35.0
   riverpod_generator: ^4.0.9
 
+  # Generate launcher icons and native splash from assets/branding/launcher/
+  # (dart run flutter_launcher_icons && dart run flutter_native_splash:create)
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.8
+
 flutter:
   uses-material-design: true
 
@@ -56,3 +61,24 @@ flutter:
 
   assets:
     - assets/branding/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/branding/launcher/icon.png
+  adaptive_icon_background: "#FAF7F0"
+  adaptive_icon_foreground: assets/branding/launcher/icon_foreground.png
+  adaptive_icon_monochrome: assets/branding/launcher/icon_monochrome.png
+  remove_alpha_ios: true
+
+flutter_native_splash:
+  color: "#FAF7F0"
+  image: assets/branding/launcher/splash_light.png
+  color_dark: "#16130F"
+  image_dark: assets/branding/launcher/splash_dark.png
+  android_12:
+    color: "#FAF7F0"
+    image: assets/branding/launcher/splash_android12_light.png
+    color_dark: "#16130F"
+    image_dark: assets/branding/launcher/splash_android12_dark.png
+  web: false
