@@ -15,7 +15,7 @@ jobs:
     name: Analyze and test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Reads the Flutter version pinned in .fvmrc
       - uses: kuhnroyal/flutter-fvm-config-action@v3
@@ -45,7 +45,7 @@ jobs:
     name: No INTERNET permission in release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check Android release manifest
         run: |
           manifest=android/app/src/main/AndroidManifest.xml
