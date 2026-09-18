@@ -98,9 +98,14 @@ jobs:
             echo "::error::Merged release manifest not found at $manifest (Android Gradle Plugin layout changed?)."
             exit 1
           fi
-          if grep -q 'android.permission.INTERNET' "$manifest"; then
-            echo "::error::The merged release manifest declares INTERNET. Find the plugin that adds it:"
-            grep -n -B2 -A2 'android.permission.INTERNET' "$manifest"
+          # Allowlist: any other permission (INTERNET, storage, location, contacts, SMS,
+          # phone…) fails. Add POST_NOTIFICATIONS here only when local reminders ship.
+          allowed='\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$'
+          unexpected=$(grep -o 'uses-permission[^>]*android:name="[^"]*"' "$manifest" \
+            | sed 's/.*android:name="\([^"]*\)"/\1/' | grep -Ev "$allowed" || true)
+          if [ -n "$unexpected" ]; then
+            echo "::error::The merged release manifest requests unexpected permissions:"
+            echo "$unexpected"
             exit 1
           fi
-          echo "OK: no INTERNET permission in the merged release manifest."
+          echo "OK: no unexpected permissions in the merged release manifest."
