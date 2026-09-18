@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "App (dev)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "flutterMode": "debug"
+    },
+    {
+      "name": "Tests",
+      "type": "dart",
+      "request": "launch",
+      "program": "test/"
+    },
+    {
+      "name": "Build release APK (local keystore)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "fvm flutter build apk --release",
+      "env": { "REQUIRE_RELEASE_SIGNING": "true" }
+    }
+  ]
+}

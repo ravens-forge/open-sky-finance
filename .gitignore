@@ -157,7 +157,10 @@ open-sky-finance-backup-*.json
 
 # Editors / OS
 .idea/
-.vscode/
+# Shared VS Code launch configs and SDK path; anything else in .vscode stays local
+.vscode/*
+!.vscode/launch.json
+!.vscode/settings.json
 *.iml
 .DS_Store
 Thumbs.db
