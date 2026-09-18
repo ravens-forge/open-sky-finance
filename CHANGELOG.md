@@ -16,5 +16,6 @@ Two other version numbers exist and are **not** the app version: the Drift datab
 - "Ledger" look in light and dark mode, with the Newsreader and Public Sans fonts bundled in the app (no downloads).
 - Screen readers say amounts with the currency name ("12.50 euros") in English, Spanish and French.
 - Store listing in English, Spanish and French.
+- Local database (Drift `schemaVersion` 1): assets accounts, categories, transactions, labels, budgets, reminders and settings. First launch creates a cash assets account and default category groups in the device language.
 
 [Unreleased]: https://github.com/ravens-forge/open-sky-finance/commits/main

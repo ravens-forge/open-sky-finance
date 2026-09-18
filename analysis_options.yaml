@@ -6,6 +6,7 @@ analyzer:
     - "**/*.drift.dart"
     - "**/*.freezed.dart"
     - "**/*.mocks.dart"
+    - test/drift/**/generated/**
     - build/**
     - android/**
     - ios/**
