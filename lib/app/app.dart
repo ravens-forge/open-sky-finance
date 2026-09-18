@@ -11,10 +11,9 @@ class App extends StatelessWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
-        builder:
-            (context) => Scaffold(
-              body: Center(child: Text(AppLocalizations.of(context).appTitle)),
-            ),
+        builder: (context) => Scaffold(
+          body: Center(child: Text(AppLocalizations.of(context).appTitle)),
+        ),
       ),
     );
   }
