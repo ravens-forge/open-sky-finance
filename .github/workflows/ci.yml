@@ -32,6 +32,29 @@ jobs:
       - run: flutter gen-l10n
       - run: dart run build_runner build --delete-conflicting-outputs
 
+      # gen-l10n writes every key missing from app_es.arb / app_fr.arb here
+      - name: Check translations are complete
+        run: |
+          if [ -f l10n_untranslated.txt ] && [ "$(tr -d '[:space:]' < l10n_untranslated.txt)" != "{}" ]; then
+            echo "::error file=l10n_untranslated.txt::Missing translations:"
+            cat l10n_untranslated.txt
+            exit 1
+          fi
+
+      # UI text goes through context.l10n. Symbols ('−', '⇄'), interpolations and
+      # lines ending in `// l10n-ignore` (debug-only widgets) are allowed.
+      - name: Check for hard-coded Text strings
+        env:
+          LC_ALL: C.UTF-8
+        run: |
+          [ -d lib/features ] || exit 0
+          if grep -rHoPz --include='*.dart' \
+            "\bText\(\s*r?(['\"])(?:\\$\{[^}'\"]*\}|\\$\w+|[^'\"\n\p{L}\\$])*\p{L}[^'\"\n]*\1(?![^\n]*// l10n-ignore)" \
+            lib/features | tr '\0' '\n'; then
+            echo "::error::Hard-coded strings in Text(...). Add them to the ARB files and use context.l10n."
+            exit 1
+          fi
+
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed .
 
@@ -46,15 +69,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Check Android release manifest
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: kuhnroyal/flutter-fvm-config-action@v3
+        id: fvm
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvm.outputs.FLUTTER_VERSION }}
+          channel: ${{ steps.fvm.outputs.FLUTTER_CHANNEL }}
+          cache: true
+
+      - run: flutter pub get
+
+      # Plugins can add permissions, so check the manifest Gradle merges for release,
+      # not only android/app/src/main/AndroidManifest.xml.
+      - name: Merge the release manifest
         run: |
-          manifest=android/app/src/main/AndroidManifest.xml
+          flutter build apk --config-only --release
+          cd android && ./gradlew :app:processReleaseManifest --no-daemon -q
+
+      - name: Check merged release manifest
+        run: |
+          manifest=build/app/intermediates/merged_manifests/release/processReleaseManifest/AndroidManifest.xml
           if [ ! -f "$manifest" ]; then
-            echo "No Android project yet, skipping."
-            exit 0
-          fi
-          if grep -q 'android.permission.INTERNET' "$manifest"; then
-            echo "::error file=$manifest::The release manifest must not declare INTERNET."
+            echo "::error::Merged release manifest not found at $manifest (Android Gradle Plugin layout changed?)."
             exit 1
           fi
-          echo "OK: no INTERNET permission in the release manifest."
+          if grep -q 'android.permission.INTERNET' "$manifest"; then
+            echo "::error::The merged release manifest declares INTERNET. Find the plugin that adds it:"
+            grep -n -B2 -A2 'android.permission.INTERNET' "$manifest"
+            exit 1
+          fi
+          echo "OK: no INTERNET permission in the merged release manifest."
