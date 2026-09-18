@@ -46,5 +46,21 @@
   "categoryColorPurple": "Violet",
   "categoryColorTeal": "Bleu canard",
   "categoryColorBlue": "Bleu",
-  "categoryColorStone": "Gris pierre"
+  "categoryColorStone": "Gris pierre",
+  "appPrivacyLine": "Hors ligne · vos données restent sur cet appareil",
+  "launchSemantic": "Ouverture de vos données",
+  "actionTryAgain": "Réessayer",
+  "actionReportBug": "Signaler un bug",
+  "actionClose": "Fermer",
+  "actionCancel": "Annuler",
+  "actionMoveUp": "Monter",
+  "actionMoveDown": "Descendre",
+  "chipScheduled": "Planifié",
+  "chipOverdue": "En retard",
+  "chipAutomatic": "Automatique",
+  "reminderRecord": "Enregistrer",
+  "reminderSkip": "Ignorer",
+  "homeSectionMove": "Déplacer la section {name}",
+  "formErrorSummary": "{count, plural, =1{1 champ à vérifier.} other{{count} champs à vérifier.}}",
+  "formNothingSaved": "Rien n'a été enregistré."
 }

@@ -61,6 +61,23 @@ flutter:
 
   assets:
     - assets/branding/
+    # Registered in main.dart so they show on the licenses page
+    - assets/fonts/Newsreader-OFL.txt
+    - assets/fonts/PublicSans-OFL.txt
+
+  # Variable fonts (SIL OFL 1.1, licenses next to them); FontWeight drives the
+  # wght axis.
+  fonts:
+    - family: Newsreader
+      fonts:
+        - asset: assets/fonts/Newsreader.ttf
+        - asset: assets/fonts/Newsreader-Italic.ttf
+          style: italic
+    - family: PublicSans
+      fonts:
+        - asset: assets/fonts/PublicSans.ttf
+        - asset: assets/fonts/PublicSans-Italic.ttf
+          style: italic
 
 flutter_launcher_icons:
   android: true

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:open_sky_finance/core/finance_colors.dart';
+import 'package:open_sky_finance/app/theme.dart';
 import 'package:open_sky_finance/core/l10n.dart';
 
 class App extends StatelessWidget {
@@ -11,11 +11,8 @@ class App extends StatelessWidget {
       onGenerateTitle: (context) => context.l10n.appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(extensions: const [FinanceColors.light]),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        extensions: const [FinanceColors.dark],
-      ),
+      theme: lightTheme,
+      darkTheme: darkTheme,
       home: Builder(
         builder: (context) =>
             Scaffold(body: Center(child: Text(context.l10n.appTitle))),

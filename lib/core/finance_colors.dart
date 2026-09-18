@@ -6,46 +6,69 @@ class FinanceColors extends ThemeExtension<FinanceColors> {
     required this.income,
     required this.expense,
     required this.transfer,
+    required this.warning,
+    required this.warningContainer,
+    required this.expenseContainer,
+    required this.sunken,
+    required this.muted,
+    required this.disabled,
+    required this.chartSeries,
+    required this.chartOther,
   });
 
-  static const light = FinanceColors(
-    income: Color(0xFF1F7A3E),
-    expense: Color(0xFFB8391F),
-    transfer: Color(0xFF2B5FAE),
-  );
-
-  static const dark = FinanceColors(
-    income: Color(0xFF6FCF8A),
-    expense: Color(0xFFFF8B6E),
-    transfer: Color(0xFF86AEF0),
-  );
-
-  /// The theme's colours, or the defaults for its brightness.
-  static FinanceColors of(BuildContext context) {
-    final theme = Theme.of(context);
-    return theme.extension<FinanceColors>() ??
-        (theme.brightness == Brightness.dark ? dark : light);
-  }
+  /// The app theme's colours (`lightTheme` / `darkTheme` carry them).
+  static FinanceColors of(BuildContext context) =>
+      Theme.of(context).extension<FinanceColors>()!;
 
   final Color income;
   final Color expense;
   final Color transfer;
 
+  /// Warning text and icons ("Was due Sep 15"), on paper or [warningContainer].
+  final Color warning;
+  final Color warningContainer;
+
+  /// Form error summary background.
+  final Color expenseContainer;
+
+  /// Progress tracks, info notes and loading placeholders.
+  final Color sunken;
+
+  /// Secondary text, captions, inactive tabs (≥ 4.5:1 on paper).
+  final Color muted;
+
+  /// Drag handles and disabled controls (not for text).
+  final Color disabled;
+
+  /// Chart series in order; "Remaining" and "Other" use [chartOther].
+  final List<Color> chartSeries;
+  final Color chartOther;
+
+  /// Series colour for [index], wrapping around.
+  Color series(int index) => chartSeries[index % chartSeries.length];
+
   @override
-  FinanceColors copyWith({Color? income, Color? expense, Color? transfer}) =>
-      FinanceColors(
-        income: income ?? this.income,
-        expense: expense ?? this.expense,
-        transfer: transfer ?? this.transfer,
-      );
+  FinanceColors copyWith() => this;
 
   @override
   FinanceColors lerp(FinanceColors? other, double t) {
     if (other == null) return this;
+    Color l(Color a, Color b) => Color.lerp(a, b, t)!;
     return FinanceColors(
-      income: Color.lerp(income, other.income, t)!,
-      expense: Color.lerp(expense, other.expense, t)!,
-      transfer: Color.lerp(transfer, other.transfer, t)!,
+      income: l(income, other.income),
+      expense: l(expense, other.expense),
+      transfer: l(transfer, other.transfer),
+      warning: l(warning, other.warning),
+      warningContainer: l(warningContainer, other.warningContainer),
+      expenseContainer: l(expenseContainer, other.expenseContainer),
+      sunken: l(sunken, other.sunken),
+      muted: l(muted, other.muted),
+      disabled: l(disabled, other.disabled),
+      chartSeries: [
+        for (final (i, c) in chartSeries.indexed)
+          l(c, other.chartSeries[i % other.chartSeries.length]),
+      ],
+      chartOther: l(chartOther, other.chartOther),
     );
   }
 }

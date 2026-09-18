@@ -13,5 +13,6 @@ Two other version numbers exist and are **not** the app version: the Drift datab
 - Repository scaffolding: contributor documentation, issue and pull request templates, CI workflow.
 - App icon and launch screen based on the logo, in light and dark mode.
 - App language selectable from Android system settings (Android 13+).
+- "Ledger" look in light and dark mode, with the Newsreader and Public Sans fonts bundled in the app (no downloads).
 
 [Unreleased]: https://github.com/ravens-forge/open-sky-finance/commits/main
