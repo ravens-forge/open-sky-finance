@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:open_sky_finance/app/theme.dart';
 import 'package:open_sky_finance/core/finance_colors.dart';
 import 'package:open_sky_finance/core/l10n.dart';
 import 'package:open_sky_finance/core/money/format_money.dart';
@@ -10,10 +11,13 @@ import 'package:open_sky_finance/core/widgets/empty_state.dart';
 
 Widget _app(Widget child, {Locale locale = const Locale('en')}) => MaterialApp(
   locale: locale,
+  theme: lightTheme,
   localizationsDelegates: AppLocalizations.localizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
   home: Scaffold(body: SingleChildScrollView(child: child)),
 );
+
+final _colors = lightTheme.extension<FinanceColors>()!;
 
 void main() {
   test('unknown category icons fall back', () {
@@ -40,7 +44,7 @@ void main() {
         final text = textOf(tester);
         expect(text.data, '−$amount');
         expect(text.semanticsLabel, '$expense, $amount');
-        expect(text.style!.color, FinanceColors.light.expense);
+        expect(text.style!.color, _colors.expense);
       });
     }
 
@@ -53,7 +57,7 @@ void main() {
       var text = await pump(const AmountText(2000000, currency: 'EUR'));
       expect(text.data, '+€2.00');
       expect(text.semanticsLabel, 'income, €2.00');
-      expect(text.style!.color, FinanceColors.light.income);
+      expect(text.style!.color, _colors.income);
 
       text = await pump(
         const AmountText(
@@ -63,7 +67,7 @@ void main() {
         ),
       );
       expect(text.data, '⇄ €2.00');
-      expect(text.style!.color, FinanceColors.light.transfer);
+      expect(text.style!.color, _colors.transfer);
 
       text = await pump(
         const AmountText(

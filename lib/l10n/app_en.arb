@@ -207,5 +207,79 @@
   "categoryColorStone": "Stone",
   "@categoryColorStone": {
     "description": "Colour option in the category colour picker (spoken label and tooltip)"
+  },
+  "appPrivacyLine": "Offline · your data stays on this device",
+  "@appPrivacyLine": {
+    "description": "Privacy line under the app name on the launch screen and in the drawer header"
+  },
+  "launchSemantic": "Opening your data",
+  "@launchSemantic": {
+    "description": "Screen reader label of the launch screen while the database opens"
+  },
+  "actionTryAgain": "Try again",
+  "@actionTryAgain": {
+    "description": "Button that retries loading a page after an error"
+  },
+  "actionReportBug": "Report a bug",
+  "@actionReportBug": {
+    "description": "Button that opens the Report a bug screen"
+  },
+  "actionClose": "Close",
+  "@actionClose": {
+    "description": "Close button of sheets and dialogs (also its tooltip)"
+  },
+  "actionCancel": "Cancel",
+  "@actionCancel": {
+    "description": "Button that cancels a dialog or a running task"
+  },
+  "actionMoveUp": "Move up",
+  "@actionMoveUp": {
+    "description": "Accessibility action that moves an item one place up in a reorderable list"
+  },
+  "actionMoveDown": "Move down",
+  "@actionMoveDown": {
+    "description": "Accessibility action that moves an item one place down in a reorderable list"
+  },
+  "chipScheduled": "Scheduled",
+  "@chipScheduled": {
+    "description": "Chip on a transaction dated in the future"
+  },
+  "chipOverdue": "Overdue",
+  "@chipOverdue": {
+    "description": "Chip on a reminder whose due date has passed"
+  },
+  "chipAutomatic": "Automatic",
+  "@chipAutomatic": {
+    "description": "Chip on a reminder that records itself on the due date"
+  },
+  "reminderRecord": "Record",
+  "@reminderRecord": {
+    "description": "Button on a reminder row that records the due transaction"
+  },
+  "reminderSkip": "Skip",
+  "@reminderSkip": {
+    "description": "Button on a reminder row that skips this occurrence"
+  },
+  "homeSectionMove": "Move section {name}",
+  "@homeSectionMove": {
+    "description": "Screen reader label of the drag handle of a Home section. {name} is the section title",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "formErrorSummary": "{count, plural, =1{1 field needs attention.} other{{count} fields need attention.}}",
+  "@formErrorSummary": {
+    "description": "Bold lead of the error summary at the top of a form that failed validation",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "formNothingSaved": "Nothing was saved.",
+  "@formNothingSaved": {
+    "description": "Follows formErrorSummary in the form error summary"
   }
 }
