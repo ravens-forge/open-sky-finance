@@ -48,6 +48,8 @@ jobs:
           LC_ALL: C.UTF-8
         run: |
           [ -d lib/features ] || exit 0
+          # Without pipefail the `if` sees tr's status (always 0), not grep's.
+          set -o pipefail
           if grep -rHoPz --include='*.dart' \
             "\bText\(\s*r?(['\"])(?:\\$\{[^}'\"]*\}|\\$\w+|[^'\"\n\p{L}\\$])*\p{L}[^'\"\n]*\1(?![^\n]*// l10n-ignore)" \
             lib/features | tr '\0' '\n'; then
