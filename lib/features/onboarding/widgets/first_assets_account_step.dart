@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/dates/wall_clock.dart';
 import '../../../core/l10n.dart';
 import '../../../core/labels.dart';
+import '../../../core/money/format_money.dart';
 import '../../../core/money/parse_money.dart';
 import '../../../core/result.dart';
 import '../../../core/widgets/choice_sheet.dart';
@@ -48,6 +49,20 @@ class _FirstAssetsAccountStepState
   String? _nameError;
   String? _balanceError;
   var _saving = false;
+
+  // Zero in the locale and currency's format (0.00, 0,00, 0 for JPY).
+  String _zero(String currency) => formatMoney(
+    0,
+    currency: currency,
+    locale: context.l10n.localeName,
+    symbol: false,
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_balance.text.isEmpty) _balance.text = _zero(_currency);
+  }
 
   @override
   void dispose() {
@@ -177,7 +192,12 @@ class _FirstAssetsAccountStepState
           value: currencyLabel(_currency, l10n),
           onTap: () async {
             final picked = await showCurrencyPicker(context, _currency);
-            if (picked != null) setState(() => _currency = picked);
+            if (picked == null) return;
+            // Keep the default zero in the new currency's format.
+            if (_balance.text == _zero(_currency)) {
+              _balance.text = _zero(picked);
+            }
+            setState(() => _currency = picked);
           },
         ),
         Padding(
@@ -189,6 +209,11 @@ class _FirstAssetsAccountStepState
         ),
         TextField(
           controller: _balance,
+          // Tapping selects the default so typing replaces it.
+          onTap: () => _balance.selection = TextSelection(
+            baseOffset: 0,
+            extentOffset: _balance.text.length,
+          ),
           keyboardType: const TextInputType.numberWithOptions(
             decimal: true,
             signed: true,
@@ -196,7 +221,6 @@ class _FirstAssetsAccountStepState
           style: theme.textTheme.displayMedium!.copyWith(fontSize: 34),
           decoration: InputDecoration(
             labelText: l10n.fieldCurrentBalance,
-            hintText: '0',
             floatingLabelBehavior: FloatingLabelBehavior.always,
             // prefixIcon, unlike prefixText, shows while the field is empty.
             prefixIcon: Padding(
