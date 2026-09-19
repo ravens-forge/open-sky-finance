@@ -177,6 +177,7 @@ void main() {
     await tester.tap(find.text('Next'));
     await settle(tester);
     expect(find.text('Add your first assets account'), findsOneWidget);
+    expect(find.text('0.00'), findsOneWidget);
 
     // Nothing is saved without a name.
     await tester.tap(find.text('Start'));
