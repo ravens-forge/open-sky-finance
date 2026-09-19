@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:open_sky_finance/app/app.dart';
 import 'package:open_sky_finance/app/locale.dart';
 import 'package:open_sky_finance/l10n/generated/app_localizations.dart';
+
+import 'pump_app.dart';
 
 void main() {
   test('supports English, Spanish and French', () {
@@ -15,7 +15,7 @@ void main() {
   });
 
   testWidgets('app starts and shows the localized title', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: App()));
+    await pumpApp(tester);
 
     expect(find.text('Open Sky Finance'), findsOneWidget);
     expect(find.byType(Scaffold), findsOneWidget);
@@ -34,7 +34,7 @@ void main() {
         tester.platformDispatcher.localesTestValue = [device];
         addTearDown(tester.platformDispatcher.clearLocalesTestValue);
 
-        await tester.pumpWidget(const ProviderScope(child: App()));
+        await pumpApp(tester);
 
         expect(activeLocale(tester), expected);
       });
@@ -43,12 +43,8 @@ void main() {
     testWidgets('the user choice applies immediately', (tester) async {
       tester.platformDispatcher.localesTestValue = [const Locale('es')];
       addTearDown(tester.platformDispatcher.clearLocalesTestValue);
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
 
-      await tester.pumpWidget(
-        UncontrolledProviderScope(container: container, child: const App()),
-      );
+      final container = await pumpApp(tester);
       expect(activeLocale(tester), 'es');
 
       container.read(userLocaleProvider.notifier).set(const Locale('fr'));

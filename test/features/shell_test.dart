@@ -1,55 +1,10 @@
-import 'dart:convert';
-
-import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:open_sky_finance/app/app.dart';
 import 'package:open_sky_finance/app/router.dart';
 import 'package:open_sky_finance/app/routes.dart';
-import 'package:open_sky_finance/data/database/app_database.dart';
-import 'package:open_sky_finance/data/database/tables/setting_keys.dart';
-import 'package:open_sky_finance/data/providers.dart';
-import 'package:open_sky_finance/features/onboarding/onboarding_steps.dart';
 
-/// Pumps the app on an in-memory database; [onboarded] marks every
-/// onboarding step as seen first.
-Future<GoRouter> pumpApp(WidgetTester tester, {bool onboarded = true}) async {
-  driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
-  final db = AppDatabase(executor: NativeDatabase.memory());
-  if (onboarded) {
-    await tester.runAsync(
-      () => db.settingsRepository.set(
-        SettingKeys.onboardingSeenSteps,
-        jsonEncode(onboardingSteps),
-      ),
-    );
-  }
-  final container = ProviderContainer(
-    overrides: [appDatabaseProvider.overrideWithValue(db)],
-  );
-  addTearDown(() async {
-    // Unmount first so Drift's stream cleanup timers run inside the test.
-    await tester.pumpWidget(const SizedBox());
-    container.dispose();
-    await tester.runAsync(db.close);
-  });
-  await tester.pumpWidget(
-    UncontrolledProviderScope(container: container, child: const App()),
-  );
-  await settle(tester);
-  return container.read(routerProvider);
-}
-
-/// Lets the database answer, then finishes animations.
-Future<void> settle(WidgetTester tester) async {
-  for (var i = 0; i < 3; i++) {
-    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
-    await tester.pumpAndSettle();
-  }
-}
+import '../pump_app.dart';
 
 String location(GoRouter router) => router.state.uri.toString();
 
@@ -57,7 +12,10 @@ void main() {
   testWidgets('first launch goes to onboarding; Skip goes Home', (
     tester,
   ) async {
-    final router = await pumpApp(tester, onboarded: false);
+    final router = (await pumpApp(
+      tester,
+      onboarded: false,
+    )).read(routerProvider);
     expect(location(router), Routes.onboarding);
 
     await tester.tap(find.text('Skip'));
@@ -67,7 +25,7 @@ void main() {
   });
 
   testWidgets('tabs, swipe and branch stay in sync', (tester) async {
-    final router = await pumpApp(tester);
+    final router = (await pumpApp(tester)).read(routerProvider);
     expect(location(router), Routes.home);
 
     await tester.tap(find.text('Transactions'));
@@ -85,7 +43,7 @@ void main() {
   });
 
   testWidgets('FAB opens the editor above the shell', (tester) async {
-    final router = await pumpApp(tester);
+    final router = (await pumpApp(tester)).read(routerProvider);
 
     await tester.tap(find.text('Add'));
     await settle(tester);
@@ -99,7 +57,7 @@ void main() {
   });
 
   testWidgets('drawer opens other pages', (tester) async {
-    final router = await pumpApp(tester);
+    final router = (await pumpApp(tester)).read(routerProvider);
 
     await tester.tap(find.byTooltip('Open navigation menu'));
     await settle(tester);
@@ -109,7 +67,7 @@ void main() {
   });
 
   testWidgets('unknown IDs and paths show not found', (tester) async {
-    final router = await pumpApp(tester);
+    final router = (await pumpApp(tester)).read(routerProvider);
 
     for (final path in [
       Routes.transaction('missing'),
