@@ -6,11 +6,11 @@ import '../core/l10n.dart';
 import '../core/widgets/not_found_gate.dart';
 import '../core/widgets/not_found_page.dart';
 import '../data/providers.dart';
-import '../features/onboarding/onboarding_page.dart';
-import '../features/onboarding/onboarding_pending.dart';
-import '../features/shell/main_page.dart';
-import '../features/shell/main_shell.dart';
-import '../features/shell/stub_page.dart';
+import '../features/onboarding/pages/onboarding_page.dart';
+import '../features/onboarding/providers/onboarding_provider.dart';
+import '../features/shell/models/main_page.dart';
+import '../features/shell/pages/main_shell.dart';
+import '../features/shell/pages/stub_page.dart';
 import 'routes.dart';
 
 part 'router.g.dart';
@@ -22,8 +22,8 @@ GoRouter router(Ref ref) {
   // Re-runs the redirect when the onboarding state loads or changes.
   final onboarding = ValueNotifier<bool?>(null);
   ref.listen(
-    onboardingPendingProvider,
-    (_, next) => onboarding.value = next.value,
+    onboardingProvider,
+    (_, next) => onboarding.value = next.value?.steps.isNotEmpty,
     fireImmediately: true,
   );
 
@@ -52,8 +52,10 @@ GoRouter router(Ref ref) {
     refreshListenable: onboarding,
     redirect: (context, state) {
       final atOnboarding = state.matchedLocation == Routes.onboarding;
+      // The welcome step links to Backups (restore, Bluecoins import).
+      final allowed = atOnboarding || state.uri.path == Routes.backups;
       return switch (onboarding.value) {
-        true when !atOnboarding => Routes.onboarding,
+        true when !allowed => Routes.onboarding,
         false when atOnboarding => Routes.home,
         _ => null,
       };

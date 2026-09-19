@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/routes.dart';
-import '../../core/l10n.dart';
-import '../../core/widgets/app_drawer_header.dart';
+import '../../../app/routes.dart';
+import '../../../core/l10n.dart';
+import '../../../core/widgets/app_drawer_header.dart';
 
 /// The drawer of the main shell: the pages that are not tabs.
 class AppDrawer extends StatelessWidget {

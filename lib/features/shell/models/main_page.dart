@@ -1,5 +1,5 @@
-import '../../app/routes.dart';
-import '../../core/l10n.dart';
+import '../../../app/routes.dart';
+import '../../../core/l10n.dart';
 
 /// The main pages, in tab order; the index is the shell branch index.
 enum MainPage {
