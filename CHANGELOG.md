@@ -17,5 +17,6 @@ Two other version numbers exist and are **not** the app version: the Drift datab
 - Screen readers say amounts with the currency name ("12.50 euros") in English, Spanish and French.
 - Store listing in English, Spanish and French.
 - Local database (Drift `schemaVersion` 1): assets accounts, categories, transactions, labels, budgets, reminders and settings. First launch creates a cash assets account and default category groups in the device language.
+- Main navigation: top bar with menu, search and calendar; Home, Transactions, Reminders, Balance sheet, Budget, Net income and Labels as tabs you can tap or swipe; a drawer with the other pages; an "Add" button for new transactions; full-screen editors; a friendly "Nothing here" page for deleted items or stale links; onboarding on first launch (for now only with Skip).
 
 [Unreleased]: https://github.com/ravens-forge/open-sky-finance/commits/main
