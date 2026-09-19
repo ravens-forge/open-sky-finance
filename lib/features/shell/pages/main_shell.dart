@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/routes.dart';
-import '../../core/l10n.dart';
-import 'add_fab.dart';
-import 'app_drawer.dart';
-import 'main_page.dart';
+import '../../../app/routes.dart';
+import '../../../core/l10n.dart';
+import '../widgets/add_fab.dart';
+import '../widgets/app_drawer.dart';
+import '../models/main_page.dart';
 
 /// Top app bar, scrollable page tabs, drawer and FAB around the main pages.
 /// Tapping a tab or swiping switches the shell branch, and vice versa.

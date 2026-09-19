@@ -25,6 +25,10 @@ class TransactionsRepository extends DatabaseAccessor<AppDatabase>
   SimpleSelectStatement<$TransactionsTableTable, TransactionTableRow> live() =>
       select(transactionsTable)..where((t) => t.deletedAt.isNull());
 
+  /// Whether any transaction exists, trashed ones included.
+  Future<bool> hasAny() async =>
+      await (select(transactionsTable)..limit(1)).getSingleOrNull() != null;
+
   /// Newest first, `from <= occurred_at < to`, optionally touching one assets
   /// account (either side of a transfer).
   Stream<List<Transaction>> watchInRange(

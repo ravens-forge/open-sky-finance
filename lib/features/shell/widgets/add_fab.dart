@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/routes.dart';
-import '../../core/l10n.dart';
+import '../../../app/routes.dart';
+import '../../../core/l10n.dart';
 
 /// Extended "+ Add" button that opens the transaction editor.
 class AddFab extends StatelessWidget {

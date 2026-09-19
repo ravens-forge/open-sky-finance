@@ -9,7 +9,7 @@ import 'package:open_sky_finance/app/app.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
 import 'package:open_sky_finance/data/database/tables/setting_keys.dart';
 import 'package:open_sky_finance/data/providers.dart';
-import 'package:open_sky_finance/features/onboarding/onboarding_steps.dart';
+import 'package:open_sky_finance/features/onboarding/models/onboarding_steps.dart';
 
 /// Pumps the app on an in-memory database; [onboarded] marks every
 /// onboarding step as seen first.
@@ -23,7 +23,7 @@ Future<ProviderContainer> pumpApp(
     await tester.runAsync(
       () => db.settingsRepository.set(
         SettingKeys.onboardingSeenSteps,
-        jsonEncode(onboardingSteps),
+        jsonEncode([for (final s in onboardingSteps) s.id]),
       ),
     );
   }

@@ -47,11 +47,11 @@ void main() {
       final container = await pumpApp(tester);
       expect(activeLocale(tester), 'es');
 
-      container.read(userLocaleProvider.notifier).set(const Locale('fr'));
+      await container.read(userLocaleProvider.notifier).set(const Locale('fr'));
       await tester.pumpAndSettle();
       expect(activeLocale(tester), 'fr');
 
-      container.read(userLocaleProvider.notifier).set(null);
+      await container.read(userLocaleProvider.notifier).set(null);
       await tester.pumpAndSettle();
       expect(activeLocale(tester), 'es');
     });

@@ -112,7 +112,11 @@ lib/
   services/
     backup/                 # JSON export / restore
     bluecoins/              # .fydb reader and mapper
-  features/                 # one folder per feature: presentation + providers
+  features/                 # one folder per feature, split into:
+    <feature>/pages/        # route screens
+    <feature>/widgets/      # widgets of this feature
+    <feature>/providers/    # Riverpod providers and notifiers
+    <feature>/models/       # feature models and pure logic
   l10n/                     # app_en.arb (template), app_es.arb, app_fr.arb
 assets/
   branding/                 # logo
@@ -126,7 +130,8 @@ presentation → providers → services/repositories → Drift.
 
 ## Conventions
 
-- Feature-first folders. Widgets never talk to Drift directly: widget → provider →
+- Feature-first folders, each split into `pages/`, `widgets/`, `providers/` and `models/`
+  (never flat). Widgets never talk to Drift directly: widget → provider →
   repository. Repositories are the only data-access type: each is a Drift accessor
   (`@DriftAccessor`) holding its queries, writes, invariants and row ↔ domain mapping.
 - Providers that read data expose Drift `Stream`s (`@riverpod Stream<...>`) so the UI

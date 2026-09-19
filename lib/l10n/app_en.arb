@@ -575,5 +575,169 @@
   "notFoundMessage": "It may have been deleted, or the link is out of date.",
   "@notFoundMessage": {
     "description": "Message under the not found title"
+  },
+  "onboardingStepOf": "Step {step} of {total}",
+  "@onboardingStepOf": {
+    "description": "Progress label above an onboarding step (shown in capitals)",
+    "placeholders": {
+      "step": {
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "onboardingWhatsNew": "What's new",
+  "@onboardingWhatsNew": {
+    "description": "Label above onboarding steps shown to existing users after an update (shown in capitals)"
+  },
+  "onboardingNewIn": "New in {version}",
+  "@onboardingNewIn": {
+    "description": "Line above the title of an onboarding step added by an update",
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "1.2"
+      }
+    }
+  },
+  "actionNext": "Next",
+  "@actionNext": {
+    "description": "Button that goes to the next onboarding step"
+  },
+  "actionBack": "Back",
+  "@actionBack": {
+    "description": "Button that goes to the previous onboarding step"
+  },
+  "actionStart": "Start",
+  "@actionStart": {
+    "description": "Button that creates the first assets account and finishes the onboarding"
+  },
+  "actionSkipForNow": "Skip for now",
+  "@actionSkipForNow": {
+    "description": "Button that finishes the onboarding without creating an assets account"
+  },
+  "actionOther": "Other…",
+  "@actionOther": {
+    "description": "Chip that opens the full list of assets account types"
+  },
+  "welcomeTitle": "Your money,",
+  "@welcomeTitle": {
+    "description": "First line of the onboarding welcome headline"
+  },
+  "welcomeTitleEmphasis": "on your device.",
+  "@welcomeTitleEmphasis": {
+    "description": "Second line of the onboarding welcome headline, in italics"
+  },
+  "welcomeIntro": "Open Sky Finance tracks assets accounts, spending, budgets and net worth. Free, without limits.",
+  "@welcomeIntro": {
+    "description": "Paragraph under the onboarding welcome headline"
+  },
+  "welcomeOfflineTitle": "Offline and private",
+  "@welcomeOfflineTitle": {
+    "description": "Onboarding welcome point title"
+  },
+  "welcomeOfflineBody": "No sign-up, no internet access, no tracking.",
+  "@welcomeOfflineBody": {
+    "description": "Onboarding welcome point text"
+  },
+  "welcomeNoAdsTitle": "No ads, no premium tier",
+  "@welcomeNoAdsTitle": {
+    "description": "Onboarding welcome point title"
+  },
+  "welcomeNoAdsBody": "Every feature is for everyone.",
+  "@welcomeNoAdsBody": {
+    "description": "Onboarding welcome point text"
+  },
+  "welcomeBackupsTitle": "You own your backups",
+  "@welcomeBackupsTitle": {
+    "description": "Onboarding welcome point title"
+  },
+  "welcomeBackupsBody": "Save them wherever you want, including your cloud drive.",
+  "@welcomeBackupsBody": {
+    "description": "Onboarding welcome point text"
+  },
+  "welcomeRestoreLink": "Restore a backup or import from Bluecoins",
+  "@welcomeRestoreLink": {
+    "description": "Link on the onboarding welcome step that opens Backups"
+  },
+  "basicsTitle": "A few basics",
+  "@basicsTitle": {
+    "description": "Title of the onboarding step with language, theme and first day of week"
+  },
+  "basicsIntro": "Picked from your phone. You can change them later in Settings.",
+  "@basicsIntro": {
+    "description": "Paragraph under the basics onboarding step title"
+  },
+  "settingsLanguage": "Language",
+  "@settingsLanguage": {
+    "description": "Language setting label and picker title"
+  },
+  "settingsLanguageSystem": "System ({language})",
+  "@settingsLanguageSystem": {
+    "description": "Language option that follows the device; {language} is the resulting language name in that language",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "English"
+      }
+    }
+  },
+  "settingsTheme": "Theme",
+  "@settingsTheme": {
+    "description": "Theme setting label and picker title"
+  },
+  "settingsFirstDayOfWeek": "First day of week",
+  "@settingsFirstDayOfWeek": {
+    "description": "First day of week setting label and picker title"
+  },
+  "firstAssetsAccountTitle": "Add your first assets account",
+  "@firstAssetsAccountTitle": {
+    "description": "Title of the last onboarding step"
+  },
+  "firstAssetsAccountIntro": "Where is your money today? Start with one and add the rest whenever you like.",
+  "@firstAssetsAccountIntro": {
+    "description": "Paragraph under the first assets account onboarding step title"
+  },
+  "firstAssetsAccountCurrencyNote": "Each assets account has its own currency. This one also becomes your main currency for totals.",
+  "@firstAssetsAccountCurrencyNote": {
+    "description": "Note under the currency of the first assets account"
+  },
+  "fieldName": "Name",
+  "@fieldName": {
+    "description": "Label of a name field"
+  },
+  "fieldType": "Type",
+  "@fieldType": {
+    "description": "Label of the assets account type field"
+  },
+  "fieldCurrency": "Currency",
+  "@fieldCurrency": {
+    "description": "Label of a currency field and title of the currency picker"
+  },
+  "fieldCurrentBalance": "Current balance",
+  "@fieldCurrentBalance": {
+    "description": "Label of the balance field of the first assets account"
+  },
+  "errorNameRequired": "Enter a name",
+  "@errorNameRequired": {
+    "description": "Error under an empty name field"
+  },
+  "currencySearch": "Search currencies",
+  "@currencySearch": {
+    "description": "Hint of the search field in the currency picker"
+  },
+  "currencyName": "{currency, select, EUR{Euro} USD{US dollar} GBP{Pound sterling} CHF{Swiss franc} CAD{Canadian dollar} AUD{Australian dollar} JPY{Japanese yen} CNY{Chinese yuan} MXN{Mexican peso} ARS{Argentine peso} COP{Colombian peso} CLP{Chilean peso} BRL{Brazilian real} other{{currency}}}",
+  "@currencyName": {
+    "description": "Currency name shown next to its ISO 4217 code in pickers; unknown codes show the code itself",
+    "placeholders": {
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      }
+    }
   }
 }

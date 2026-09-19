@@ -8,3 +8,6 @@ extension L10nContext on BuildContext {
 
   String get localeName => l10n.localeName;
 }
+
+/// Language names in their own language, never translated.
+const languageEndonyms = {'en': 'English', 'es': 'Español', 'fr': 'Français'};

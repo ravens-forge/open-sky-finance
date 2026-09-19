@@ -1,13 +1,21 @@
 import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../data/database/tables/setting_keys.dart';
+import '../data/providers.dart';
+
 part 'locale.g.dart';
 
 /// Language chosen in Settings, or `null` to follow the device.
 @Riverpod(keepAlive: true)
 class UserLocale extends _$UserLocale {
   @override
-  Locale? build() => null;
+  Stream<Locale?> build() => ref
+      .watch(settingsRepositoryProvider)
+      .watch(SettingKeys.locale)
+      .map((code) => code == null ? null : Locale(code));
 
-  void set(Locale? locale) => state = locale;
+  Future<void> set(Locale? locale) => ref
+      .read(settingsRepositoryProvider)
+      .set(SettingKeys.locale, locale?.languageCode);
 }
