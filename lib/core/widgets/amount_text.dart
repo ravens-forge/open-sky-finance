@@ -38,12 +38,16 @@ class AmountText extends StatelessWidget {
     required this.currency,
     this.amountStyle = AmountStyle.signed,
     this.style,
+    this.approximate = false,
   });
 
   final int micros;
   final String currency;
   final AmountStyle amountStyle;
   final TextStyle? style;
+
+  /// Converted from other currencies: shown with "≈".
+  final bool approximate;
 
   @override
   Widget build(BuildContext context) {
@@ -78,8 +82,8 @@ class AmountText extends StatelessWidget {
     };
 
     return Text(
-      text,
-      semanticsLabel: label,
+      approximate ? l10n.amountApproximate(text) : text,
+      semanticsLabel: approximate ? l10n.amountApproximate(label) : label,
       style: (style ?? const TextStyle()).copyWith(
         color: color,
         fontFeatures: const [FontFeature.tabularFigures()],

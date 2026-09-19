@@ -13,5 +13,8 @@ enum AssetsAccountType {
   payable,
   mortgage,
   externalLiability,
-  otherLiability,
+  otherLiability;
+
+  /// Credit cards, loans… what the user owes. The rest are assets.
+  bool get isLiability => index >= creditCard.index;
 }
