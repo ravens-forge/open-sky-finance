@@ -447,5 +447,133 @@
   "seedCategoryGroupOtherIncome": "Other income",
   "@seedCategoryGroupOtherIncome": {
     "description": "Default income category group created on first launch for any other income"
+  },
+  "pageHome": "Home",
+  "@pageHome": {
+    "description": "Main page tab and drawer entry"
+  },
+  "pageTransactions": "Transactions",
+  "@pageTransactions": {
+    "description": "Main page tab"
+  },
+  "pageReminders": "Reminders",
+  "@pageReminders": {
+    "description": "Main page tab"
+  },
+  "pageBalanceSheet": "Balance sheet",
+  "@pageBalanceSheet": {
+    "description": "Main page tab"
+  },
+  "pageBudgets": "Budget",
+  "@pageBudgets": {
+    "description": "Main page tab"
+  },
+  "pageNetIncome": "Net income",
+  "@pageNetIncome": {
+    "description": "Main page tab"
+  },
+  "pageLabels": "Labels",
+  "@pageLabels": {
+    "description": "Main page tab"
+  },
+  "pageCalendar": "Calendar",
+  "@pageCalendar": {
+    "description": "Drawer entry, page title and tooltip of the calendar button in the top bar"
+  },
+  "pageAssetsAccounts": "Assets accounts",
+  "@pageAssetsAccounts": {
+    "description": "Drawer entry and page title"
+  },
+  "pageCategories": "Categories",
+  "@pageCategories": {
+    "description": "Drawer entry and page title"
+  },
+  "pageTrash": "Trash",
+  "@pageTrash": {
+    "description": "Drawer entry and page title"
+  },
+  "pageSettings": "Settings",
+  "@pageSettings": {
+    "description": "Drawer entry and page title"
+  },
+  "pageBackups": "Backups",
+  "@pageBackups": {
+    "description": "Drawer entry and page title"
+  },
+  "pageSupport": "Support the project",
+  "@pageSupport": {
+    "description": "Drawer entry and page title of the donations page"
+  },
+  "pageArrangeHome": "Arrange Home",
+  "@pageArrangeHome": {
+    "description": "Page title of the Home sections order and visibility settings"
+  },
+  "pageErased": "All data erased",
+  "@pageErased": {
+    "description": "Title of the page shown once after erasing all data"
+  },
+  "editorNewTransaction": "New transaction",
+  "@editorNewTransaction": {
+    "description": "Title of the transaction editor when creating"
+  },
+  "editorEditTransaction": "Edit transaction",
+  "@editorEditTransaction": {
+    "description": "Title of the transaction editor when editing"
+  },
+  "editorNewReminder": "New reminder",
+  "@editorNewReminder": {
+    "description": "Title of the reminder editor when creating"
+  },
+  "editorEditReminder": "Edit reminder",
+  "@editorEditReminder": {
+    "description": "Title of the reminder editor when editing"
+  },
+  "editorNewAssetsAccount": "New assets account",
+  "@editorNewAssetsAccount": {
+    "description": "Title of the assets account editor when creating"
+  },
+  "editorEditAssetsAccount": "Edit assets account",
+  "@editorEditAssetsAccount": {
+    "description": "Title of the assets account editor when editing"
+  },
+  "editorNewCategory": "New category",
+  "@editorNewCategory": {
+    "description": "Title of the category editor when creating"
+  },
+  "editorEditCategory": "Edit category",
+  "@editorEditCategory": {
+    "description": "Title of the category editor when editing"
+  },
+  "editorNewCategoryGroup": "New group",
+  "@editorNewCategoryGroup": {
+    "description": "Title of the category group editor when creating"
+  },
+  "editorEditCategoryGroup": "Edit group",
+  "@editorEditCategoryGroup": {
+    "description": "Title of the category group editor when editing"
+  },
+  "actionAdd": "Add",
+  "@actionAdd": {
+    "description": "Floating button on the main pages that opens the transaction editor"
+  },
+  "actionSearch": "Search",
+  "@actionSearch": {
+    "description": "Tooltip of the search button in the top bar"
+  },
+  "actionSkip": "Skip",
+  "@actionSkip": {
+    "description": "Button that skips the remaining onboarding steps"
+  },
+  "actionGoHome": "Go to Home",
+  "@actionGoHome": {
+    "description": "Button on the not found page that goes back to Home"
+  },
+  "notFoundTitle": "Nothing here",
+  "@notFoundTitle": {
+    "description": "Title shown when a page or item does not exist (deleted or stale link)"
+  },
+  "notFoundMessage": "It may have been deleted, or the link is out of date.",
+  "@notFoundMessage": {
+    "description": "Message under the not found title"
   }
 }
