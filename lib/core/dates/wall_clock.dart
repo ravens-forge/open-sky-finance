@@ -5,6 +5,13 @@ final _wallClock = RegExp(
 /// Midnight at the start of [date]'s day.
 DateTime startOfDay(DateTime date) => DateTime(date.year, date.month, date.day);
 
+/// Midnight tonight: balances "as of today" count transactions before it, so
+/// scheduled ones stay out.
+DateTime startOfTomorrow() {
+  final now = DateTime.now();
+  return DateTime(now.year, now.month, now.day + 1);
+}
+
 /// The last microsecond of [date]'s day.
 DateTime endOfDay(DateTime date) =>
     DateTime(date.year, date.month, date.day, 23, 59, 59, 999, 999);

@@ -739,5 +739,385 @@
         "example": "EUR"
       }
     }
+  },
+  "assetsAccountsShowHidden": "Show hidden assets accounts ({count})",
+  "@assetsAccountsShowHidden": {
+    "description": "Switch on the Assets accounts page that also lists hidden assets accounts; {count} is how many are hidden",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "assetsAccountsIntro": "Favorite assets accounts feed the Home charts. Drag to reorder.",
+  "@assetsAccountsIntro": {
+    "description": "Line at the top of the Assets accounts page"
+  },
+  "assetsAccountsAssets": "Assets",
+  "@assetsAccountsAssets": {
+    "description": "Section title for asset-type assets accounts, and the asset option of the type field"
+  },
+  "assetsAccountsLiabilities": "Liabilities",
+  "@assetsAccountsLiabilities": {
+    "description": "Section title for liability-type assets accounts (credit cards, loans…), and the liability option of the type field"
+  },
+  "assetsAccountsEmpty": "No assets accounts yet",
+  "@assetsAccountsEmpty": {
+    "description": "Assets accounts page with no assets account"
+  },
+  "assetsAccountsNotIncluded": "Not included: {amounts} · no exchange rate yet",
+  "@assetsAccountsNotIncluded": {
+    "description": "Under a subtotal: balances in currencies without an exchange rate, left out of it",
+    "placeholders": {
+      "amounts": {
+        "type": "String",
+        "example": "$1,250.00"
+      }
+    }
+  },
+  "amountApproximate": "≈ {amount}",
+  "@amountApproximate": {
+    "description": "A total converted from other currencies with the latest transfer rate",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "€62,410.00"
+      }
+    }
+  },
+  "assetsAccountFavorite": "Favorite assets account: {name}",
+  "@assetsAccountFavorite": {
+    "description": "Spoken label of the favorite star toggle of an assets account",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Checking"
+      }
+    }
+  },
+  "assetsAccountMove": "Move {name}",
+  "@assetsAccountMove": {
+    "description": "Spoken label of the drag handle of an assets account",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Checking"
+      }
+    }
+  },
+  "assetsAccountHidden": "Hidden",
+  "@assetsAccountHidden": {
+    "description": "Hidden option in the assets account editor, and the marker of a hidden assets account in lists"
+  },
+  "assetsAccountExcluded": "Not in net worth",
+  "@assetsAccountExcluded": {
+    "description": "Marker of an assets account excluded from net worth in lists"
+  },
+  "assetsAccountCreditAvailableOf": "{available} available of {limit}",
+  "@assetsAccountCreditAvailableOf": {
+    "description": "Under a credit card in the list: credit left and the credit limit",
+    "placeholders": {
+      "available": {
+        "type": "String",
+        "example": "€2,320.15"
+      },
+      "limit": {
+        "type": "String",
+        "example": "€3,000.00"
+      }
+    }
+  },
+  "assetsAccountDetailSubtitle": "{type} · {currency} · {side, select, liability{liability} other{asset}}",
+  "@assetsAccountDetailSubtitle": {
+    "description": "Under the balance on the assets account detail: type, currency and whether it is an asset or a liability",
+    "placeholders": {
+      "type": {
+        "type": "String",
+        "example": "Credit card"
+      },
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      },
+      "side": {
+        "type": "String",
+        "example": "liability"
+      }
+    }
+  },
+  "assetsAccountBalanceInfoLabel": "About the balance",
+  "@assetsAccountBalanceInfoLabel": {
+    "description": "Spoken label of the info button next to the balance"
+  },
+  "assetsAccountBalanceInfoLiability": "A credit card, loan or mortgage is a liability: what you owe shows as a negative balance and lowers your net worth. Payments move it back toward zero.",
+  "@assetsAccountBalanceInfoLiability": {
+    "description": "Info popover next to the balance of a liability (credit card, loan…)"
+  },
+  "assetsAccountBalanceInfoAsset": "The opening balance plus every transaction up to today. Scheduled transactions count once their date arrives.",
+  "@assetsAccountBalanceInfoAsset": {
+    "description": "Info popover next to the balance of an asset (bank, cash…)"
+  },
+  "assetsAccountCreditUsed": "Credit used",
+  "@assetsAccountCreditUsed": {
+    "description": "Label of the credit limit usage of a credit card"
+  },
+  "assetsAccountCreditUsedOf": "{percent} of {limit}",
+  "@assetsAccountCreditUsedOf": {
+    "description": "Next to Credit used: share of the limit used and the limit",
+    "placeholders": {
+      "percent": {
+        "type": "String",
+        "example": "22.7%"
+      },
+      "limit": {
+        "type": "String",
+        "example": "€3,000.00"
+      }
+    }
+  },
+  "assetsAccountCreditAvailable": "{amount} available",
+  "@assetsAccountCreditAvailable": {
+    "description": "Credit left on a credit card",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "€2,320.15"
+      }
+    }
+  },
+  "assetsAccountCreditInfoLabel": "About credit used",
+  "@assetsAccountCreditInfoLabel": {
+    "description": "Spoken label of the info button next to Credit used"
+  },
+  "assetsAccountCreditInfo": "What you owe on the card against its credit limit, and what you can still spend.",
+  "@assetsAccountCreditInfo": {
+    "description": "Info popover next to Credit used"
+  },
+  "assetsAccountBalanceOverTime": "Balance over time",
+  "@assetsAccountBalanceOverTime": {
+    "description": "Title of the balance chart on the assets account detail"
+  },
+  "assetsAccountLastMonths": "{count, plural, =1{Last month} other{Last {count} months}}",
+  "@assetsAccountLastMonths": {
+    "description": "Caption of the balance chart",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "6"
+      }
+    }
+  },
+  "assetsAccountBalanceChartSemantic": "Balance at the end of each month: {values}",
+  "@assetsAccountBalanceChartSemantic": {
+    "description": "Spoken summary of the balance chart; {values} lists month: balance pairs",
+    "placeholders": {
+      "values": {
+        "type": "String",
+        "example": "April: €120.00, May: €80.00"
+      }
+    }
+  },
+  "chartPointSemantic": "{label}: {value}",
+  "@chartPointSemantic": {
+    "description": "One point of a spoken chart summary",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "April"
+      },
+      "value": {
+        "type": "String",
+        "example": "€120.00"
+      }
+    }
+  },
+  "assetsAccountMoneyIn": "Money in",
+  "@assetsAccountMoneyIn": {
+    "description": "Total received by an assets account in the month"
+  },
+  "assetsAccountMoneyOut": "Money out",
+  "@assetsAccountMoneyOut": {
+    "description": "Total leaving an assets account in the month"
+  },
+  "assetsAccountDayBalance": "Balance {amount}",
+  "@assetsAccountDayBalance": {
+    "description": "Balance at the end of a day, in the day header of the assets account detail",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "−€679.85"
+      }
+    }
+  },
+  "assetsAccountNoTransactions": "No transactions this month",
+  "@assetsAccountNoTransactions": {
+    "description": "Assets account detail when the month has no transactions"
+  },
+  "actionPreviousMonth": "Previous month",
+  "@actionPreviousMonth": {
+    "description": "Tooltip of the button that shows the previous month"
+  },
+  "actionNextMonth": "Next month",
+  "@actionNextMonth": {
+    "description": "Tooltip of the button that shows the next month"
+  },
+  "actionEdit": "Edit",
+  "@actionEdit": {
+    "description": "Tooltip of the button that opens an editor"
+  },
+  "actionSave": "Save",
+  "@actionSave": {
+    "description": "Button that saves an editor"
+  },
+  "actionDelete": "Delete",
+  "@actionDelete": {
+    "description": "Button that confirms a deletion"
+  },
+  "categoryNone": "Uncategorized",
+  "@categoryNone": {
+    "description": "Category of a transaction without one"
+  },
+  "transferFromTo": "{from} → {to}",
+  "@transferFromTo": {
+    "description": "Subtitle of a transfer row: source and destination assets accounts",
+    "placeholders": {
+      "from": {
+        "type": "String",
+        "example": "Checking"
+      },
+      "to": {
+        "type": "String",
+        "example": "Visa"
+      }
+    }
+  },
+  "fieldOpeningBalance": "Opening balance",
+  "@fieldOpeningBalance": {
+    "description": "Label of the opening balance field of the assets account editor"
+  },
+  "fieldSince": "Since",
+  "@fieldSince": {
+    "description": "Label of the opening balance date"
+  },
+  "fieldNotes": "Notes",
+  "@fieldNotes": {
+    "description": "Label of a notes field"
+  },
+  "fieldNotesHint": "Add a note",
+  "@fieldNotesHint": {
+    "description": "Hint of an empty notes field"
+  },
+  "assetsAccountCurrencyNote": "Every transaction in this assets account uses this currency",
+  "@assetsAccountCurrencyNote": {
+    "description": "Note under the currency of the assets account editor"
+  },
+  "assetsAccountCurrencyLocked": "{count, plural, =1{Locked: this assets account has 1 transaction} other{Locked: this assets account has {count} transactions}}",
+  "@assetsAccountCurrencyLocked": {
+    "description": "Note under a currency that can no longer change",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "86"
+      }
+    }
+  },
+  "assetsAccountOptions": "Options",
+  "@assetsAccountOptions": {
+    "description": "Heading of the switches of the assets account editor (shown in capitals)"
+  },
+  "assetsAccountFavoriteOption": "Favorite",
+  "@assetsAccountFavoriteOption": {
+    "description": "Favorite switch of the assets account editor"
+  },
+  "assetsAccountFavoriteOptionNote": "Include in the Home charts",
+  "@assetsAccountFavoriteOptionNote": {
+    "description": "Under the Favorite switch"
+  },
+  "assetsAccountExcludeOption": "Exclude from net worth",
+  "@assetsAccountExcludeOption": {
+    "description": "Exclude from net worth switch of the assets account editor"
+  },
+  "assetsAccountExcludeOptionNote": "Still listed, but not added to totals",
+  "@assetsAccountExcludeOptionNote": {
+    "description": "Under the Exclude from net worth switch"
+  },
+  "assetsAccountHiddenOptionNote": "Hide from lists, pickers and totals",
+  "@assetsAccountHiddenOptionNote": {
+    "description": "Under the Hidden switch"
+  },
+  "assetsAccountDelete": "Delete assets account",
+  "@assetsAccountDelete": {
+    "description": "Button at the bottom of the assets account editor"
+  },
+  "assetsAccountDeleteNote": "{count, plural, =0{Deleting it can't be undone.} =1{Deleting also removes its transaction. To keep its history, mark it as hidden instead.} other{Deleting also removes its {count} transactions. To keep its history, mark it as hidden instead.}}",
+  "@assetsAccountDeleteNote": {
+    "description": "Under the delete button of the assets account editor",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "86"
+      }
+    }
+  },
+  "assetsAccountDeleteTitle": "Delete “{name}”?",
+  "@assetsAccountDeleteTitle": {
+    "description": "Title of the delete confirmation",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Visa"
+      }
+    }
+  },
+  "assetsAccountDeleteTransactions": "{count, plural, =1{1 transaction will be deleted permanently} other{{count} transactions will be deleted permanently}}{trashed, plural, =0{.} =1{, including 1 in the Trash.} other{, including {trashed} in the Trash.}}",
+  "@assetsAccountDeleteTransactions": {
+    "description": "Delete confirmation: how many transactions go, and how many of them are in the Trash",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "86"
+      },
+      "trashed": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "assetsAccountDeleteReminders": "{count, plural, =1{1 reminder that uses it will be deleted too.} other{{count} reminders that use it will be deleted too.}}",
+  "@assetsAccountDeleteReminders": {
+    "description": "Delete confirmation: reminders that use the assets account",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "assetsAccountDeleteNoUndo": "This can't be undone.",
+  "@assetsAccountDeleteNoUndo": {
+    "description": "Last sentence of the delete confirmation"
+  },
+  "assetsAccountHideInstead": "Keep the history instead?",
+  "@assetsAccountHideInstead": {
+    "description": "Title of the hide alternative in the delete confirmation"
+  },
+  "assetsAccountHideInsteadNote": "Hide it: it leaves lists, pickers and totals, and its transactions stay in reports.",
+  "@assetsAccountHideInsteadNote": {
+    "description": "Text of the hide alternative in the delete confirmation"
+  },
+  "assetsAccountHide": "Hide “{name}”",
+  "@assetsAccountHide": {
+    "description": "Button that hides the assets account instead of deleting it",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Visa"
+      }
+    }
+  },
+  "errorCurrencyLocked": "The currency can't change: this assets account already has transactions.",
+  "@errorCurrencyLocked": {
+    "description": "Save error: the currency of an assets account with transactions changed"
   }
 }

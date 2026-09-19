@@ -12,6 +12,7 @@ import '../models/transaction.dart';
 import 'repository_data_error.dart';
 import 'valid_name.dart';
 import '../models/assets_account_draft.dart';
+import '../models/assets_account_usage.dart';
 
 part 'assets_accounts_repository.g.dart';
 
@@ -29,9 +30,58 @@ class AssetsAccountsRepository extends DatabaseAccessor<AppDatabase>
     return query.map((r) => r.toDomain()).watch();
   }
 
-  Future<AssetsAccount?> findById(String id) => (select(
-    assetsAccountsTable,
-  )..where((a) => a.id.equals(id))).map((r) => r.toDomain()).getSingleOrNull();
+  SimpleSelectStatement<$AssetsAccountsTableTable, AssetsAccountTableRow> _byId(
+    String id,
+  ) => select(assetsAccountsTable)..where((a) => a.id.equals(id));
+
+  Future<AssetsAccount?> findById(String id) =>
+      _byId(id).map((r) => r.toDomain()).getSingleOrNull();
+
+  Stream<AssetsAccount?> watchById(String id) =>
+      _byId(id).map((r) => r.toDomain()).watchSingleOrNull();
+
+  Future<void> _write(String id, AssetsAccountsTableCompanion row) =>
+      (update(assetsAccountsTable)..where((a) => a.id.equals(id))).write(
+        row.copyWith(updatedAt: Value(DateTime.now().toUtc())),
+      );
+
+  Future<void> setFavorite(String id, bool isFavorite) =>
+      _write(id, AssetsAccountsTableCompanion(isFavorite: Value(isFavorite)));
+
+  Future<void> setHidden(String id, bool isHidden) =>
+      _write(id, AssetsAccountsTableCompanion(isHidden: Value(isHidden)));
+
+  /// Stores [ids] (every assets account) in this order.
+  Future<void> reorder(List<String> ids) => batch((b) {
+    for (final (i, id) in ids.indexed) {
+      b.update(
+        assetsAccountsTable,
+        AssetsAccountsTableCompanion(sortOrder: Value(i)),
+        where: (a) => a.id.equals(id),
+      );
+    }
+  });
+
+  /// What [remove] deletes along with the assets account.
+  Future<AssetsAccountUsage> usage(String id) async {
+    final row = await customSelect(
+      '''
+SELECT COUNT(*) AS transactions,
+  COALESCE(SUM(deleted_at IS NOT NULL), 0) AS trashed,
+  (SELECT COUNT(*) FROM reminders
+    WHERE assets_account_id = ?1 OR to_assets_account_id = ?1) AS reminders
+FROM transactions
+WHERE (assets_account_id = ?1 OR to_assets_account_id = ?1)
+  AND type <> 'openingBalance'
+''',
+      variables: [Variable(id)],
+    ).getSingle();
+    return AssetsAccountUsage(
+      transactions: row.read<int>('transactions'),
+      trashed: row.read<int>('trashed'),
+      reminders: row.read<int>('reminders'),
+    );
+  }
 
   /// Transactions touching [id] other than its opening balance, trashed ones
   /// included: they fix its currency.

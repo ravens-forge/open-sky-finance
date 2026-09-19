@@ -193,6 +193,32 @@ void main() {
     expect(excluded[YearMonth(2026, 3)], {'EUR': m(10)});
   });
 
+  test('balance history of one assets account', () async {
+    final history = await db.balancesRepository
+        .watchBalanceHistory(
+          a,
+          YearMonth(2026, 2),
+          YearMonth(2026, 12),
+          before: DateTime(2026, 4),
+        )
+        .first;
+    expect(history[YearMonth(2026, 2)], m(100));
+    expect(history[YearMonth(2026, 3)], -m(60));
+    // The scheduled expense stays out.
+    expect(history[YearMonth(2026, 12)], -m(60));
+    expect(
+      (await db.balancesRepository
+          .watchBalanceHistory(
+            u,
+            YearMonth(2026, 3),
+            YearMonth(2026, 3),
+            before: DateTime(2027),
+          )
+          .first)[YearMonth(2026, 3)],
+      m(121),
+    );
+  });
+
   test('budget progress includes subcategories', () async {
     await db.budgetsRepository.set(food, m(100));
     await db.budgetsRepository.set(groceries, m(10));

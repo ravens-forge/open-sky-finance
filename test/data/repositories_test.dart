@@ -285,6 +285,46 @@ void main() {
       );
     });
 
+    test('favorite, hidden and order', () async {
+      await repo(db).setFavorite(eur2, true);
+      await repo(db).setHidden(usd, true);
+      await repo(db).reorder([usd, eur2, eur]);
+      final all = await repo(db).watchAll().first;
+      expect([for (final a in all) a.id], [usd, eur2, eur]);
+      expect(all[1].isFavorite, isTrue);
+      expect(all[0].isHidden, isTrue);
+      expect(
+        [
+          for (final a in await repo(db).watchAll(includeHidden: false).first)
+            a.id,
+        ],
+        [eur2, eur],
+      );
+    });
+
+    test('usage counts what a delete removes', () async {
+      final id = ok(await repo(db).save(account(openingBalance: m(10))));
+      // The opening balance is not counted.
+      expect((await repo(db).usage(id)).transactions, 0);
+      ok(await transactions.save(draft(from: id)));
+      final trashed = ok(await transactions.save(draft(from: id)));
+      await transactions.trash(trashed);
+      ok(
+        await transactions.save(
+          draft(
+            type: TransactionType.transfer,
+            from: eur,
+            to: id,
+            amount: m(1),
+          ),
+        ),
+      );
+      final usage = await repo(db).usage(id);
+      expect(usage.transactions, 3);
+      expect(usage.trashed, 1);
+      expect(usage.reminders, 0);
+    });
+
     test('delete removes its transactions', () async {
       final id = ok(await transactions.save(draft(from: eur2)));
       await repo(db).remove(eur2);

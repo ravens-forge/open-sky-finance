@@ -31,6 +31,42 @@ GROUP BY a.id''',
         },
       );
 
+  /// Balance of one assets account at the end of each month in [from, to],
+  /// never counting transactions on or after [before].
+  Stream<Map<YearMonth, int>> watchBalanceHistory(
+    String assetsAccountId,
+    YearMonth from,
+    YearMonth to, {
+    required DateTime before,
+  }) {
+    final end = to.end.isBefore(before) ? to.end : before;
+    return customSelect(
+      '''
+WITH $movesCte
+SELECT CASE WHEN occurred_at < ?2 THEN '' ELSE substr(occurred_at, 1, 7)
+  END AS month, SUM(amount) AS total
+FROM moves WHERE assets_account_id = ?1 AND occurred_at < ?3
+GROUP BY 1''',
+      variables: [
+        Variable(assetsAccountId),
+        wallClockVariable(from.start),
+        wallClockVariable(end),
+      ],
+      readsFrom: {assetsAccountsTable, transactionsTable},
+    ).watch().map((rows) {
+      final deltas = {
+        for (final r in rows) r.read<String>('month'): r.read<int>('total'),
+      };
+      var running = deltas[''] ?? 0;
+      final history = <YearMonth, int>{};
+      for (var m = from; m.compareTo(to) <= 0; m = m.plus(1)) {
+        running += deltas['$m'] ?? 0;
+        history[m] = running;
+      }
+      return history;
+    });
+  }
+
   /// Net worth of the chart accounts (excluding those excluded from net worth)
   /// at the end of each month in [from, to], never counting transactions on or
   /// after [before] (pass the start of tomorrow to leave scheduled ones out).

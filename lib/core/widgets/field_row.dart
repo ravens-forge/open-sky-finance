@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// A form value that opens a picker: small label, value and a chevron.
+/// A form value that opens a picker: small label, value and a chevron, or a
+/// lock when [onTap] is `null`.
 class FieldRow extends StatelessWidget {
   const FieldRow({
     super.key,
@@ -11,7 +12,7 @@ class FieldRow extends StatelessWidget {
 
   final String label;
   final String value;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,10 @@ class FieldRow extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.expand_more, color: theme.textTheme.bodySmall!.color),
+            Icon(
+              onTap == null ? Icons.lock_outline : Icons.expand_more,
+              color: theme.textTheme.bodySmall!.color,
+            ),
           ],
         ),
       ),

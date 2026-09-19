@@ -6,6 +6,9 @@ import '../core/l10n.dart';
 import '../core/widgets/not_found_gate.dart';
 import '../core/widgets/not_found_page.dart';
 import '../data/providers.dart';
+import '../features/assets_accounts/pages/assets_account_detail_page.dart';
+import '../features/assets_accounts/pages/assets_account_editor_page.dart';
+import '../features/assets_accounts/pages/assets_accounts_page.dart';
 import '../features/onboarding/pages/onboarding_page.dart';
 import '../features/onboarding/providers/onboarding_provider.dart';
 import '../features/shell/models/main_page.dart';
@@ -141,15 +144,12 @@ GoRouter router(Ref ref) {
       ),
       GoRoute(
         path: Routes.assetsAccounts,
-        builder: (context, state) =>
-            StubPage(title: context.l10n.pageAssetsAccounts),
+        builder: (context, state) => const AssetsAccountsPage(),
         routes: [
           GoRoute(
             path: 'new',
-            pageBuilder: (context, state) => editor(
-              state,
-              StubPage(title: context.l10n.editorNewAssetsAccount),
-            ),
+            pageBuilder: (context, state) =>
+                editor(state, const AssetsAccountEditorPage()),
           ),
           GoRoute(
             path: ':assetsAccountId',
@@ -159,7 +159,7 @@ GoRouter router(Ref ref) {
                 context,
                 id,
                 () => ref.read(assetsAccountsRepositoryProvider).findById(id),
-                StubPage(title: context.l10n.pageAssetsAccounts),
+                AssetsAccountDetailPage(id: id),
               );
             },
             routes: [
@@ -175,7 +175,7 @@ GoRouter router(Ref ref) {
                       () => ref
                           .read(assetsAccountsRepositoryProvider)
                           .findById(id),
-                      StubPage(title: context.l10n.editorEditAssetsAccount),
+                      AssetsAccountEditorPage(id: id),
                     ),
                   );
                 },
