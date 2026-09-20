@@ -3,14 +3,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
-import '../../../data/models/category.dart';
+import '../../../data/models/category_group.dart';
 
 /// Last row of an expanded group: "Add category to …", preceded by "No
 /// categories yet" while the group is still empty.
 class CategoryAddRow extends StatelessWidget {
   const CategoryAddRow({super.key, required this.group, required this.isEmpty});
 
-  final Category group;
+  final CategoryGroup group;
 
   /// The group has no categories yet.
   final bool isEmpty;
@@ -28,9 +28,8 @@ class CategoryAddRow extends StatelessWidget {
           if (isEmpty)
             Text(l10n.categoriesEmptyGroup, style: theme.textTheme.bodySmall),
           OutlinedButton.icon(
-            onPressed: () => context.push(
-              Routes.newCategory(group.kind, parentId: group.id),
-            ),
+            onPressed: () =>
+                context.push(Routes.newCategory(group.kind, groupId: group.id)),
             icon: const Icon(Icons.add, size: 18),
             label: Text(l10n.categoriesAddTo(group.name)),
           ),

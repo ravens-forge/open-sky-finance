@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/routes.dart';
+import '../../../app/theme.dart';
+import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
 import '../../../core/text/sort_key.dart';
 import '../../../core/widgets/category_avatar.dart';
@@ -11,22 +13,26 @@ import '../../../core/widgets/picker_row.dart';
 import '../../../core/widgets/picker_sheet.dart';
 import '../../../data/enums/category_kind.dart';
 import '../../../data/models/category.dart';
+import '../../../data/models/category_group.dart';
 import '../models/category_group_node.dart';
 import '../providers/categories_providers.dart';
 
-/// Picks a category of [kind]: groups are selectable as a whole and their
-/// categories are listed under them. Hidden ones are left out. Returns the
-/// chosen id, `null` when dismissed.
+/// Picks a category of [kind]. Groups are headings in their type's colour,
+/// not choices: a transaction always points at a category. Hidden categories,
+/// and the categories of a hidden group, are left out. Returns the chosen id,
+/// `null` when dismissed.
 Future<String?> showCategoryPickerSheet(
   BuildContext context, {
   required CategoryKind kind,
   String? selectedId,
+  String? excludeId,
   bool showActions = true,
 }) => showPickerSheet<String>(
   context,
   (context) => CategoryPickerSheet(
     kind: kind,
     selectedId: selectedId,
+    excludeId: excludeId,
     showActions: showActions,
   ),
 );
@@ -36,11 +42,15 @@ class CategoryPickerSheet extends ConsumerStatefulWidget {
     super.key,
     required this.kind,
     this.selectedId,
+    this.excludeId,
     this.showActions = true,
   });
 
   final CategoryKind kind;
   final String? selectedId;
+
+  /// Left out of the list, e.g. the category being deleted.
+  final String? excludeId;
 
   /// "New category" and "Manage"; off where leaving the sheet would drop
   /// what the caller is in the middle of.
@@ -63,47 +73,58 @@ class _CategoryPickerSheetState extends ConsumerState<CategoryPickerSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final all = ref.watch(categoriesProvider).value ?? const <Category>[];
-    final nodes = groupCategories(all, widget.kind, includeHidden: false);
+    final theme = Theme.of(context);
+    final nodes = groupCategories(
+      ref.watch(categoryGroupsProvider).value ?? const <CategoryGroup>[],
+      ref.watch(categoriesProvider).value ?? const <Category>[],
+      widget.kind,
+      includeHidden: false,
+    );
     final query = sortKey(_query.trim());
     bool matches(String name) => sortKey(name).contains(query);
 
     final rows = <Widget>[];
     for (final node in nodes) {
       final wholeGroup = query.isEmpty || matches(node.group.name);
-      final categories = wholeGroup
-          ? node.categories
-          : [
-              for (final category in node.categories)
-                if (matches(category.name)) category,
-            ];
-      if (!wholeGroup && categories.isEmpty) continue;
+      final categories = [
+        for (final category in node.categories)
+          if (category.id != widget.excludeId &&
+              (wholeGroup || matches(category.name)))
+            category,
+      ];
+      if (categories.isEmpty) continue;
       rows.add(
-        PickerRow(
-          title: node.group.name,
-          subtitle: l10n.categoryPickerWholeGroup,
-          leading: CategoryAvatar(
-            icon: categoryIcon(node.group.icon),
-            color: Color(node.group.color!),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+          child: Row(
+            spacing: 8,
+            children: [
+              Icon(
+                node.group.kind.icon,
+                size: 16,
+                color: node.group.kind.color(context),
+              ),
+              Text(
+                node.group.name.toUpperCase(),
+                style: theme.textTheme.eyebrow.copyWith(
+                  color: node.group.kind.color(context),
+                ),
+              ),
+            ],
           ),
-          selected: node.group.id == widget.selectedId,
-          onTap: () => Navigator.pop(context, node.group.id),
         ),
       );
       for (final category in categories) {
         rows.add(
-          Padding(
-            padding: const EdgeInsetsDirectional.only(start: 24),
-            child: PickerRow(
-              title: category.name,
-              leading: CategoryAvatar(
-                icon: categoryIcon(category.icon),
-                color: Color(node.colorOf(category)),
-                size: 32,
-              ),
-              selected: category.id == widget.selectedId,
-              onTap: () => Navigator.pop(context, category.id),
+          PickerRow(
+            title: category.name,
+            leading: CategoryAvatar(
+              icon: categoryIcon(category.icon),
+              color: Color(category.color),
+              size: 32,
             ),
+            selected: category.id == widget.selectedId,
+            onTap: () => Navigator.pop(context, category.id),
           ),
         );
       }

@@ -27,11 +27,7 @@ enum RepositoryDataError {
   categoryNotAllowed,
   categoryKindMismatch,
 
-  /// Parent is itself a subcategory: only group → subcategory is allowed.
-  parentNotGroup,
-  colorRequired,
-
-  /// A group's kind is fixed once it has subcategories or transactions.
+  /// A group's kind is fixed once it has categories or transactions.
   kindLocked,
-  groupHasSubcategories,
+  groupHasCategories,
 }

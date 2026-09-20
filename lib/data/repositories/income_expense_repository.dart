@@ -78,8 +78,8 @@ GROUP BY 1, 2, 3''',
   }
 
   /// Expense (or income) totals per category group of non-hidden assets accounts
-  /// in [from, to); a group includes its subcategories. The `null` key is
-  /// uncategorized.
+  /// in [from, to); a group includes every category inside it. The `null` key
+  /// is uncategorized.
   Stream<Map<String?, Map<String, int>>> watchTotalsByGroup(
     CategoryKind kind,
     DateTime from,
@@ -87,7 +87,7 @@ GROUP BY 1, 2, 3''',
   ) =>
       customSelect(
         '''
-SELECT COALESCE(c.parent_id, c.id) AS group_id, t.currency AS currency,
+SELECT c.group_id AS group_id, t.currency AS currency,
   SUM(t.amount) AS total
 FROM transactions t LEFT JOIN categories c ON c.id = t.category_id
 WHERE t.deleted_at IS NULL AND t.type = ?1

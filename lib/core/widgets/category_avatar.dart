@@ -7,12 +7,16 @@ class CategoryAvatar extends StatelessWidget {
     required this.color,
     this.size = 40,
     this.transparent = false,
+    this.background,
   });
 
   final IconData icon;
   final Color color;
   final double size;
   final bool transparent;
+
+  /// A tint behind the icon; the neutral container colour when left out.
+  final Color? background;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +26,7 @@ class CategoryAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: transparent ? null : scheme.surfaceContainer,
+        color: transparent ? null : background ?? scheme.surfaceContainer,
         border: Border.all(color: scheme.outlineVariant),
       ),
       child: Icon(icon, size: 18, color: color),

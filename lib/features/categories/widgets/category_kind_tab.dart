@@ -8,21 +8,28 @@ import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/home_section_header.dart';
 import '../../../data/enums/category_kind.dart';
 import '../../../data/models/category.dart';
+import '../../../data/models/category_group.dart';
 import '../models/category_group_node.dart';
 import '../providers/categories_controller.dart';
 import 'category_add_row.dart';
 import 'category_group_tile.dart';
 import 'category_row.dart';
 
-/// One tab of the Categories page: the groups of [kind] with their
-/// categories, expandable and reorderable.
+/// The groups of [kind] with their categories, expandable and reorderable.
 class CategoryKindTab extends ConsumerStatefulWidget {
-  const CategoryKindTab({super.key, required this.kind, required this.all});
+  const CategoryKindTab({
+    super.key,
+    required this.kind,
+    required this.groups,
+    required this.categories,
+  });
 
   final CategoryKind kind;
 
-  /// Every category, in sort order: reordering rewrites the whole order.
-  final List<Category> all;
+  /// Every group and every category, in sort order: reordering rewrites the
+  /// whole order.
+  final List<CategoryGroup> groups;
+  final List<Category> categories;
 
   @override
   ConsumerState<CategoryKindTab> createState() => _CategoryKindTabState();
@@ -35,8 +42,11 @@ class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final nodes = groupCategories(widget.all, widget.kind);
+    final nodes = groupCategories(
+      widget.groups,
+      widget.categories,
+      widget.kind,
+    );
     if (nodes.isEmpty) {
       return Center(
         child: SingleChildScrollView(
@@ -54,15 +64,10 @@ class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
       );
     }
 
-    final allIds = [for (final category in widget.all) category.id];
+    final controller = ref.read(categoriesControllerProvider.notifier);
+    final allGroupIds = [for (final g in widget.groups) g.id];
+    final allIds = [for (final c in widget.categories) c.id];
     final groupIds = [for (final node in nodes) node.group.id];
-    void move(List<String> ids, int from, int to) {
-      if (from != to) {
-        ref
-            .read(categoriesControllerProvider.notifier)
-            .move(allIds, ids, from, to);
-      }
-    }
 
     // Groups and categories share one list; a row only moves within its own
     // ids, kept per row index together with its position in them.
@@ -72,6 +77,12 @@ class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
     for (final (g, node) in nodes.indexed) {
       final group = node.group;
       final expanded = !_collapsed.contains(group.id);
+      void moveGroup(int to) {
+        final from = allGroupIds.indexOf(group.id);
+        final target = allGroupIds.indexOf(groupIds[to]);
+        if (from != target) controller.moveGroup(allGroupIds, from, target);
+      }
+
       children.add(
         CategoryGroupTile(
           key: ValueKey(group.id),
@@ -84,10 +95,8 @@ class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
                 : _collapsed.remove(group.id),
           ),
           onTap: () => context.push(Routes.categoryGroup(group.id)),
-          onMoveUp: g > 0 ? () => move(groupIds, g, g - 1) : null,
-          onMoveDown: g < nodes.length - 1
-              ? () => move(groupIds, g, g + 1)
-              : null,
+          onMoveUp: g > 0 ? () => moveGroup(g - 1) : null,
+          onMoveDown: g < nodes.length - 1 ? () => moveGroup(g + 1) : null,
         ),
       );
       owner.add(groupIds);
@@ -95,16 +104,19 @@ class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
       if (!expanded) continue;
 
       final ids = [for (final category in node.categories) category.id];
+      void move(int from, int to) {
+        if (from != to) controller.move(allIds, ids, from, to);
+      }
+
       for (final (i, category) in node.categories.indexed) {
         children.add(
           CategoryRow(
             key: ValueKey(category.id),
             category: category,
-            color: node.colorOf(category),
             index: children.length,
             onTap: () => context.push(Routes.category(category.id)),
-            onMoveUp: i > 0 ? () => move(ids, i, i - 1) : null,
-            onMoveDown: i < ids.length - 1 ? () => move(ids, i, i + 1) : null,
+            onMoveUp: i > 0 ? () => move(i, i - 1) : null,
+            onMoveDown: i < ids.length - 1 ? () => move(i, i + 1) : null,
           ),
         );
         owner.add(ids);
@@ -121,33 +133,10 @@ class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
       position.add(0);
     }
 
-    final firstLaunch = nodes.every((node) => node.categories.isEmpty);
     return ReorderableListView(
       buildDefaultDragHandles: false,
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
       proxyDecorator: homeSectionProxyDecorator,
-      header: firstLaunch
-          ? Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 6,
-                children: [
-                  Icon(
-                    Icons.auto_awesome_outlined,
-                    size: 16,
-                    color: theme.colorScheme.secondary,
-                  ),
-                  Expanded(
-                    child: Text(
-                      l10n.categoriesIntro,
-                      style: theme.textTheme.bodySmall!.copyWith(fontSize: 13),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : null,
       footer: Padding(
         padding: const EdgeInsets.only(top: 16),
         child: OutlinedButton.icon(
@@ -160,7 +149,17 @@ class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
         if (to >= owner.length) return;
         final ids = owner[from];
         if (ids == null || !identical(owner[to], ids)) return;
-        move(ids, position[from], position[to]);
+        if (identical(ids, groupIds)) {
+          final start = allGroupIds.indexOf(ids[position[from]]);
+          final target = allGroupIds.indexOf(ids[position[to]]);
+          if (start != target) {
+            controller.moveGroup(allGroupIds, start, target);
+          }
+          return;
+        }
+        if (position[from] != position[to]) {
+          controller.move(allIds, ids, position[from], position[to]);
+        }
       },
       children: children,
     );

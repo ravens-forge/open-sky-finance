@@ -63,19 +63,16 @@ class CategoryIconPicker extends StatelessWidget {
   }
 }
 
-/// Colour swatches for a category. With a [groupColor], a first "Group" option
-/// selects `null`: follow the group's colour.
+/// Colour swatches for a category; every category has one of its own.
 class CategoryColorPicker extends StatelessWidget {
   const CategoryColorPicker({
     super.key,
     required this.selected,
     required this.onSelected,
-    this.groupColor,
   });
 
-  final int? selected;
-  final int? groupColor;
-  final ValueChanged<int?> onSelected;
+  final int selected;
+  final ValueChanged<int> onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -86,13 +83,6 @@ class CategoryColorPicker extends StatelessWidget {
       runSpacing: 4,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        if (groupColor != null)
-          ChoiceChip(
-            avatar: CircleAvatar(backgroundColor: Color(groupColor!)),
-            label: Text(l10n.categoryColorGroup),
-            selected: selected == null,
-            onSelected: (_) => onSelected(null),
-          ),
         for (final (i, value) in categoryColors.indexed)
           IconButton(
             isSelected: value == selected,

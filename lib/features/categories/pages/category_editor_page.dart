@@ -13,7 +13,7 @@ class CategoryEditorPage extends ConsumerWidget {
     super.key,
     this.id,
     this.kind = CategoryKind.expense,
-    this.parentId,
+    this.groupId,
   });
 
   final String? id;
@@ -22,7 +22,7 @@ class CategoryEditorPage extends ConsumerWidget {
   final CategoryKind kind;
 
   /// Group of a new category, when it is created from one.
-  final String? parentId;
+  final String? groupId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +30,7 @@ class CategoryEditorPage extends ConsumerWidget {
       AsyncData(:final value) => CategoryForm(
         data: value,
         kind: kind,
-        parentId: parentId,
+        groupId: groupId,
       ),
       AsyncError() => Scaffold(
         appBar: AppBar(),

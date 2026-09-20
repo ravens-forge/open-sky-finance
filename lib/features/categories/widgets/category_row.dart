@@ -14,7 +14,6 @@ class CategoryRow extends StatelessWidget {
   const CategoryRow({
     super.key,
     required this.category,
-    required this.color,
     required this.index,
     required this.onTap,
     this.onMoveUp,
@@ -22,9 +21,6 @@ class CategoryRow extends StatelessWidget {
   });
 
   final Category category;
-
-  /// Its own colour, or its group's.
-  final int color;
 
   /// Position in the reorderable list.
   final int index;
@@ -72,7 +68,7 @@ class CategoryRow extends StatelessWidget {
               const SizedBox(width: 16),
               CategoryAvatar(
                 icon: categoryIcon(category.icon),
-                color: Color(color),
+                color: Color(category.color),
                 size: 32,
               ),
               const SizedBox(width: 12),

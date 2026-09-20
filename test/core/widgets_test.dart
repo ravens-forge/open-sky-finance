@@ -141,20 +141,17 @@ void main() {
     expect(picked, 'local_gas_station');
   });
 
-  testWidgets('colour picker offers "Group" as null', (tester) async {
-    int? picked = 1;
+  testWidgets('colour picker picks a swatch', (tester) async {
+    var picked = 0;
     await tester.pumpWidget(
       _app(
         CategoryColorPicker(
           selected: categoryColors.first,
-          groupColor: categoryColors.last,
           onSelected: (value) => picked = value,
         ),
         locale: const Locale('es'),
       ),
     );
-    await tester.tap(find.text('Grupo'));
-    expect(picked, isNull);
     await tester.tap(find.byTooltip('Azul'));
     expect(picked, 0xFF2B5FAE);
   });

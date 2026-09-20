@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../data/enums/category_kind.dart';
+
 @immutable
 class FinanceColors extends ThemeExtension<FinanceColors> {
   const FinanceColors({
@@ -71,4 +73,18 @@ class FinanceColors extends ThemeExtension<FinanceColors> {
       chartOther: l(chartOther, other.chartOther),
     );
   }
+}
+
+/// Income is green and expense is red; a category group is drawn in the
+/// colour of its kind, and never by colour alone.
+extension CategoryKindColor on CategoryKind {
+  Color color(BuildContext context) => switch (this) {
+    CategoryKind.income => FinanceColors.of(context).income,
+    CategoryKind.expense => FinanceColors.of(context).expense,
+  };
+
+  IconData get icon => switch (this) {
+    CategoryKind.income => Icons.arrow_upward,
+    CategoryKind.expense => Icons.arrow_downward,
+  };
 }

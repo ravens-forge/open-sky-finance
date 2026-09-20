@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n.dart';
 import '../../../core/widgets/ledger_dialog.dart';
+import '../../../data/enums/category_kind.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/category_usage.dart';
 import '../models/category_delete_choice.dart';
@@ -15,28 +16,19 @@ Future<CategoryDeleteChoice?> showDeleteCategoryDialog(
   BuildContext context, {
   required Category category,
   required CategoryUsage usage,
-  required Category? group,
 }) => showDialog<CategoryDeleteChoice>(
   context: context,
-  builder: (context) =>
-      _DeleteCategoryDialog(category: category, usage: usage, group: group),
+  builder: (context) => _DeleteCategoryDialog(category: category, usage: usage),
 );
 
 /// Where the transactions and reminders go.
-enum _Target { group, other, none }
+enum _Target { other, none }
 
 class _DeleteCategoryDialog extends ConsumerStatefulWidget {
-  const _DeleteCategoryDialog({
-    required this.category,
-    required this.usage,
-    required this.group,
-  });
+  const _DeleteCategoryDialog({required this.category, required this.usage});
 
   final Category category;
   final CategoryUsage usage;
-
-  /// The group of [category]; `null` when it is a group itself.
-  final Category? group;
 
   @override
   ConsumerState<_DeleteCategoryDialog> createState() =>
@@ -44,24 +36,18 @@ class _DeleteCategoryDialog extends ConsumerStatefulWidget {
 }
 
 class _DeleteCategoryDialogState extends ConsumerState<_DeleteCategoryDialog> {
-  late var _target = widget.group == null ? _Target.none : _Target.group;
+  var _target = _Target.other;
   String? _otherId;
 
-  String? get _reassignTo => switch (_target) {
-    _Target.group => widget.group!.id,
-    _Target.other => _otherId,
-    _Target.none => null,
-  };
-
-  Future<void> _pickOther() async {
+  Future<void> _pickOther(CategoryKind kind) async {
     final id = await showCategoryPickerSheet(
       context,
-      kind: widget.category.kind,
+      kind: kind,
+      excludeId: widget.category.id,
       selectedId: _otherId,
       showActions: false,
     );
-    // Moving it to itself is not a choice; the sheet cannot hide it.
-    if (!mounted || id == null || id == widget.category.id) return;
+    if (!mounted || id == null) return;
     setState(() => _otherId = id);
   }
 
@@ -93,7 +79,12 @@ class _DeleteCategoryDialogState extends ConsumerState<_DeleteCategoryDialog> {
             foregroundColor: scheme.onError,
           ),
           onPressed: canDelete
-              ? () => Navigator.pop(context, CategoryDeleteChoice(_reassignTo))
+              ? () => Navigator.pop(
+                  context,
+                  CategoryDeleteChoice(
+                    _target == _Target.other ? _otherId : null,
+                  ),
+                )
               : null,
           child: Text(l10n.actionDelete),
         ),
@@ -104,6 +95,12 @@ class _DeleteCategoryDialogState extends ConsumerState<_DeleteCategoryDialog> {
   Widget _reassign(AppLocalizations l10n) {
     final all = ref.watch(categoriesProvider).value ?? const <Category>[];
     final chosen = all.where((c) => c.id == _otherId).firstOrNull;
+    final kind = ref
+        .watch(categoryGroupsProvider)
+        .value
+        ?.where((g) => g.id == widget.category.groupId)
+        .firstOrNull
+        ?.kind;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -115,16 +112,12 @@ class _DeleteCategoryDialogState extends ConsumerState<_DeleteCategoryDialog> {
           groupValue: _target,
           onChanged: (target) {
             setState(() => _target = target ?? _Target.none);
-            if (target == _Target.other && _otherId == null) _pickOther();
+            if (target == _Target.other && _otherId == null && kind != null) {
+              _pickOther(kind);
+            }
           },
           child: Column(
             children: [
-              if (widget.group case final group?)
-                RadioListTile<_Target>(
-                  contentPadding: EdgeInsets.zero,
-                  value: _Target.group,
-                  title: Text(l10n.categoryDeleteToGroup(group.name)),
-                ),
               RadioListTile<_Target>(
                 contentPadding: EdgeInsets.zero,
                 value: _Target.other,
@@ -133,7 +126,9 @@ class _DeleteCategoryDialogState extends ConsumerState<_DeleteCategoryDialog> {
                     ? Align(
                         alignment: AlignmentDirectional.centerStart,
                         child: TextButton(
-                          onPressed: _pickOther,
+                          onPressed: kind == null
+                              ? null
+                              : () => _pickOther(kind),
                           child: Text(chosen?.name ?? l10n.actionChoose),
                         ),
                       )

@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/routes.dart';
+import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
 import '../../../core/widgets/category_avatar.dart';
-import '../../../core/widgets/category_icons.dart';
 import '../../../core/widgets/picker_row.dart';
 import '../../../core/widgets/picker_sheet.dart';
 import '../../../data/enums/category_kind.dart';
-import '../../../data/models/category.dart';
+import '../../../data/models/category_group.dart';
 import '../providers/categories_providers.dart';
 
 /// Picks the group a category belongs to, hidden groups included. "New
@@ -33,7 +33,9 @@ class _GroupPicker extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final all = ref.watch(categoriesProvider).value ?? const <Category>[];
+    final groups =
+        ref.watch(categoryGroupsProvider).value ?? const <CategoryGroup>[];
+    final color = kind.color(context);
     return PickerSheet(
       title: l10n.fieldGroup,
       footer: [
@@ -47,14 +49,15 @@ class _GroupPicker extends ConsumerWidget {
         ),
       ],
       children: [
-        for (final group in all)
-          if (group.isGroup && group.kind == kind)
+        for (final group in groups)
+          if (group.kind == kind)
             PickerRow(
               title: group.name,
               subtitle: group.isHidden ? l10n.categoryHidden : null,
               leading: CategoryAvatar(
-                icon: categoryIcon(group.icon),
-                color: Color(group.color!),
+                icon: kind.icon,
+                color: color,
+                background: color.withValues(alpha: 0.14),
               ),
               selected: group.id == selectedId,
               onTap: () => Navigator.pop(context, group.id),

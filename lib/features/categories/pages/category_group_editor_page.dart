@@ -22,7 +22,7 @@ class CategoryGroupEditorPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return switch (ref.watch(categoryEditorDataProvider(id))) {
+    return switch (ref.watch(categoryGroupEditorDataProvider(id))) {
       AsyncData(:final value) => CategoryGroupForm(data: value, kind: kind),
       AsyncError() => Scaffold(
         appBar: AppBar(),

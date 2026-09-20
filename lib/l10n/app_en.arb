@@ -176,10 +176,6 @@
   "@categoryIconOther": {
     "description": "Spoken label and tooltip of a category icon in the icon picker"
   },
-  "categoryColorGroup": "Group",
-  "@categoryColorGroup": {
-    "description": "Colour option in the category colour picker that follows the category group's colour"
-  },
   "categoryColorPine": "Pine green",
   "@categoryColorPine": {
     "description": "Colour option in the category colour picker (spoken label and tooltip)"
@@ -447,6 +443,38 @@
   "seedCategoryGroupOtherIncome": "Other income",
   "@seedCategoryGroupOtherIncome": {
     "description": "Default income category group created on first launch for any other income"
+  },
+  "seedCategoryMonthlyPay": "Monthly pay",
+  "@seedCategoryMonthlyPay": {
+    "description": "First-launch category inside the Salary group; after that it is plain user data"
+  },
+  "seedCategoryOther": "Other",
+  "@seedCategoryOther": {
+    "description": "First-launch category inside the Other income and Other group; after that it is plain user data"
+  },
+  "seedCategoryRent": "Rent",
+  "@seedCategoryRent": {
+    "description": "First-launch category inside the Housing group; after that it is plain user data"
+  },
+  "seedCategoryGroceries": "Groceries",
+  "@seedCategoryGroceries": {
+    "description": "First-launch category inside the Food group; after that it is plain user data"
+  },
+  "seedCategoryFuel": "Fuel",
+  "@seedCategoryFuel": {
+    "description": "First-launch category inside the Transport group; after that it is plain user data"
+  },
+  "seedCategoryElectricity": "Electricity",
+  "@seedCategoryElectricity": {
+    "description": "First-launch category inside the Utilities group; after that it is plain user data"
+  },
+  "seedCategorySubscriptions": "Subscriptions",
+  "@seedCategorySubscriptions": {
+    "description": "First-launch category inside the Entertainment group; after that it is plain user data"
+  },
+  "seedCategoryPharmacy": "Pharmacy",
+  "@seedCategoryPharmacy": {
+    "description": "First-launch category inside the Health group; after that it is plain user data"
   },
   "pageHome": "Home",
   "@pageHome": {
@@ -1134,10 +1162,6 @@
       }
     }
   },
-  "categoriesIntro": "Your groups are ready. Add categories inside a group when you want more detail.",
-  "@categoriesIntro": {
-    "description": "Line above the list while no group has categories yet"
-  },
   "categoriesEmpty": "No category groups yet",
   "@categoriesEmpty": {
     "description": "Empty state of a Categories tab without groups"
@@ -1283,6 +1307,10 @@
   "categoryGroupDelete": "Delete group",
   "@categoryGroupDelete": {
     "description": "Button at the bottom of the group editor"
+  },
+  "categoryGroupDeleteNote": "Only an empty group can be deleted.",
+  "@categoryGroupDeleteNote": {
+    "description": "Under the delete button of the group editor"
   },
   "categoryGroupDeleteBlocked": "{count, plural, =1{Move or delete its category first.} other{Move or delete its {count} categories first.}}",
   "@categoryGroupDeleteBlocked": {

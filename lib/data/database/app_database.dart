@@ -16,8 +16,8 @@ import '../repositories/labels_repository.dart';
 import '../repositories/settings_repository.dart';
 import '../repositories/transactions_repository.dart';
 import 'tables/assets_accounts_table.dart';
-import 'tables/budgets_table.dart';
 import 'tables/categories_table.dart';
+import 'tables/category_groups_table.dart';
 import 'tables/labels_table.dart';
 import 'tables/reminder_labels_table.dart';
 import 'tables/reminders_table.dart';
@@ -32,11 +32,11 @@ part 'app_database.g.dart';
   tables: [
     SettingsTable,
     AssetsAccountsTable,
+    CategoryGroupsTable,
     CategoriesTable,
     TransactionsTable,
     LabelsTable,
     TransactionLabelsTable,
-    BudgetsTable,
     RemindersTable,
     ReminderLabelsTable,
   ],

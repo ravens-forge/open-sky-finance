@@ -5,11 +5,11 @@ import '../../../app/theme.dart';
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
 import '../../../core/widgets/category_avatar.dart';
-import '../../../core/widgets/category_icons.dart';
 import '../models/category_group_node.dart';
 
-/// A category group: drag handle, icon, name, how many categories it holds
-/// and the expand toggle. Must sit in a `ReorderableListView`.
+/// A category group: drag handle, the arrow of its type in its type's
+/// colour, name, how many categories it holds and the expand toggle. Must sit
+/// in a `ReorderableListView`.
 class CategoryGroupTile extends StatelessWidget {
   const CategoryGroupTile({
     super.key,
@@ -38,6 +38,7 @@ class CategoryGroupTile extends StatelessWidget {
     final theme = Theme.of(context);
     final finance = FinanceColors.of(context);
     final group = node.group;
+    final color = group.kind.color(context);
     return Material(
       color: theme.colorScheme.surface,
       child: InkWell(
@@ -71,8 +72,9 @@ class CategoryGroupTile extends StatelessWidget {
                 ),
               ),
               CategoryAvatar(
-                icon: categoryIcon(group.icon),
-                color: Color(group.color!),
+                icon: group.kind.icon,
+                color: color,
+                background: color.withValues(alpha: 0.14),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -80,7 +82,13 @@ class CategoryGroupTile extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(group.name, style: theme.textTheme.rowTitle),
+                    Text(
+                      group.name,
+                      style: theme.textTheme.rowTitle.copyWith(
+                        color: color,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     Text(
                       [
                         l10n.categoriesCount(node.categories.length),

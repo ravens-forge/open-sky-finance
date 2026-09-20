@@ -41,7 +41,6 @@ class AssetsAccountTransactionRow extends StatelessWidget {
     final finance = FinanceColors.of(context);
     final t = transaction;
     final category = categories[t.categoryId];
-    final group = categories[category?.parentId] ?? category;
     final effect = effectOn(t, assetsAccountId);
 
     final untitled = t.title.isEmpty;
@@ -68,7 +67,7 @@ class AssetsAccountTransactionRow extends StatelessWidget {
       ),
       _ => (
         category == null ? fallbackCategoryIcon : categoryIcon(category.icon),
-        Color(category?.color ?? group?.color ?? finance.muted.toARGB32()),
+        Color(category?.color ?? finance.muted.toARGB32()),
         untitled ? category?.name ?? l10n.categoryNone : t.title,
         untitled ? t.type.label(l10n) : category?.name ?? l10n.categoryNone,
       ),

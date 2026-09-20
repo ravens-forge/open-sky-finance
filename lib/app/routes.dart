@@ -37,9 +37,9 @@ abstract final class Routes {
   static String assetsAccount(String id) => '$assetsAccounts/$id';
   static String editAssetsAccount(String id) => '$assetsAccounts/$id/edit';
 
-  static String newCategory(CategoryKind kind, {String? parentId}) => Uri(
+  static String newCategory(CategoryKind kind, {String? groupId}) => Uri(
     path: '$categories/new',
-    queryParameters: {'kind': kind.name, 'parentId': ?parentId},
+    queryParameters: {'kind': kind.name, 'groupId': ?groupId},
   ).toString();
   static String category(String id) => '$categories/$id';
   static String newCategoryGroup(CategoryKind kind) =>

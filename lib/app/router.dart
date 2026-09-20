@@ -204,7 +204,7 @@ GoRouter router(Ref ref) {
               state,
               CategoryEditorPage(
                 kind: kindOf(state),
-                parentId: state.uri.queryParameters['parentId'],
+                groupId: state.uri.queryParameters['groupId'],
               ),
             ),
           ),
@@ -222,7 +222,8 @@ GoRouter router(Ref ref) {
                 gate(
                   context,
                   id,
-                  () => ref.read(categoriesRepositoryProvider).findById(id),
+                  () =>
+                      ref.read(categoriesRepositoryProvider).findGroupById(id),
                   CategoryGroupEditorPage(id: id),
                 ),
               );
