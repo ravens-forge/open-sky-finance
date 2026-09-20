@@ -423,6 +423,35 @@ void main() {
         expect((await row(id)).categoryId, home);
       },
     );
+
+    test('usage counts what a delete would move, reminders included', () async {
+      final groceries = await addCategory(db, 'Groceries', parentId: food);
+      ok(await transactions.save(draft(categoryId: groceries)));
+      ok(await transactions.save(draft(categoryId: groceries)));
+      await addReminder(db, 'r1', assetsAccountId: eur, categoryId: groceries);
+
+      expect(
+        (await repo.usage(food)).subcategories,
+        1,
+        reason: 'the group holds Groceries',
+      );
+      final usage = await repo.usage(groceries);
+      expect(usage.transactions, 2);
+      expect(usage.reminders, 1);
+      expect(usage.hasBudget, isFalse);
+      expect(usage.isUnused, isFalse);
+
+      // Uncategorized: the reminder keeps existing, without a category.
+      ok(await repo.remove(groceries, reassignTo: food));
+      expect(await reminderCategory(db, 'r1'), food);
+    });
+
+    test('reorder stores the given order', () async {
+      final home = await addCategory(db, 'Home');
+      await repo.reorder([home, salary, food]);
+      final all = await repo.watchAll().first;
+      expect([for (final c in all) c.name], ['Home', 'Salary', 'Food']);
+    });
   });
 
   test('label names are unique ignoring case and accents', () async {

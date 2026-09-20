@@ -4,19 +4,28 @@ import '../../core/ids.dart';
 import '../../core/result.dart';
 import '../database/app_database.dart';
 import '../database/tables/categories_table.dart';
+import '../database/tables/reminders_table.dart';
 import '../database/tables/transactions_table.dart';
 import '../enums/category_kind.dart';
 import '../models/category.dart';
 import 'repository_data_error.dart';
 import 'valid_name.dart';
 import '../models/category_draft.dart';
+import '../models/category_usage.dart';
 
 part 'categories_repository.g.dart';
 
-@DriftAccessor(tables: [CategoriesTable, TransactionsTable])
+@DriftAccessor(tables: [CategoriesTable, TransactionsTable, RemindersTable])
 class CategoriesRepository extends DatabaseAccessor<AppDatabase>
     with _$CategoriesRepositoryMixin {
   CategoriesRepository(super.attachedDatabase);
+
+  /// Every group and subcategory, hidden ones included, in display order.
+  Stream<List<Category>> watchAll() =>
+      (select(categoriesTable)
+            ..orderBy([(c) => OrderingTerm(expression: c.sortOrder)]))
+          .map((r) => r.toDomain())
+          .watch();
 
   /// Groups and subcategories of [kind], in display order.
   Stream<List<Category>> watchByKind(CategoryKind kind) =>
@@ -25,6 +34,38 @@ class CategoriesRepository extends DatabaseAccessor<AppDatabase>
             ..orderBy([(c) => OrderingTerm(expression: c.sortOrder)]))
           .map((r) => r.toDomain())
           .watch();
+
+  /// Stores [ids] (every category, groups and subcategories) in this order.
+  Future<void> reorder(List<String> ids) => batch((b) {
+    for (final (i, id) in ids.indexed) {
+      b.update(
+        categoriesTable,
+        CategoriesTableCompanion(sortOrder: Value(i)),
+        where: (c) => c.id.equals(id),
+      );
+    }
+  });
+
+  /// What uses the category: the editors show it and the delete confirmation
+  /// asks where it goes.
+  Future<CategoryUsage> usage(String id) async {
+    final row = await customSelect(
+      '''
+SELECT
+  (SELECT COUNT(*) FROM transactions WHERE category_id = ?1) AS transactions,
+  (SELECT COUNT(*) FROM reminders WHERE category_id = ?1) AS reminders,
+  (SELECT COUNT(*) FROM categories WHERE parent_id = ?1) AS subcategories,
+  (SELECT COUNT(*) FROM budgets WHERE category_id = ?1) AS budgets
+''',
+      variables: [Variable(id)],
+    ).getSingle();
+    return CategoryUsage(
+      transactions: row.read<int>('transactions'),
+      reminders: row.read<int>('reminders'),
+      subcategories: row.read<int>('subcategories'),
+      hasBudget: row.read<int>('budgets') > 0,
+    );
+  }
 
   Future<Category?> findById(String id) => (select(
     categoriesTable,
@@ -96,7 +137,8 @@ class CategoriesRepository extends DatabaseAccessor<AppDatabase>
       });
 
   /// Deletes a category, or a group without subcategories. Its transactions
-  /// move to [reassignTo] (same kind), or become uncategorized.
+  /// and reminders move to [reassignTo] (same kind), or become uncategorized.
+  /// Its budget goes with it.
   Future<Result<void, RepositoryDataError>> remove(
     String id, {
     String? reassignTo,
@@ -116,6 +158,8 @@ class CategoriesRepository extends DatabaseAccessor<AppDatabase>
       }
       await (update(transactionsTable)..where((t) => t.categoryId.equals(id)))
           .write(TransactionsTableCompanion(categoryId: Value(reassignTo)));
+      await (update(remindersTable)..where((r) => r.categoryId.equals(id)))
+          .write(RemindersTableCompanion(categoryId: Value(reassignTo)));
     }
     await (delete(categoriesTable)..where((c) => c.id.equals(id))).go();
     return const Ok(null);

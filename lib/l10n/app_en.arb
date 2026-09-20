@@ -1119,5 +1119,271 @@
   "errorCurrencyLocked": "The currency can't change: this assets account already has transactions.",
   "@errorCurrencyLocked": {
     "description": "Save error: the currency of an assets account with transactions changed"
+  },
+  "categoriesTab": "{label} ({count})",
+  "@categoriesTab": {
+    "description": "Tab of the Categories page: the type and how many groups it has",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "Expenses"
+      },
+      "count": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "categoriesIntro": "Your groups are ready. Add categories inside a group when you want more detail.",
+  "@categoriesIntro": {
+    "description": "Line above the list while no group has categories yet"
+  },
+  "categoriesEmpty": "No category groups yet",
+  "@categoriesEmpty": {
+    "description": "Empty state of a Categories tab without groups"
+  },
+  "categoriesEmptyGroup": "No categories yet",
+  "@categoriesEmptyGroup": {
+    "description": "Shown inside an expanded group that has no categories"
+  },
+  "categoriesAddTo": "Add category to {group}",
+  "@categoriesAddTo": {
+    "description": "Last row of an expanded group",
+    "placeholders": {
+      "group": {
+        "type": "String",
+        "example": "Housing"
+      }
+    }
+  },
+  "categoriesNewGroup": "New category group",
+  "@categoriesNewGroup": {
+    "description": "Button at the end of a Categories tab"
+  },
+  "categoriesCount": "{count, plural, =0{No categories} =1{1 category} other{{count} categories}}",
+  "@categoriesCount": {
+    "description": "How many categories a group holds, under its name",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "categoriesExpand": "Show the categories of {group}",
+  "@categoriesExpand": {
+    "description": "Tooltip of the toggle of a collapsed group",
+    "placeholders": {
+      "group": {
+        "type": "String",
+        "example": "Housing"
+      }
+    }
+  },
+  "categoriesCollapse": "Hide the categories of {group}",
+  "@categoriesCollapse": {
+    "description": "Tooltip of the toggle of an expanded group",
+    "placeholders": {
+      "group": {
+        "type": "String",
+        "example": "Housing"
+      }
+    }
+  },
+  "categoryMove": "Move {name}",
+  "@categoryMove": {
+    "description": "Spoken label of the drag handle of a group or category",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Groceries"
+      }
+    }
+  },
+  "categoryHidden": "Hidden",
+  "@categoryHidden": {
+    "description": "Hidden switch of the category and group editors, and marker on a hidden row"
+  },
+  "categoryHiddenNote": "Hide it from the pickers; its transactions stay in reports",
+  "@categoryHiddenNote": {
+    "description": "Under the Hidden switch of the category editor"
+  },
+  "categoryGroupHiddenNote": "Hide the group and its categories from the pickers",
+  "@categoryGroupHiddenNote": {
+    "description": "Under the Hidden switch of the group editor"
+  },
+  "categoryTypeLocked": "The type can't change after a category is created",
+  "@categoryTypeLocked": {
+    "description": "Under the locked type of the category editor"
+  },
+  "categoryGroupTypeLocked": "Locked: this group already has categories or transactions",
+  "@categoryGroupTypeLocked": {
+    "description": "Under the locked type of the group editor"
+  },
+  "categoryMoveNote": "Moving it to another group keeps its transactions",
+  "@categoryMoveNote": {
+    "description": "Under the group of the category editor while editing"
+  },
+  "fieldGroup": "Group",
+  "@fieldGroup": {
+    "description": "Label of the group field of the category editor"
+  },
+  "fieldIcon": "Icon",
+  "@fieldIcon": {
+    "description": "Label of the icon picker of the category editor"
+  },
+  "fieldColor": "Color",
+  "@fieldColor": {
+    "description": "Label of the colour picker of the category editor"
+  },
+  "errorGroupRequired": "Choose a group",
+  "@errorGroupRequired": {
+    "description": "Value of the group field while none is chosen, and the error when saving without one"
+  },
+  "categoryUsage": "Usage",
+  "@categoryUsage": {
+    "description": "Heading above what uses the category (shown in capitals)"
+  },
+  "categoryUsageTransactions": "{count, plural, =0{No transactions} =1{1 transaction} other{{count} transactions}}",
+  "@categoryUsageTransactions": {
+    "description": "How many transactions use the category",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "86"
+      }
+    }
+  },
+  "categoryUsageReminders": "{count, plural, =1{1 reminder} other{{count} reminders}}",
+  "@categoryUsageReminders": {
+    "description": "How many reminders use the category",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "categoryUsageBudget": "Budget",
+  "@categoryUsageBudget": {
+    "description": "Shown when the category has a budget"
+  },
+  "categoryAdd": "Add category",
+  "@categoryAdd": {
+    "description": "Button under the categories of the group editor"
+  },
+  "categoryGroupCategories": "Categories",
+  "@categoryGroupCategories": {
+    "description": "Heading above the categories of the group editor (shown in capitals)"
+  },
+  "categoryDelete": "Delete category",
+  "@categoryDelete": {
+    "description": "Button at the bottom of the category editor"
+  },
+  "categoryGroupDelete": "Delete group",
+  "@categoryGroupDelete": {
+    "description": "Button at the bottom of the group editor"
+  },
+  "categoryGroupDeleteBlocked": "{count, plural, =1{Move or delete its category first.} other{Move or delete its {count} categories first.}}",
+  "@categoryGroupDeleteBlocked": {
+    "description": "Why the delete button of a group with categories is disabled",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "categoryDeleteNote": "You choose where its transactions and reminders go.",
+  "@categoryDeleteNote": {
+    "description": "Under the delete button when something uses the category"
+  },
+  "categoryDeleteUnusedNote": "Nothing uses it yet.",
+  "@categoryDeleteUnusedNote": {
+    "description": "Under the delete button when nothing uses the category"
+  },
+  "categoryDeleteTitle": "Delete “{name}”?",
+  "@categoryDeleteTitle": {
+    "description": "Title of the delete confirmation of a category or group",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Groceries"
+      }
+    }
+  },
+  "categoryDeleteTransactions": "{count, plural, =1{1 transaction uses it.} other{{count} transactions use it.}}",
+  "@categoryDeleteTransactions": {
+    "description": "Delete confirmation: transactions that have to move",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "86"
+      }
+    }
+  },
+  "categoryDeleteReminders": "{count, plural, =1{1 reminder uses it.} other{{count} reminders use it.}}",
+  "@categoryDeleteReminders": {
+    "description": "Delete confirmation: reminders that have to move",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "categoryDeleteBudget": "Its budget is removed.",
+  "@categoryDeleteBudget": {
+    "description": "Delete confirmation: the budget of the category goes with it"
+  },
+  "categoryDeleteMoveTitle": "Where do they go?",
+  "@categoryDeleteMoveTitle": {
+    "description": "Title of the reassignment choices in the delete confirmation"
+  },
+  "categoryDeleteToGroup": "To {group}",
+  "@categoryDeleteToGroup": {
+    "description": "Reassignment choice: the group of the deleted category",
+    "placeholders": {
+      "group": {
+        "type": "String",
+        "example": "Food"
+      }
+    }
+  },
+  "categoryDeleteToOther": "To another category",
+  "@categoryDeleteToOther": {
+    "description": "Reassignment choice that opens the category picker"
+  },
+  "actionChoose": "Choose…",
+  "@actionChoose": {
+    "description": "Button that opens a picker for a value not chosen yet"
+  },
+  "categoryPickerTitle": "Category",
+  "@categoryPickerTitle": {
+    "description": "Title of the category picker sheet"
+  },
+  "categoryPickerSearchHint": "Search categories",
+  "@categoryPickerSearchHint": {
+    "description": "Hint and spoken label of the search field of the category picker"
+  },
+  "categoryPickerWholeGroup": "Whole group",
+  "@categoryPickerWholeGroup": {
+    "description": "Under a group in the category picker: picking it uses the group itself"
+  },
+  "categoryPickerManage": "Manage",
+  "@categoryPickerManage": {
+    "description": "Button of the category picker that opens the Categories page"
+  },
+  "categoryPickerNoResults": "Nothing matches your search",
+  "@categoryPickerNoResults": {
+    "description": "Shown in the category picker when the search finds nothing"
+  },
+  "errorDeleteFailed": "Couldn't delete. Nothing was changed.",
+  "@errorDeleteFailed": {
+    "description": "Snack bar shown when a delete is refused"
+  },
+  "errorCategoryKindLocked": "The type can't change: this group already has categories or transactions.",
+  "@errorCategoryKindLocked": {
+    "description": "Save error: the type of a group in use changed"
   }
 }

@@ -53,6 +53,31 @@ Future<String> addAssetsAccount(
   ),
 );
 
+/// A minimal reminder row. Reminders have no repository yet, so tests that
+/// need one write it directly.
+Future<void> addReminder(
+  AppDatabase db,
+  String id, {
+  required String assetsAccountId,
+  String? categoryId,
+}) => db.customStatement(
+  'INSERT INTO reminders (id, type, amount, assets_account_id, category_id, '
+  'currency, frequency, start_date, created_at, updated_at) '
+  "VALUES (?, 'expense', -1000000, ?, ?, 'EUR', 'monthly', "
+  "'2026-01-01T00:00:00', 0, 0)",
+  [id, assetsAccountId, categoryId],
+);
+
+/// The category a reminder written by [addReminder] points at.
+Future<String?> reminderCategory(AppDatabase db, String id) async =>
+    (await db
+            .customSelect(
+              'SELECT category_id FROM reminders WHERE id = ?',
+              variables: [Variable(id)],
+            )
+            .getSingle())
+        .read<String?>('category_id');
+
 Future<String> addCategory(
   AppDatabase db,
   String name, {

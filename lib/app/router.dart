@@ -5,10 +5,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../core/l10n.dart';
 import '../core/widgets/not_found_gate.dart';
 import '../core/widgets/not_found_page.dart';
+import '../data/enums/category_kind.dart';
 import '../data/providers.dart';
 import '../features/assets_accounts/pages/assets_account_detail_page.dart';
 import '../features/assets_accounts/pages/assets_account_editor_page.dart';
 import '../features/assets_accounts/pages/assets_accounts_page.dart';
+import '../features/categories/pages/categories_page.dart';
+import '../features/categories/pages/category_editor_page.dart';
+import '../features/categories/pages/category_group_editor_page.dart';
 import '../features/onboarding/pages/onboarding_page.dart';
 import '../features/onboarding/providers/onboarding_provider.dart';
 import '../features/shell/models/main_page.dart';
@@ -35,6 +39,12 @@ GoRouter router(Ref ref) {
   // Full-screen editor on the root navigator, above the shell.
   Page<void> editor(GoRouterState state, Widget child) =>
       MaterialPage(key: state.pageKey, fullscreenDialog: true, child: child);
+
+  // The type a new category or group is created with.
+  CategoryKind kindOf(GoRouterState state) => CategoryKind.values.firstWhere(
+    (kind) => kind.name == state.uri.queryParameters['kind'],
+    orElse: () => CategoryKind.expense,
+  );
 
   // Shows the not-found page when [find] resolves to null.
   Widget gate(
@@ -186,20 +196,22 @@ GoRouter router(Ref ref) {
       ),
       GoRoute(
         path: Routes.categories,
-        builder: (context, state) =>
-            StubPage(title: context.l10n.pageCategories),
+        builder: (context, state) => const CategoriesPage(),
         routes: [
           GoRoute(
             path: 'new',
-            pageBuilder: (context, state) =>
-                editor(state, StubPage(title: context.l10n.editorNewCategory)),
+            pageBuilder: (context, state) => editor(
+              state,
+              CategoryEditorPage(
+                kind: kindOf(state),
+                parentId: state.uri.queryParameters['parentId'],
+              ),
+            ),
           ),
           GoRoute(
             path: 'groups/new',
-            pageBuilder: (context, state) => editor(
-              state,
-              StubPage(title: context.l10n.editorNewCategoryGroup),
-            ),
+            pageBuilder: (context, state) =>
+                editor(state, CategoryGroupEditorPage(kind: kindOf(state))),
           ),
           GoRoute(
             path: 'groups/:groupId',
@@ -211,7 +223,7 @@ GoRouter router(Ref ref) {
                   context,
                   id,
                   () => ref.read(categoriesRepositoryProvider).findById(id),
-                  StubPage(title: context.l10n.editorEditCategoryGroup),
+                  CategoryGroupEditorPage(id: id),
                 ),
               );
             },
@@ -226,7 +238,7 @@ GoRouter router(Ref ref) {
                   context,
                   id,
                   () => ref.read(categoriesRepositoryProvider).findById(id),
-                  StubPage(title: context.l10n.editorEditCategory),
+                  CategoryEditorPage(id: id),
                 ),
               );
             },
