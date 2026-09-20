@@ -6,7 +6,7 @@ import 'package:open_sky_finance/core/l10n.dart';
 import 'package:open_sky_finance/core/money/format_money.dart';
 import 'package:open_sky_finance/core/widgets/amount_text.dart';
 import 'package:open_sky_finance/core/widgets/category_icons.dart';
-import 'package:open_sky_finance/core/widgets/category_pickers.dart';
+import 'package:open_sky_finance/features/categories/widgets/category_pickers.dart';
 import 'package:open_sky_finance/core/widgets/empty_state.dart';
 
 Widget _app(Widget child, {Locale locale = const Locale('en')}) => MaterialApp(

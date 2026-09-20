@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../data/database/tables/setting_keys.dart';
+import '../data/repositories/setting_keys.dart';
 import '../data/providers.dart';
 
 part 'theme_mode.g.dart';

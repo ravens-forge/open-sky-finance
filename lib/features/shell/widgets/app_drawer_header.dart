@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../l10n.dart';
-import 'app_logo.dart';
+import '../../../core/l10n.dart';
+import '../../../core/widgets/app_logo.dart';
 
 /// Top of the drawer: logo, app name and the privacy line.
 class AppDrawerHeader extends StatelessWidget {

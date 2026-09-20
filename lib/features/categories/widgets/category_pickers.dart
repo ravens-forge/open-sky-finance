@@ -1,18 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../l10n.dart';
-import 'category_icons.dart';
-
-/// Category colours (ARGB, as stored), in picker order.
-const categoryColors = <int>[
-  0xFF0F5C4D, // pine
-  0xFF9A5B00, // ochre
-  0xFFB8391F, // red
-  0xFF7D5BA6, // purple
-  0xFF2F7F72, // teal
-  0xFF2B5FAE, // blue
-  0xFF6A5F51, // stone
-];
+import '../../../core/finance_colors.dart';
+import '../../../core/l10n.dart';
+import '../../../core/widgets/category_icons.dart';
 
 /// Grid of [categoryIcons], six per row. The selected one is tinted and ringed in
 /// [color] (the category's colour).

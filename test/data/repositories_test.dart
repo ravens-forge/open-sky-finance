@@ -12,7 +12,7 @@ import 'package:open_sky_finance/data/models/transaction.dart';
 import 'package:open_sky_finance/data/repositories/assets_accounts_repository.dart';
 import 'package:open_sky_finance/data/repositories/categories_repository.dart';
 import 'package:open_sky_finance/data/repositories/repository_data_error.dart';
-import 'package:open_sky_finance/data/database/tables/setting_keys.dart';
+import 'package:open_sky_finance/data/repositories/setting_keys.dart';
 import 'package:open_sky_finance/data/models/home_section.dart';
 import 'package:open_sky_finance/data/repositories/transactions_repository.dart';
 

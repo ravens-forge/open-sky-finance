@@ -3,7 +3,7 @@ import 'package:drift/drift.dart';
 import '../database/app_database.dart';
 import '../database/tables/settings_table.dart';
 import '../models/home_section.dart';
-import '../database/tables/setting_keys.dart';
+import 'setting_keys.dart';
 
 part 'settings_repository.g.dart';
 

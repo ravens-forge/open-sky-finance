@@ -1,17 +1,17 @@
+import '../../core/finance_colors.dart';
 import '../../core/ids.dart';
 import '../../core/l10n.dart';
-import '../../core/widgets/category_pickers.dart';
 import '../enums/assets_account_type.dart';
 import '../enums/category_kind.dart';
 import '../models/assets_account.dart';
 import '../models/category.dart';
 import '../models/category_group.dart';
 import '../models/timestamps.dart';
+import '../repositories/setting_keys.dart';
 import 'app_database.dart';
 import 'tables/assets_accounts_table.dart';
 import 'tables/categories_table.dart';
 import 'tables/category_groups_table.dart';
-import 'tables/setting_keys.dart';
 
 /// First-launch data: a cash assets account in [currency] (also the main
 /// currency) and the default category groups, each with one category to start

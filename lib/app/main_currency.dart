@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../data/database/tables/setting_keys.dart';
+import '../data/repositories/setting_keys.dart';
 import '../data/providers.dart';
 
 part 'main_currency.g.dart';

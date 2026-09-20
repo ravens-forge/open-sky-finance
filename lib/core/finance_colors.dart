@@ -2,6 +2,18 @@ import 'package:flutter/material.dart';
 
 import '../data/enums/category_kind.dart';
 
+/// Category colours (ARGB, as stored), in picker order. Stored values, not
+/// theme values: they must not change with the light/dark scheme.
+const categoryColors = <int>[
+  0xFF0F5C4D, // pine
+  0xFF9A5B00, // ochre
+  0xFFB8391F, // red
+  0xFF7D5BA6, // purple
+  0xFF2F7F72, // teal
+  0xFF2B5FAE, // blue
+  0xFF6A5F51, // stone
+];
+
 @immutable
 class FinanceColors extends ThemeExtension<FinanceColors> {
   const FinanceColors({
