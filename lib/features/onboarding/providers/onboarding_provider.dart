@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/result.dart';
-import '../../../data/database/tables/setting_keys.dart';
+import '../../../data/repositories/setting_keys.dart';
 import '../../../data/models/assets_account_draft.dart';
 import '../../../data/providers.dart';
 import '../../../data/repositories/repository_data_error.dart';

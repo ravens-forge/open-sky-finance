@@ -14,7 +14,7 @@ import 'package:open_sky_finance/data/models/timestamps.dart';
 import 'package:open_sky_finance/data/models/transaction.dart';
 import 'package:open_sky_finance/data/models/transfer_destination.dart';
 import 'package:open_sky_finance/data/providers.dart';
-import 'package:open_sky_finance/data/database/tables/setting_keys.dart';
+import 'package:open_sky_finance/data/repositories/setting_keys.dart';
 
 import 'test_db.dart';
 

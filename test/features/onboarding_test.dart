@@ -7,7 +7,7 @@ import 'package:open_sky_finance/app/router.dart';
 import 'package:open_sky_finance/app/routes.dart';
 import 'package:open_sky_finance/core/result.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
-import 'package:open_sky_finance/data/database/tables/setting_keys.dart';
+import 'package:open_sky_finance/data/repositories/setting_keys.dart';
 import 'package:open_sky_finance/data/enums/assets_account_type.dart';
 import 'package:open_sky_finance/data/models/assets_account_draft.dart';
 import 'package:open_sky_finance/data/providers.dart';

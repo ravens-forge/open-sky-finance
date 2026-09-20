@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/app/app.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
-import 'package:open_sky_finance/data/database/tables/setting_keys.dart';
+import 'package:open_sky_finance/data/repositories/setting_keys.dart';
 import 'package:open_sky_finance/data/providers.dart';
 import 'package:open_sky_finance/features/onboarding/models/onboarding_steps.dart';
 

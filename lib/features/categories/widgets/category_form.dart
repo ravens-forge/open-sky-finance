@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
 import '../../../core/labels.dart';
 import '../../../core/result.dart';
-import '../../../core/widgets/category_pickers.dart';
 import '../../../core/widgets/field_error.dart';
 import '../../../core/widgets/field_row.dart';
 import '../../../core/widgets/type_selector.dart';
@@ -18,6 +18,7 @@ import '../providers/categories_controller.dart';
 import '../providers/categories_providers.dart';
 import 'category_delete_section.dart';
 import 'category_group_picker.dart';
+import 'category_pickers.dart';
 import 'category_usage_note.dart';
 
 /// Name, group, icon, colour and hidden; Save pops. Editing adds what uses it
