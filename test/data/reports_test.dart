@@ -29,8 +29,8 @@ void main() {
     b = await addAssetsAccount(db, 'B');
     u = await addAssetsAccount(db, 'U', currency: 'USD');
     h = await addAssetsAccount(db, 'H', isHidden: true);
-    food = await addCategory(db, 'Food');
-    groceries = await addCategory(db, 'Groceries', parentId: food);
+    food = await addCategoryGroup(db, 'Food');
+    groceries = await addCategory(db, 'Groceries', groupId: food);
     trip = ok(await db.labelsRepository.save(name: 'Trip'));
     idle = ok(await db.labelsRepository.save(name: 'Idle'));
 
@@ -219,13 +219,13 @@ void main() {
     );
   });
 
-  test('budget progress includes subcategories', () async {
+  test('budget progress includes the categories of a group', () async {
     await db.budgetsRepository.set(food, m(100));
     await db.budgetsRepository.set(groceries, m(10));
     final progress = await db.budgetsRepository
         .watchProgress(YearMonth(2026, 3))
         .first;
-    final byCategory = {for (final p in progress) p.budget.categoryId: p.spent};
+    final byCategory = {for (final p in progress) p.budget.targetId: p.spent};
     expect(byCategory, {
       food: {'EUR': m(30)},
       groceries: {'EUR': m(30)},

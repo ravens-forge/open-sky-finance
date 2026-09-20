@@ -156,11 +156,12 @@ class TransactionsRepository extends DatabaseAccessor<AppDatabase>
         return (null, RepositoryDataError.toAmountNotAllowed);
       }
       if (d.categoryId != null) {
-        final category = await attachedDatabase.categoriesRepository.findById(
+        // The type of a category is the type of its group.
+        final kind = await attachedDatabase.categoriesRepository.kindOf(
           d.categoryId!,
         );
-        if (category == null) return (null, RepositoryDataError.notFound);
-        if (category.kind.name != d.type.name) {
+        if (kind == null) return (null, RepositoryDataError.notFound);
+        if (kind.name != d.type.name) {
           return (null, RepositoryDataError.categoryKindMismatch);
         }
       }

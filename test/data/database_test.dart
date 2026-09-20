@@ -50,7 +50,7 @@ void main() {
         'transactions_to_assets_account_id',
         'transactions_category_id',
         'transactions_deleted_at',
-        'categories_parent_id',
+        'categories_group_id',
         'reminders_next_due_at',
       ]),
     );
@@ -66,7 +66,11 @@ void main() {
       db = testDb();
       a = await addAssetsAccount(db, 'A');
       b = await addAssetsAccount(db, 'B');
-      food = await addCategory(db, 'Food');
+      food = await addCategory(
+        db,
+        'Groceries',
+        groupId: await addCategoryGroup(db, 'Food'),
+      );
     });
 
     Future<void> insert({
@@ -208,17 +212,23 @@ void main() {
     expect(accounts.single.type, AssetsAccountType.cash);
     expect(accounts.single.currency, 'EUR');
 
-    final categories = await db.select(db.categoriesTable).get();
-    expect(categories.every((c) => c.parentId == null), isTrue);
-    expect(categories.every((c) => c.color != null), isTrue);
+    final groups = await db.select(db.categoryGroupsTable).get();
+    expect(groups.where((g) => g.kind == CategoryKind.expense), hasLength(7));
     expect(
-      categories.where((c) => c.kind == CategoryKind.expense),
-      hasLength(7),
-    );
-    expect(
-      categories.where((c) => c.kind == CategoryKind.income).map((c) => c.name),
+      groups.where((g) => g.kind == CategoryKind.income).map((g) => g.name),
       ['Salaire', 'Autres revenus'],
+      reason: 'income comes first',
     );
+    expect(groups.first.kind, CategoryKind.income);
+
+    // Every group starts with one category, so the app is usable at once.
+    final categories = await db.select(db.categoriesTable).get();
+    expect(categories, hasLength(groups.length));
+    expect(
+      {for (final c in categories) c.groupId},
+      {for (final g in groups) g.id},
+    );
+    expect(categories.map((c) => c.name), contains('Loyer'));
     expect(await db.settingsRepository.get(SettingKeys.mainCurrency), 'EUR');
   });
 

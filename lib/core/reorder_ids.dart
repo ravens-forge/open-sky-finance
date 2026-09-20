@@ -1,6 +1,7 @@
 /// [all] after moving the item of [group] at [from] to [to] (indexes within
 /// [group], [to] counted after removing it). Ids outside [group], such as
-/// hidden or other-type assets accounts, keep their place.
+/// hidden assets accounts or the categories of another group, keep their
+/// place.
 List<String> reorderIds(
   List<String> all,
   List<String> group,

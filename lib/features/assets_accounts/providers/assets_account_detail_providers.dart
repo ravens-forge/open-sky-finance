@@ -2,7 +2,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/dates/wall_clock.dart';
 import '../../../core/dates/year_month.dart';
-import '../../../data/enums/category_kind.dart';
 import '../../../data/models/assets_account.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/transaction.dart';
@@ -62,14 +61,10 @@ Future<AssetsAccountMonth> assetsAccountMonth(
   return AssetsAccountMonth.of(id, transactions, balances[id] ?? 0);
 }
 
-@riverpod
-Stream<List<Category>> categoriesOfKind(Ref ref, CategoryKind kind) =>
-    ref.watch(categoriesRepositoryProvider).watchByKind(kind);
-
-/// Every category and group by id, for transaction rows.
+/// Every category by id, for transaction rows.
 @riverpod
 Future<Map<String, Category>> categoriesById(Ref ref) async => {
-  for (final kind in CategoryKind.values)
-    for (final c in await ref.watch(categoriesOfKindProvider(kind).future))
-      c.id: c,
+  for (final c
+      in await ref.watch(categoriesRepositoryProvider).watchCategories().first)
+    c.id: c,
 };

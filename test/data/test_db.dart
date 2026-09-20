@@ -3,6 +3,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/core/result.dart';
 import 'package:open_sky_finance/data/models/category_draft.dart';
+import 'package:open_sky_finance/data/models/category_group_draft.dart';
 import 'package:open_sky_finance/data/models/assets_account_draft.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
 import 'package:open_sky_finance/data/enums/assets_account_type.dart';
@@ -53,19 +54,48 @@ Future<String> addAssetsAccount(
   ),
 );
 
-Future<String> addCategory(
+/// A minimal reminder row. Reminders have no repository yet, so tests that
+/// need one write it directly.
+Future<void> addReminder(
+  AppDatabase db,
+  String id, {
+  required String assetsAccountId,
+  String? categoryId,
+}) => db.customStatement(
+  'INSERT INTO reminders (id, type, amount, assets_account_id, category_id, '
+  'currency, frequency, start_date, created_at, updated_at) '
+  "VALUES (?, 'expense', -1000000, ?, ?, 'EUR', 'monthly', "
+  "'2026-01-01T00:00:00', 0, 0)",
+  [id, assetsAccountId, categoryId],
+);
+
+/// The category a reminder written by [addReminder] points at.
+Future<String?> reminderCategory(AppDatabase db, String id) async =>
+    (await db
+            .customSelect(
+              'SELECT category_id FROM reminders WHERE id = ?',
+              variables: [Variable(id)],
+            )
+            .getSingle())
+        .read<String?>('category_id');
+
+Future<String> addCategoryGroup(
   AppDatabase db,
   String name, {
   CategoryKind kind = CategoryKind.expense,
-  String? parentId,
 }) async => ok(
-  await db.categoriesRepository.save(
-    CategoryDraft(
-      name: name,
-      kind: kind,
-      parentId: parentId,
-      icon: 'category',
-      color: parentId == null ? 0xFF0F5C4D : null,
-    ),
+  await db.categoriesRepository.saveGroup(
+    CategoryGroupDraft(name: name, kind: kind),
+  ),
+);
+
+Future<String> addCategory(
+  AppDatabase db,
+  String name, {
+  required String groupId,
+  int color = 0xFF0F5C4D,
+}) async => ok(
+  await db.categoriesRepository.saveCategory(
+    CategoryDraft(name: name, groupId: groupId, icon: 'category', color: color),
   ),
 );

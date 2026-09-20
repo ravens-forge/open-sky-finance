@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/data/models/category_draft.dart';
+import 'package:open_sky_finance/data/models/category_group_draft.dart';
 import 'package:open_sky_finance/data/models/assets_account_draft.dart';
 import 'package:open_sky_finance/data/models/transaction_draft.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
@@ -25,6 +26,9 @@ void main() {
   late String usd;
   late String food;
   late String salary;
+  // A transaction points at a category, never at a group.
+  late String groceries;
+  late String pay;
 
   setUp(() async {
     db = testDb();
@@ -32,8 +36,10 @@ void main() {
     eur = await addAssetsAccount(db, 'Bank');
     eur2 = await addAssetsAccount(db, 'Wallet');
     usd = await addAssetsAccount(db, 'Dollars', currency: 'USD');
-    food = await addCategory(db, 'Food');
-    salary = await addCategory(db, 'Salary', kind: CategoryKind.income);
+    food = await addCategoryGroup(db, 'Food');
+    salary = await addCategoryGroup(db, 'Salary', kind: CategoryKind.income);
+    groceries = await addCategory(db, 'Groceries', groupId: food);
+    pay = await addCategory(db, 'Pay', groupId: salary);
   });
 
   TransactionDraft draft({
@@ -68,10 +74,13 @@ void main() {
 
     test('category kind must match the type', () async {
       expect(
-        err(await transactions.save(draft(categoryId: salary))),
+        err(await transactions.save(draft(categoryId: pay))),
         RepositoryDataError.categoryKindMismatch,
       );
-      expect(err(await transactions.save(draft(categoryId: food))), isNull);
+      expect(
+        err(await transactions.save(draft(categoryId: groceries))),
+        isNull,
+      );
     });
 
     test('opening balances are not saved as transactions', () async {
@@ -161,7 +170,9 @@ void main() {
       );
       expect(
         err(
-          await transactions.save(draft(type: t, to: eur2, categoryId: food)),
+          await transactions.save(
+            draft(type: t, to: eur2, categoryId: groceries),
+          ),
         ),
         RepositoryDataError.categoryNotAllowed,
       );
@@ -191,9 +202,9 @@ void main() {
     });
 
     test('a deleted category leaves the transaction uncategorized', () async {
-      final id = ok(await transactions.save(draft(categoryId: food)));
+      final id = ok(await transactions.save(draft(categoryId: groceries)));
       await transactions.trash(id);
-      ok(await db.categoriesRepository.remove(food));
+      ok(await db.categoriesRepository.remove(groceries));
       await transactions.restore(id);
       expect((await row(id)).categoryId, isNull);
     });
@@ -336,93 +347,98 @@ void main() {
     late CategoriesRepository repo;
     setUp(() => repo = db.categoriesRepository);
 
-    test('two levels, same kind, groups need a colour', () async {
-      final groceries = await addCategory(db, 'Groceries', parentId: food);
+    test('a category takes the type of its group', () async {
+      expect(await repo.kindOf(groceries), CategoryKind.expense);
       expect(
         err(
-          await repo.save(
-            CategoryDraft(
+          await repo.saveCategory(
+            const CategoryDraft(
               name: 'Fruit',
-              kind: CategoryKind.expense,
-              parentId: groceries,
+              groupId: 'missing',
               icon: 'category',
+              color: 0xFF0F5C4D,
             ),
           ),
         ),
-        RepositoryDataError.parentNotGroup,
+        RepositoryDataError.notFound,
       );
+      // Moving it to a group of the other type would change what its
+      // transactions are.
       expect(
         err(
-          await repo.save(
+          await repo.saveCategory(
             CategoryDraft(
-              name: 'Bonus',
-              kind: CategoryKind.income,
-              parentId: food,
+              id: groceries,
+              name: 'Groceries',
+              groupId: salary,
               icon: 'category',
+              color: 0xFF0F5C4D,
             ),
           ),
         ),
         RepositoryDataError.categoryKindMismatch,
       );
-      expect(
-        err(
-          await repo.save(
-            const CategoryDraft(
-              name: 'Misc',
-              kind: CategoryKind.expense,
-              icon: 'category',
-            ),
-          ),
-        ),
-        RepositoryDataError.colorRequired,
-      );
     });
 
-    test('group kind is locked by subcategories or transactions', () async {
-      CategoryDraft asIncome(String id, String name) => CategoryDraft(
-        id: id,
-        name: name,
-        kind: CategoryKind.income,
-        icon: 'category',
-        color: 0xFF0F5C4D,
-      );
+    test('group kind is locked by its categories or transactions', () async {
+      CategoryGroupDraft asIncome(String id, String name) =>
+          CategoryGroupDraft(id: id, name: name, kind: CategoryKind.income);
 
-      final empty = await addCategory(db, 'Empty');
-      ok(await repo.save(asIncome(empty, 'Empty')));
+      final empty = await addCategoryGroup(db, 'Empty');
+      ok(await repo.saveGroup(asIncome(empty, 'Empty')));
 
-      await addCategory(db, 'Groceries', parentId: food);
       expect(
-        err(await repo.save(asIncome(food, 'Food'))),
-        RepositoryDataError.kindLocked,
-      );
-
-      final used = await addCategory(db, 'Used');
-      ok(await transactions.save(draft(categoryId: used)));
-      expect(
-        err(await repo.save(asIncome(used, 'Used'))),
+        err(await repo.saveGroup(asIncome(food, 'Food'))),
         RepositoryDataError.kindLocked,
       );
     });
 
     test(
-      'delete: blocked with subcategories, reassigns transactions',
+      'delete: a group keeps its categories, a category reassigns',
       () async {
-        final groceries = await addCategory(db, 'Groceries', parentId: food);
         expect(
-          err(await repo.remove(food)),
-          RepositoryDataError.groupHasSubcategories,
+          err(await repo.removeGroup(food)),
+          RepositoryDataError.groupHasCategories,
         );
 
-        final home = await addCategory(db, 'Home');
+        final home = await addCategoryGroup(db, 'Home');
+        final rent = await addCategory(db, 'Rent', groupId: home);
         final id = ok(await transactions.save(draft(categoryId: groceries)));
         expect(
-          err(await repo.remove(groceries, reassignTo: salary)),
+          err(await repo.remove(groceries, reassignTo: pay)),
           RepositoryDataError.categoryKindMismatch,
         );
-        ok(await repo.remove(groceries, reassignTo: home));
-        expect((await row(id)).categoryId, home);
+        ok(await repo.remove(groceries, reassignTo: rent));
+        expect((await row(id)).categoryId, rent);
+        ok(await repo.removeGroup(food));
       },
     );
+
+    test('usage counts what a delete would move, reminders included', () async {
+      ok(await transactions.save(draft(categoryId: groceries)));
+      ok(await transactions.save(draft(categoryId: groceries)));
+      await addReminder(db, 'r1', assetsAccountId: eur, categoryId: groceries);
+
+      final group = await repo.groupUsage(food);
+      expect(group.categories, 1, reason: 'the group holds Groceries');
+      expect(group.transactions, 2);
+      final usage = await repo.usage(groceries);
+      expect(usage.transactions, 2);
+      expect(usage.reminders, 1);
+      expect(usage.hasBudget, isFalse);
+      expect(usage.isUnused, isFalse);
+
+      final rent = await addCategory(db, 'Rent', groupId: food);
+      ok(await repo.remove(groceries, reassignTo: rent));
+      expect(await reminderCategory(db, 'r1'), rent);
+    });
+
+    test('reorder stores the given order', () async {
+      final home = await addCategoryGroup(db, 'Home');
+      await repo.reorderGroups([home, salary, food]);
+      final groups = await repo.watchGroups().first;
+      expect([for (final g in groups) g.name], ['Home', 'Salary', 'Food']);
+    });
   });
 
   test('label names are unique ignoring case and accents', () async {

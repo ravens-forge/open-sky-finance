@@ -12,10 +12,12 @@ import 'package:open_sky_finance/data/providers.dart';
 import 'package:open_sky_finance/features/onboarding/models/onboarding_steps.dart';
 
 /// Pumps the app on an in-memory database; [onboarded] marks every
-/// onboarding step as seen first.
+/// onboarding step as seen first, and [locale] pins the language instead
+/// of following the device.
 Future<ProviderContainer> pumpApp(
   WidgetTester tester, {
   bool onboarded = true,
+  String? locale,
 }) async {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
   final db = AppDatabase(executor: NativeDatabase.memory());
@@ -25,6 +27,11 @@ Future<ProviderContainer> pumpApp(
         SettingKeys.onboardingSeenSteps,
         jsonEncode([for (final s in onboardingSteps) s.id]),
       ),
+    );
+  }
+  if (locale != null) {
+    await tester.runAsync(
+      () => db.settingsRepository.set(SettingKeys.locale, locale),
     );
   }
   final container = ProviderContainer(

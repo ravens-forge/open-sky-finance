@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/app/router.dart';
 import 'package:open_sky_finance/app/routes.dart';
 import 'package:open_sky_finance/core/money/currency_converter.dart';
+import 'package:open_sky_finance/core/reorder_ids.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
 import 'package:open_sky_finance/data/database/tables/setting_keys.dart';
 import 'package:open_sky_finance/data/enums/assets_account_type.dart';
@@ -21,7 +22,6 @@ import 'package:open_sky_finance/features/assets_accounts/models/assets_account_
 import 'package:open_sky_finance/features/assets_accounts/models/assets_account_with_balance.dart';
 import 'package:open_sky_finance/features/assets_accounts/models/assets_accounts_side.dart';
 import 'package:open_sky_finance/features/assets_accounts/models/credit_usage.dart';
-import 'package:open_sky_finance/features/assets_accounts/models/reorder_ids.dart';
 
 import '../data/test_db.dart';
 import '../pump_app.dart';
