@@ -7,6 +7,7 @@ import 'package:open_sky_finance/data/database/app_database.dart';
 import 'package:open_sky_finance/data/enums/category_kind.dart';
 import 'package:open_sky_finance/data/models/category.dart';
 import 'package:open_sky_finance/data/models/transaction_draft.dart';
+import 'package:open_sky_finance/core/widgets/destructive_button.dart';
 import 'package:open_sky_finance/data/providers.dart';
 import 'package:open_sky_finance/data/enums/transaction_type.dart';
 import 'package:open_sky_finance/features/categories/models/category_group_node.dart';
@@ -29,6 +30,43 @@ Category _category(
   isHidden: hidden,
   sortOrder: 0,
 );
+
+/// The page's list, not the text fields inside it.
+final _page = find
+    .descendant(of: find.byType(ListView), matching: find.byType(Scrollable))
+    .first;
+
+Future<String> _addCategory(
+  WidgetTester tester,
+  AppDatabase db,
+  String name, {
+  CategoryKind kind = CategoryKind.expense,
+  String? parentId,
+}) async => (await tester.runAsync(
+  () => addCategory(db, name, kind: kind, parentId: parentId),
+))!;
+
+/// An expense in [categoryId], so it counts as usage.
+Future<String> _addTransaction(
+  WidgetTester tester,
+  AppDatabase db,
+  String categoryId,
+) async {
+  final account = (await tester.runAsync(() => addAssetsAccount(db, 'Bank')))!;
+  return (await tester.runAsync(
+    () async => ok(
+      await db.transactionsRepository.save(
+        TransactionDraft(
+          type: TransactionType.expense,
+          occurredAt: DateTime(2026, 3, 1),
+          amount: -m(10),
+          assetsAccountId: account,
+          categoryId: categoryId,
+        ),
+      ),
+    ),
+  ))!;
+}
 
 void main() {
   test('groups keep their order and hidden ones can be left out', () {
@@ -85,14 +123,6 @@ void main() {
     late ProviderContainer container;
     late AppDatabase db;
 
-    // The page's list, not the text fields inside it.
-    final page = find
-        .descendant(
-          of: find.byType(ListView),
-          matching: find.byType(Scrollable),
-        )
-        .first;
-
     Future<void> open(WidgetTester tester, String path) async {
       container.read(routerProvider).go(path);
       await settle(tester);
@@ -108,31 +138,10 @@ void main() {
       String name, {
       CategoryKind kind = CategoryKind.expense,
       String? parentId,
-    }) async => (await tester.runAsync(
-      () => addCategory(db, name, kind: kind, parentId: parentId),
-    ))!;
+    }) => _addCategory(tester, db, name, kind: kind, parentId: parentId);
 
-    Future<String> addTransaction(
-      WidgetTester tester,
-      String categoryId,
-    ) async {
-      final account = (await tester.runAsync(
-        () => addAssetsAccount(db, 'Bank'),
-      ))!;
-      return (await tester.runAsync(
-        () async => ok(
-          await db.transactionsRepository.save(
-            TransactionDraft(
-              type: TransactionType.expense,
-              occurredAt: DateTime(2026, 3, 1),
-              amount: -m(10),
-              assetsAccountId: account,
-              categoryId: categoryId,
-            ),
-          ),
-        ),
-      ))!;
-    }
+    Future<String> addTransaction(WidgetTester tester, String categoryId) =>
+        _addTransaction(tester, db, categoryId);
 
     testWidgets('first launch: intro and groups without categories', (
       tester,
@@ -208,7 +217,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Delete group'),
         200,
-        scrollable: page,
+        scrollable: _page,
       );
       expect(find.text('Move or delete its category first.'), findsOneWidget);
     });
@@ -223,7 +232,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Delete category'),
         200,
-        scrollable: page,
+        scrollable: _page,
       );
       expect(find.text('1 transaction'), findsOneWidget);
       await tester.tap(find.text('Delete category'));
@@ -260,7 +269,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Delete category'),
         200,
-        scrollable: page,
+        scrollable: _page,
       );
       await tester.tap(find.text('Delete category'));
       await settle(tester);
@@ -286,5 +295,84 @@ void main() {
       expect(saved!.categoryId, isNotNull);
       expect(saved.categoryId, isNot(groceries));
     });
+  });
+
+  // Every screen of the feature in the three languages, on a phone-sized
+  // surface and with the longest text there is (French, plus a long group
+  // name): a row that does not fit overflows, and an overflow fails the test
+  // on its own. One theme is enough, since colours change no layout.
+  group('locales', () {
+    final locales = [
+      (
+        code: 'en',
+        tab: 'Expenses (1)',
+        add: 'Add category to Divertissement',
+        group: 'Group',
+        locked: 'Locked: this group already has categories or transactions',
+        where: 'Where do they go?',
+      ),
+      (
+        code: 'es',
+        tab: 'Gastos (1)',
+        add: 'Añadir categoría a Divertissement',
+        group: 'Grupo',
+        locked: 'Bloqueado: este grupo ya tiene categorías o transacciones',
+        where: '¿A dónde van?',
+      ),
+      (
+        code: 'fr',
+        tab: 'Dépenses (1)',
+        add: 'Ajouter une catégorie à Divertissement',
+        group: 'Groupe',
+        locked:
+            'Verrouillé : ce groupe a déjà des catégories ou des transactions',
+        where: 'Où vont-ils ?',
+      ),
+    ];
+
+    for (final l in locales) {
+      testWidgets('every screen fits in ${l.code}', (tester) async {
+        tester.view.physicalSize = const Size(360, 780);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+
+        final container = await pumpApp(tester, locale: l.code);
+        final db = container.read(appDatabaseProvider);
+        final group = await _addCategory(tester, db, 'Divertissement');
+        final category = await _addCategory(
+          tester,
+          db,
+          'Cinéma',
+          parentId: group,
+        );
+        await _addTransaction(tester, db, category);
+        final router = container.read(routerProvider);
+        Future<void> open(String path) async {
+          router.go(path);
+          await settle(tester);
+        }
+
+        await open(Routes.categories);
+        expect(find.text(l.tab), findsOneWidget);
+        expect(find.text(l.add), findsOneWidget);
+
+        await open(Routes.newCategory(CategoryKind.expense));
+        expect(find.text(l.group), findsOneWidget);
+
+        await open(Routes.categoryGroup(group));
+        expect(find.text(l.locked), findsOneWidget);
+
+        // The delete confirmation is the tallest thing the feature shows.
+        await open(Routes.category(category));
+        await tester.scrollUntilVisible(
+          find.byType(DestructiveButton),
+          200,
+          scrollable: _page,
+        );
+        await tester.tap(find.byType(DestructiveButton));
+        await settle(tester);
+        expect(find.text(l.where), findsOneWidget);
+      });
+    }
   });
 }
