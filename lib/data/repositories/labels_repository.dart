@@ -53,6 +53,31 @@ class LabelsRepository extends DatabaseAccessor<AppDatabase>
   Future<void> remove(String id) =>
       (delete(labelsTable)..where((l) => l.id.equals(id))).go();
 
+  /// Labels of the live transactions in [from, to), by transaction id, each
+  /// list by name. Transactions without labels are left out.
+  Stream<Map<String, List<Label>>> watchByTransaction(
+    DateTime from,
+    DateTime to,
+  ) =>
+      customSelect(
+        '''
+SELECT tl.transaction_id AS transaction_id, l.* FROM transaction_labels tl
+JOIN labels l ON l.id = tl.label_id
+JOIN transactions t ON t.id = tl.transaction_id
+WHERE t.deleted_at IS NULL AND t.occurred_at >= ?1 AND t.occurred_at < ?2
+ORDER BY l.name''',
+        variables: [wallClockVariable(from), wallClockVariable(to)],
+        readsFrom: {labelsTable, transactionLabelsTable, transactionsTable},
+      ).watch().map((rows) {
+        final byTransaction = <String, List<Label>>{};
+        for (final r in rows) {
+          (byTransaction[r.read<String>('transaction_id')] ??= []).add(
+            labelsTable.map(r.data).toDomain(),
+          );
+        }
+        return byTransaction;
+      });
+
   /// Every label, by name, with the count and signed total (transfers count but
   /// add nothing) of its live transactions in [from, to).
   Stream<List<LabelTotal>> watchTotals(DateTime from, DateTime to) =>

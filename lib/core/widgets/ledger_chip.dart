@@ -4,14 +4,16 @@ import 'package:flutter/material.dart';
 
 import '../finance_colors.dart';
 
-enum _ChipKind { filled, outline, dashed, overdue }
+enum _ChipKind { filled, outline, dashed, add, overdue }
 
 class LedgerChip extends StatelessWidget {
-  /// Label or favorite chip on `primaryContainer`.
+  /// Label or favorite chip on `primaryContainer`. [trailingIcon] follows the
+  /// text, e.g. the ✕ of a removable label.
   const LedgerChip.label(
     this.text, {
     super.key,
     this.icon,
+    this.trailingIcon,
     this.compact = false,
     this.onPressed,
   }) : _kind = _ChipKind.filled;
@@ -23,22 +25,36 @@ class LedgerChip extends StatelessWidget {
     this.icon,
     this.compact = false,
     this.onPressed,
-  }) : _kind = _ChipKind.outline;
+  }) : _kind = _ChipKind.outline,
+       trailingIcon = null;
+
+  /// Dashed chip that adds something, e.g. "+ Add" under a list of labels.
+  const LedgerChip.add(
+    this.text, {
+    super.key,
+    this.icon,
+    this.compact = false,
+    this.onPressed,
+  }) : _kind = _ChipKind.add,
+       trailingIcon = null;
 
   /// Dashed italic chip for scheduled transactions.
   const LedgerChip.scheduled(this.text, {super.key, this.compact = true})
     : _kind = _ChipKind.dashed,
       icon = null,
+      trailingIcon = null,
       onPressed = null;
 
   /// Overdue reminder chip on `secondaryContainer`.
   const LedgerChip.overdue(this.text, {super.key, this.compact = true})
     : _kind = _ChipKind.overdue,
       icon = null,
+      trailingIcon = null,
       onPressed = null;
 
   final String text;
   final IconData? icon;
+  final IconData? trailingIcon;
   final bool compact;
   final VoidCallback? onPressed;
   final _ChipKind _kind;
@@ -56,6 +72,7 @@ class LedgerChip extends StatelessWidget {
       ),
       _ChipKind.outline => (null, scheme.onSurface, scheme.outline),
       _ChipKind.dashed => (null, finance.muted, finance.disabled),
+      _ChipKind.add => (null, scheme.onSurfaceVariant, finance.disabled),
       _ChipKind.overdue => (
         scheme.secondaryContainer,
         scheme.onSecondaryContainer,
@@ -69,10 +86,11 @@ class LedgerChip extends StatelessWidget {
       fontStyle: _kind == _ChipKind.dashed ? FontStyle.italic : null,
     );
 
+    final dashed = _kind == _ChipKind.dashed || _kind == _ChipKind.add;
     Widget chip = Container(
       constraints: BoxConstraints(minHeight: compact ? 20 : 30),
       padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 12),
-      decoration: _kind == _ChipKind.dashed
+      decoration: dashed
           ? null
           : ShapeDecoration(
               color: fill,
@@ -90,10 +108,14 @@ class LedgerChip extends StatelessWidget {
             const SizedBox(width: 4),
           ],
           Flexible(child: Text(text, style: style)),
+          if (trailingIcon != null) ...[
+            const SizedBox(width: 4),
+            Icon(trailingIcon, size: compact ? 12 : 14, color: fg),
+          ],
         ],
       ),
     );
-    if (_kind == _ChipKind.dashed) {
+    if (dashed) {
       chip = CustomPaint(painter: _DashedStadium(border!), child: chip);
     }
     if (onPressed == null) return chip;
