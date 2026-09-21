@@ -19,15 +19,20 @@ class CategoryAddRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(60, 8, 0, 12),
+    return Container(
+      padding: const EdgeInsetsDirectional.fromSTEB(60, 4, 0, 4),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 4,
         children: [
           if (isEmpty)
             Text(l10n.categoriesEmptyGroup, style: theme.textTheme.bodySmall),
-          OutlinedButton.icon(
+          TextButton.icon(
             onPressed: () =>
                 context.push(Routes.newCategory(group.kind, groupId: group.id)),
             icon: const Icon(Icons.add, size: 18),

@@ -1148,7 +1148,7 @@
   "@errorCurrencyLocked": {
     "description": "Save error: the currency of an assets account with transactions changed"
   },
-  "categoriesTab": "{label} ({count})",
+  "categoriesTab": "{label} · {count}",
   "@categoriesTab": {
     "description": "Tab of the Categories page: the type and how many groups it has",
     "placeholders": {
@@ -1390,13 +1390,9 @@
   "@categoryPickerTitle": {
     "description": "Title of the category picker sheet"
   },
-  "categoryPickerSearchHint": "Search categories",
+  "categoryPickerSearchHint": "Search groups and categories",
   "@categoryPickerSearchHint": {
     "description": "Hint and spoken label of the search field of the category picker"
-  },
-  "categoryPickerWholeGroup": "Whole group",
-  "@categoryPickerWholeGroup": {
-    "description": "Under a group in the category picker: picking it uses the group itself"
   },
   "categoryPickerManage": "Manage",
   "@categoryPickerManage": {

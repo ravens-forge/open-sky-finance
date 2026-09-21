@@ -205,6 +205,25 @@ void main() {
       expect(find.text('Central Market'), findsOneWidget);
     });
 
+    testWidgets('the search keeps the keyboard while typing', (tester) async {
+      final wallet = await start(tester);
+      await _addToday(tester, db, assetsAccountId: wallet, title: 'Bakery');
+      await _addToday(tester, db, assetsAccountId: wallet, title: 'Cinema');
+      await open(tester, Routes.transactions);
+
+      final search = find.widgetWithText(TextField, 'Search title or notes');
+      await tester.showKeyboard(search);
+      for (final text in ['b', 'ba', 'bak']) {
+        tester.testTextInput.enterText(text);
+        await tester.pump();
+        expect(find.byType(TextField), findsOneWidget);
+        await settle(tester);
+      }
+      expect(tester.testTextInput.isVisible, isTrue);
+      expect(find.text('Bakery'), findsOneWidget);
+      expect(find.text('Cinema'), findsNothing);
+    });
+
     testWidgets('the editor saves an expense', (tester) async {
       final wallet = await start(tester);
       await open(tester, Routes.newTransaction());

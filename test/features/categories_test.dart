@@ -135,12 +135,12 @@ void main() {
       await open(tester, Routes.categories);
 
       // The selector opens on Income, which is the first option.
-      expect(find.text('Income (1)'), findsOneWidget);
-      expect(find.text('Expenses (1)'), findsOneWidget);
+      expect(find.text('Income · 1'), findsOneWidget);
+      expect(find.text('Expenses · 1'), findsOneWidget);
       expect(find.text('Salary'), findsOneWidget);
       expect(find.text('Groceries'), findsNothing);
 
-      await tester.tap(find.text('Expenses (1)'));
+      await tester.tap(find.text('Expenses · 1'));
       await settle(tester);
       expect(find.text('Groceries'), findsOneWidget);
       expect(find.text('1 category'), findsOneWidget);
@@ -155,7 +155,7 @@ void main() {
       await start(tester);
       await _addGroup(tester, db, 'Food');
       await open(tester, Routes.categories);
-      await tester.tap(find.text('Expenses (1)'));
+      await tester.tap(find.text('Expenses · 1'));
       await settle(tester);
 
       expect(find.text('No categories yet'), findsOneWidget);
@@ -280,7 +280,7 @@ void main() {
       expect(find.text('Groceries'), findsNothing);
 
       await tester.enterText(
-        find.widgetWithText(TextField, 'Search categories'),
+        find.widgetWithText(TextField, 'Search groups and categories'),
         'cinema',
       );
       await settle(tester);

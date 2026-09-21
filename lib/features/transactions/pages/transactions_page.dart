@@ -45,6 +45,9 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
   var _filter = const TransactionFilter();
   final _search = TextEditingController();
 
+  /// The last month loaded, with the month and filter it was loaded for.
+  (TransactionsMonth, YearMonth, TransactionFilter)? _shown;
+
   @override
   void dispose() {
     _search.dispose();
@@ -89,6 +92,19 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
     final l10n = context.l10n;
     final month = ref.watch(transactionsMonthProvider(_month, _filter));
     final converter = ref.watch(currencyConverterProvider).value;
+    if (month case AsyncData(:final value)) _shown = (value, _month, _filter);
+    // Each keystroke is a new filter, so a new provider that starts out
+    // loading. The previous result stays meanwhile, and with it the search
+    // field inside the list, so the keyboard stays open. A reload of the same
+    // one (a swipe to the Trash) still waits, or the dismissed row would be
+    // drawn again.
+    final shown = switch ((month, _shown)) {
+      (AsyncData(:final value), _) => value,
+      (AsyncLoading(), (final value, final m, final f))
+          when (m, f) != (_month, _filter) =>
+        value,
+      _ => null,
+    };
 
     return Column(
       children: [
@@ -99,14 +115,13 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
         ),
         const Divider(),
         Expanded(
-          child: switch ((month, converter)) {
-            (AsyncData(:final value), final CurrencyConverter converter) =>
-              ListView(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 96),
-                children: _sections(value, converter),
-              ),
-            (AsyncError(), _) => Center(
+          child: switch ((month, shown, converter)) {
+            (AsyncError(), _, _) => Center(
               child: EmptyState(title: l10n.errorLoadFailed),
+            ),
+            (_, final shown?, final CurrencyConverter converter) => ListView(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 96),
+              children: _sections(shown, converter),
             ),
             _ => PagePlaceholder(label: l10n.pageTransactions),
           },

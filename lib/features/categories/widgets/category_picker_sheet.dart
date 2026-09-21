@@ -136,14 +136,22 @@ class _CategoryPickerSheetState extends ConsumerState<CategoryPickerSheet> {
       onSearch: (value) => setState(() => _query = value),
       footer: widget.showActions
           ? [
-              TextButton(
-                onPressed: () => _leave(context, Routes.categories),
-                child: Text(l10n.categoryPickerManage),
-              ),
-              OutlinedButton(
-                onPressed: () =>
-                    _leave(context, Routes.newCategory(widget.kind)),
-                child: Text(l10n.editorNewCategory),
+              Row(
+                spacing: 10,
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () =>
+                          _leave(context, Routes.newCategory(widget.kind)),
+                      icon: const Icon(Icons.add),
+                      label: Text(l10n.editorNewCategory),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => _leave(context, Routes.categories),
+                    child: Text(l10n.categoryPickerManage),
+                  ),
+                ],
               ),
             ]
           : const [],
