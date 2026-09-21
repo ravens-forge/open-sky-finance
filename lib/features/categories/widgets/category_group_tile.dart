@@ -47,7 +47,7 @@ class CategoryGroupTile extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: 64),
           decoration: BoxDecoration(
             border: Border(
-              top: BorderSide(color: theme.colorScheme.outline, width: 2),
+              top: BorderSide(color: theme.colorScheme.outlineVariant),
             ),
           ),
           child: Row(

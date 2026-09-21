@@ -216,7 +216,7 @@ class _CategoryGroupFormState extends ConsumerState<CategoryGroupForm> {
                 ),
             ],
           ),
-        OutlinedButton.icon(
+        TextButton.icon(
           onPressed: () =>
               context.push(Routes.newCategory(_kind, groupId: group.id)),
           icon: const Icon(Icons.add, size: 18),
