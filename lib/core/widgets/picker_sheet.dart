@@ -8,6 +8,8 @@ Future<T?> showPickerSheet<T>(BuildContext context, WidgetBuilder builder) =>
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
+      // Above the shell's FAB, which would otherwise cover the footer.
+      useRootNavigator: true,
       builder: (context) =>
           FractionallySizedBox(heightFactor: 0.9, child: builder(context)),
     );

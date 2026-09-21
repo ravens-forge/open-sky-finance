@@ -24,7 +24,11 @@ class TypeSelector<T> extends StatelessWidget {
       for (final (value, label) in options)
         ButtonSegment(
           value: value,
-          label: Text(label, overflow: TextOverflow.ellipsis),
+          // Long translations ("⇄ Transferencia") shrink rather than cut.
+          label: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(label, maxLines: 1),
+          ),
           icon: locked && value == selected
               ? const Icon(Icons.lock_outline, size: 16)
               : null,

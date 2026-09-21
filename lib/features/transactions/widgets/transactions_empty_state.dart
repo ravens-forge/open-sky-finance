@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../core/dates/wall_clock.dart';
 import '../../../core/dates/year_month.dart';
 import '../../../core/l10n.dart';
 import '../../../core/widgets/empty_state.dart';
@@ -33,8 +32,9 @@ class TransactionsEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    // Inside a sentence: the locale's own case (`August`, `agosto`, `août`).
     String name(YearMonth month) =>
-        capitalizeFirst(DateFormat.MMMM(l10n.localeName).format(month.start));
+        DateFormat.MMMM(l10n.localeName).format(month.start);
     return EmptyState(
       title: filtered
           ? l10n.transactionsNoResults

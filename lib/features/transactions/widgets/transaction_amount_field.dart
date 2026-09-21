@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/theme.dart';
+import '../../../core/l10n.dart';
+import '../../../core/money/format_money.dart';
 import '../../../core/widgets/currency_picker.dart';
 import '../../../core/widgets/field_error.dart';
 
@@ -40,6 +42,19 @@ class TransactionAmountField extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final serif = theme.textTheme.hero.copyWith(color: color);
+    // `€1.00` in en, `1,00 €` in es and fr: the symbol sits where the locale
+    // puts it.
+    final symbolAfter = RegExp(r'^\d').hasMatch(
+      formatMoney(
+        microsPerUnit,
+        currency: currency,
+        locale: context.l10n.localeName,
+      ),
+    );
+    final symbol = Text(
+      currencySymbol(currency),
+      style: serif.copyWith(fontSize: large ? 32 : 26),
+    );
     return Container(
       padding: EdgeInsets.fromLTRB(0, large ? 22 : 14, 0, large ? 16 : 14),
       decoration: BoxDecoration(
@@ -59,38 +74,40 @@ class TransactionAmountField extends StatelessWidget {
                 ExcludeSemantics(
                   child: Text(sign!, style: serif.copyWith(fontSize: 40)),
                 ),
-              Text(
-                currencySymbol(currency),
-                style: serif.copyWith(fontSize: large ? 32 : 26),
-              ),
-              Expanded(
+              if (!symbolAfter) symbol,
+              Flexible(
+                fit: symbolAfter ? FlexFit.loose : FlexFit.tight,
                 // The capitals above label it on screen; this says it aloud.
                 child: Semantics(
                   label: label,
-                  child: TextField(
-                    controller: controller,
-                    autofocus: autofocus,
-                    onChanged: onChanged,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    style: serif.copyWith(fontSize: large ? 56 : 40),
-                    cursorColor: color,
-                    decoration: InputDecoration(
-                      hintText: '0',
-                      hintStyle: serif.copyWith(
-                        fontSize: large ? 56 : 40,
-                        color: color.withValues(alpha: 0.35),
+                  child: _widthOf(
+                    symbolAfter,
+                    TextField(
+                      controller: controller,
+                      autofocus: autofocus,
+                      onChanged: onChanged,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
                       ),
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
+                      style: serif.copyWith(fontSize: large ? 56 : 40),
+                      cursorColor: color,
+                      decoration: InputDecoration(
+                        hintText: '0',
+                        hintStyle: serif.copyWith(
+                          fontSize: large ? 56 : 40,
+                          color: color.withValues(alpha: 0.35),
+                        ),
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
                   ),
                 ),
               ),
+              if (symbolAfter) symbol,
             ],
           ),
           if (error != null) FieldError(error!),
@@ -100,3 +117,8 @@ class TransactionAmountField extends StatelessWidget {
     );
   }
 }
+
+/// With the symbol after the number, the field is as wide as its text so the
+/// symbol follows it.
+Widget _widthOf(bool fitText, Widget field) =>
+    fitText ? IntrinsicWidth(child: field) : field;

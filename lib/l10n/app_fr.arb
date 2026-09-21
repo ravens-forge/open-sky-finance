@@ -284,7 +284,7 @@
   "transactionsNet": "Net",
   "transactionSubtitle": "{category} · {assetsAccount}",
   "transactionSubtitleDated": "{date} · {details}",
-  "transactionsSearchHint": "Rechercher dans le titre ou les notes",
+  "transactionsSearchHint": "Rechercher titre ou notes",
   "transactionsFilters": "Filtres",
   "transactionsFiltersCount": "Filtres ({count})",
   "transactionsFilterTitle": "Filtres",

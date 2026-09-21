@@ -32,8 +32,9 @@ class TransactionFormActions extends StatelessWidget {
     final text = theme.textTheme.labelLarge!.copyWith(fontSize: 15);
     const size = Size(0, 52);
     const padding = EdgeInsets.symmetric(horizontal: 16);
+    // Long translations wrap rather than shrink to an unreadable size.
     Widget label(String value) =>
-        FittedBox(fit: BoxFit.scaleDown, child: Text(value, maxLines: 1));
+        Text(value, maxLines: 2, textAlign: TextAlign.center);
 
     return DecoratedBox(
       decoration: BoxDecoration(
