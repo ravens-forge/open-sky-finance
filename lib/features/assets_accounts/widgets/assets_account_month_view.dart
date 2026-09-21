@@ -11,11 +11,11 @@ import '../../../core/money/format_money.dart';
 import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/day_header.dart';
 import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/month_switcher.dart';
 import '../../../data/models/assets_account.dart';
 import '../providers/assets_account_detail_providers.dart';
 import '../providers/assets_accounts_providers.dart';
 import 'assets_account_transaction_row.dart';
-import 'month_switcher.dart';
 
 /// The month picker, money in and out, and the month's transactions by day
 /// with the balance at the end of each day.

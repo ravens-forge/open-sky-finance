@@ -6,6 +6,7 @@ import '../core/l10n.dart';
 import '../core/widgets/not_found_gate.dart';
 import '../core/widgets/not_found_page.dart';
 import '../data/enums/category_kind.dart';
+import '../data/enums/transaction_type.dart';
 import '../data/providers.dart';
 import '../features/assets_accounts/pages/assets_account_detail_page.dart';
 import '../features/assets_accounts/pages/assets_account_editor_page.dart';
@@ -16,6 +17,8 @@ import '../features/categories/pages/category_group_editor_page.dart';
 import '../features/onboarding/pages/onboarding_page.dart';
 import '../features/onboarding/providers/onboarding_provider.dart';
 import '../features/shell/models/main_page.dart';
+import '../features/transactions/pages/transaction_editor_page.dart';
+import '../features/transactions/pages/transactions_page.dart';
 import '../features/shell/pages/main_shell.dart';
 import '../features/shell/pages/stub_page.dart';
 import 'routes.dart';
@@ -39,6 +42,13 @@ GoRouter router(Ref ref) {
   // Full-screen editor on the root navigator, above the shell.
   Page<void> editor(GoRouterState state, Widget child) =>
       MaterialPage(key: state.pageKey, fullscreenDialog: true, child: child);
+
+  // The type a new transaction starts with (`/transactions/new?type=income`).
+  TransactionType typeOf(GoRouterState state) =>
+      TransactionType.values.firstWhere(
+        (type) => type.name == state.uri.queryParameters['type'],
+        orElse: () => TransactionType.expense,
+      );
 
   // The type a new category or group is created with.
   CategoryKind kindOf(GoRouterState state) => CategoryKind.values.firstWhere(
@@ -89,7 +99,10 @@ GoRouter router(Ref ref) {
                 GoRoute(
                   path: page.path,
                   // ponytail: empty until each main page is built.
-                  builder: (context, state) => const SizedBox.expand(),
+                  builder: (context, state) => switch (page) {
+                    MainPage.transactions => const TransactionsPage(),
+                    _ => const SizedBox.expand(),
+                  },
                   routes: switch (page) {
                     MainPage.transactions => [
                       GoRoute(
@@ -97,7 +110,7 @@ GoRouter router(Ref ref) {
                         parentNavigatorKey: rootKey,
                         pageBuilder: (context, state) => editor(
                           state,
-                          StubPage(title: context.l10n.editorNewTransaction),
+                          TransactionEditorPage(type: typeOf(state)),
                         ),
                       ),
                       GoRoute(
@@ -113,9 +126,7 @@ GoRouter router(Ref ref) {
                               () => ref
                                   .read(transactionsRepositoryProvider)
                                   .findById(id),
-                              StubPage(
-                                title: context.l10n.editorEditTransaction,
-                              ),
+                              TransactionEditorPage(id: id),
                             ),
                           );
                         },

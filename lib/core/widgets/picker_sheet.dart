@@ -17,17 +17,25 @@ class PickerSheet extends StatelessWidget {
     super.key,
     required this.title,
     required this.children,
+    this.header,
     this.searchHint,
     this.onSearch,
+    this.onSearchSubmitted,
     this.footer = const [],
   });
 
   final String title;
   final List<Widget> children;
 
+  /// Between the title and the search field, e.g. the chosen items as chips.
+  final Widget? header;
+
   /// Shows the search field when set (also its spoken label).
   final String? searchHint;
   final ValueChanged<String>? onSearch;
+
+  /// The keyboard's action key, e.g. to create what was typed.
+  final ValueChanged<String>? onSearchSubmitted;
   final List<Widget> footer;
 
   @override
@@ -54,11 +62,20 @@ class PickerSheet extends StatelessWidget {
             ],
           ),
         ),
+        if (header != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 2, 20, 10),
+            child: header,
+          ),
         if (searchHint != null)
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 6, 20, 10),
             child: TextField(
               onChanged: onSearch,
+              onSubmitted: onSearchSubmitted,
+              textInputAction: onSearchSubmitted == null
+                  ? null
+                  : TextInputAction.done,
               decoration: InputDecoration(
                 hintText: searchHint,
                 prefixIcon: const Icon(Icons.search, size: 20),
@@ -82,6 +99,7 @@ class PickerSheet extends StatelessWidget {
         Expanded(child: ListView(children: children)),
         if (footer.isNotEmpty)
           Container(
+            width: double.infinity,
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: scheme.outline)),

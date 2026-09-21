@@ -1,9 +1,7 @@
-import 'package:decimal/decimal.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/main_currency.dart';
 import '../../../core/dates/wall_clock.dart';
-import '../../../core/money/currency_converter.dart';
 import '../../../data/models/assets_account.dart';
 import '../../../data/providers.dart';
 import '../models/assets_account_with_balance.dart';
@@ -32,15 +30,6 @@ Future<List<AssetsAccountWithBalance>> assetsAccountsWithBalance(
   ];
 }
 
-/// Units of the main currency per unit of each other currency, as of today.
-@riverpod
-Stream<Map<String, Decimal>> exchangeRates(Ref ref) async* {
-  final main = await ref.watch(mainCurrencyProvider.future);
-  yield* ref
-      .watch(exchangeRatesRepositoryProvider)
-      .watchRates(main, startOfTomorrow());
-}
-
 /// The Assets accounts page: assets and liabilities grouped by type, with
 /// subtotals in the main currency.
 @riverpod
@@ -49,10 +38,7 @@ Future<List<AssetsAccountsSide>> assetsAccountsSides(
   bool showHidden,
 ) async {
   final accounts = await ref.watch(assetsAccountsWithBalanceProvider.future);
-  final converter = CurrencyConverter(
-    await ref.watch(mainCurrencyProvider.future),
-    await ref.watch(exchangeRatesProvider.future),
-  );
+  final converter = await ref.watch(currencyConverterProvider.future);
   return groupAssetsAccounts([
     for (final a in accounts)
       if (showHidden || !a.account.isHidden) a,

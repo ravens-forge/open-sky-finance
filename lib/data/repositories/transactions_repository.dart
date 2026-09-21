@@ -9,6 +9,7 @@ import '../database/tables/transaction_labels_table.dart';
 import '../database/tables/transactions_table.dart';
 import '../enums/transaction_type.dart';
 import '../models/transaction.dart';
+import '../models/transaction_filter.dart';
 import 'repository_data_error.dart';
 import 'report_sql.dart';
 import '../models/transaction_draft.dart';
@@ -29,12 +30,12 @@ class TransactionsRepository extends DatabaseAccessor<AppDatabase>
   Future<bool> hasAny() async =>
       await (select(transactionsTable)..limit(1)).getSingleOrNull() != null;
 
-  /// Newest first, `from <= occurred_at < to`, optionally touching one assets
-  /// account (either side of a transfer).
+  /// Newest first, `from <= occurred_at < to`, narrowed by [filter] (an assets
+  /// account matches either side of a transfer).
   Stream<List<Transaction>> watchInRange(
     DateTime from,
     DateTime to, {
-    String? assetsAccountId,
+    TransactionFilter filter = const TransactionFilter(),
   }) {
     final query = live()
       ..where(
@@ -46,12 +47,30 @@ class TransactionsRepository extends DatabaseAccessor<AppDatabase>
         (t) => OrderingTerm.desc(t.occurredAt),
         (t) => OrderingTerm.desc(t.createdAt),
       ]);
-    if (assetsAccountId != null) {
+    if (filter.assetsAccountId case final id?) {
       query.where(
-        (t) =>
-            t.assetsAccountId.equals(assetsAccountId) |
-            t.toAssetsAccountId.equals(assetsAccountId),
+        (t) => t.assetsAccountId.equals(id) | t.toAssetsAccountId.equals(id),
       );
+    }
+    if (filter.type case final type?) {
+      query.where((t) => t.type.equalsValue(type));
+    }
+    if (filter.categoryId case final id?) {
+      query.where((t) => t.categoryId.equals(id));
+    }
+    if (filter.labelId case final id?) {
+      query.where(
+        (t) => t.id.isInQuery(
+          selectOnly(transactionLabelsTable)
+            ..addColumns([transactionLabelsTable.transactionId])
+            ..where(transactionLabelsTable.labelId.equals(id)),
+        ),
+      );
+    }
+    // `%` and `_` typed by the user widen the search; they never leak rows the
+    // filters above exclude.
+    if (filter.query.trim() case final text when text.isNotEmpty) {
+      query.where((t) => t.title.contains(text) | t.notes.contains(text));
     }
     return query.map((r) => r.toDomain()).watch();
   }

@@ -1413,5 +1413,393 @@
   "errorCategoryKindLocked": "The type can't change: this group already has categories or transactions.",
   "@errorCategoryKindLocked": {
     "description": "Save error: the type of a group in use changed"
+  },
+  "transactionsIncome": "Income",
+  "@transactionsIncome": {
+    "description": "Summary label above the income total of the period"
+  },
+  "transactionsExpenses": "Expenses",
+  "@transactionsExpenses": {
+    "description": "Summary label above the expenses total of the period"
+  },
+  "transactionsNet": "Net",
+  "@transactionsNet": {
+    "description": "Summary label above income plus expenses"
+  },
+  "transactionSubtitle": "{category} · {assetsAccount}",
+  "@transactionSubtitle": {
+    "description": "Subtitle of an income or expense row",
+    "placeholders": {
+      "category": {
+        "type": "String",
+        "example": "Groceries"
+      },
+      "assetsAccount": {
+        "type": "String",
+        "example": "Wallet"
+      }
+    }
+  },
+  "transactionSubtitleDated": "{date} · {details}",
+  "@transactionSubtitleDated": {
+    "description": "Subtitle of a scheduled row, which sits outside the day groups",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Sep 30"
+      },
+      "details": {
+        "type": "String",
+        "example": "Transport · Checking"
+      }
+    }
+  },
+  "transactionsSearchHint": "Search title or notes",
+  "@transactionsSearchHint": {
+    "description": "Hint of the transactions search field"
+  },
+  "transactionsFilters": "Filters",
+  "@transactionsFilters": {
+    "description": "Button that opens the filters"
+  },
+  "transactionsFiltersCount": "Filters ({count})",
+  "@transactionsFiltersCount": {
+    "description": "Filters button with the number of active filters",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "transactionsFilterTitle": "Filters",
+  "@transactionsFilterTitle": {
+    "description": "Title of the filters sheet"
+  },
+  "filterAll": "All",
+  "@filterAll": {
+    "description": "Filter value that matches everything"
+  },
+  "transactionsPickMonth": "Choose a month",
+  "@transactionsPickMonth": {
+    "description": "Title of the month picker of the period selector"
+  },
+  "transactionsMovedToTrash": "Moved to Trash",
+  "@transactionsMovedToTrash": {
+    "description": "Snack bar after a transaction is deleted"
+  },
+  "transactionsEmpty": "Nothing in {month} yet",
+  "@transactionsEmpty": {
+    "description": "Empty transactions list of a period",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "September"
+      }
+    }
+  },
+  "transactionsEmptyMessage": "Add your first expense or income. Each one updates balances, budgets and charts right away.",
+  "@transactionsEmptyMessage": {
+    "description": "Message of the empty transactions list"
+  },
+  "transactionsNoResults": "No transactions match your search",
+  "@transactionsNoResults": {
+    "description": "Empty transactions list while a search or filter is on"
+  },
+  "transactionsGoToMonth": "Go to {month}",
+  "@transactionsGoToMonth": {
+    "description": "Action of the empty list that moves to the previous month",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "August"
+      }
+    }
+  },
+  "transactionSaved": "Transaction saved",
+  "@transactionSaved": {
+    "description": "Snack bar of “Save and add another”"
+  },
+  "categoryInGroup": "{group} › {category}",
+  "@categoryInGroup": {
+    "description": "A category shown with its group",
+    "placeholders": {
+      "group": {
+        "type": "String",
+        "example": "Food"
+      },
+      "category": {
+        "type": "String",
+        "example": "Groceries"
+      }
+    }
+  },
+  "assetsAccountPickerSubtitle": "{type} · {currency}",
+  "@assetsAccountPickerSubtitle": {
+    "description": "Subtitle of a row of the assets account picker: type and currency",
+    "placeholders": {
+      "type": {
+        "type": "String",
+        "example": "Bank"
+      },
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      }
+    }
+  },
+  "assetsAccountPickerHiddenNote": "Hidden assets accounts are not listed.",
+  "@assetsAccountPickerHiddenNote": {
+    "description": "Note at the end of the assets account picker"
+  },
+  "labelsPickerSearchHint": "Search or create a label",
+  "@labelsPickerSearchHint": {
+    "description": "Hint of the search field of the labels picker"
+  },
+  "labelsPickerCreate": "Create “{name}”",
+  "@labelsPickerCreate": {
+    "description": "Row of the labels picker that creates the typed label",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "lisbon-2026"
+      }
+    }
+  },
+  "labelsPickerNote": "Type a name that doesn't exist and press Enter to create it. Rename or delete labels from the Labels page.",
+  "@labelsPickerNote": {
+    "description": "Note at the end of the labels picker"
+  },
+  "fieldAmount": "Amount",
+  "@fieldAmount": {
+    "description": "Label of the amount field"
+  },
+  "fieldTitle": "Title",
+  "@fieldTitle": {
+    "description": "Label of the title field of the transaction editor"
+  },
+  "fieldTitleHint": "Payee or description",
+  "@fieldTitleHint": {
+    "description": "Hint of the title field"
+  },
+  "fieldCategory": "Category",
+  "@fieldCategory": {
+    "description": "Label of the category field"
+  },
+  "fieldAssetsAccount": "Assets account",
+  "@fieldAssetsAccount": {
+    "description": "Label of the assets account field"
+  },
+  "fieldLabel": "Label",
+  "@fieldLabel": {
+    "description": "Label of the single-label filter"
+  },
+  "fieldLabels": "Labels",
+  "@fieldLabels": {
+    "description": "Label of the labels field"
+  },
+  "fieldFrom": "From",
+  "@fieldFrom": {
+    "description": "Label of the source assets account of a transfer"
+  },
+  "fieldTo": "To",
+  "@fieldTo": {
+    "description": "Label of the destination assets account of a transfer"
+  },
+  "fieldDate": "Date",
+  "@fieldDate": {
+    "description": "Label of the date field"
+  },
+  "fieldTime": "Time",
+  "@fieldTime": {
+    "description": "Label of the time field"
+  },
+  "transactionRefund": "This is a refund",
+  "@transactionRefund": {
+    "description": "Toggle that turns an expense into money coming back"
+  },
+  "transactionRefundNote": "(adds to the assets account)",
+  "@transactionRefundNote": {
+    "description": "After the refund toggle, in muted text"
+  },
+  "transactionAmountCurrencyNote": "The amount uses the currency of the assets account",
+  "@transactionAmountCurrencyNote": {
+    "description": "Note under the amount field"
+  },
+  "transactionRate": "1 {from} = {rate} {to}",
+  "@transactionRate": {
+    "description": "Exchange rate of a cross-currency transfer; tapping it edits the rate",
+    "placeholders": {
+      "from": {
+        "type": "String",
+        "example": "EUR"
+      },
+      "rate": {
+        "type": "String",
+        "example": "1.094"
+      },
+      "to": {
+        "type": "String",
+        "example": "USD"
+      }
+    }
+  },
+  "transactionRateNote": "Currencies differ: enter the amount received or the rate",
+  "@transactionRateNote": {
+    "description": "Note under the amount received of a cross-currency transfer"
+  },
+  "actionApply": "Apply",
+  "@actionApply": {
+    "description": "Button that applies the filters"
+  },
+  "actionClear": "Clear",
+  "@actionClear": {
+    "description": "Button that clears the search and the filters"
+  },
+  "actionDone": "Done",
+  "@actionDone": {
+    "description": "Button that closes a multiple-choice picker"
+  },
+  "actionUndo": "Undo",
+  "@actionUndo": {
+    "description": "Action of the snack bar that restores a deleted transaction"
+  },
+  "actionSwap": "Swap",
+  "@actionSwap": {
+    "description": "Button that swaps the assets accounts of a transfer"
+  },
+  "actionSaveAndAddAnother": "Save and add another",
+  "@actionSaveAndAddAnother": {
+    "description": "Saves and keeps the editor open for the next transaction"
+  },
+  "actionSaveChanges": "Save changes",
+  "@actionSaveChanges": {
+    "description": "Save button when editing an existing transaction"
+  },
+  "errorAmountRequired": "Enter an amount",
+  "@errorAmountRequired": {
+    "description": "Validation message of the amount field"
+  },
+  "errorAssetsAccountRequired": "Choose an assets account",
+  "@errorAssetsAccountRequired": {
+    "description": "Validation message of the assets account field"
+  },
+  "errorDestinationRequired": "Choose a destination assets account",
+  "@errorDestinationRequired": {
+    "description": "Validation message of a transfer without destination"
+  },
+  "errorDestinationSame": "Choose a different destination assets account",
+  "@errorDestinationSame": {
+    "description": "Validation message of a transfer to the source assets account"
+  },
+  "errorAmountReceivedRequired": "Enter the amount received",
+  "@errorAmountReceivedRequired": {
+    "description": "Validation message of a cross-currency transfer"
+  },
+  "errorCategoryKindMismatch": "This category doesn't match the type of the transaction.",
+  "@errorCategoryKindMismatch": {
+    "description": "Save error: the category is of the other kind"
+  },
+  "errorTransferCategory": "Transfers have no category.",
+  "@errorTransferCategory": {
+    "description": "Save error: a category was sent with a transfer"
+  },
+  "fieldAmountReceivedIn": "Amount received · {currency}",
+  "@fieldAmountReceivedIn": {
+    "description": "Label of the amount received by the destination of a cross-currency transfer (shown in capitals)",
+    "placeholders": {
+      "currency": {
+        "type": "String",
+        "example": "USD"
+      }
+    }
+  },
+  "fieldRate": "Rate",
+  "@fieldRate": {
+    "description": "Title of the dialog that edits the exchange rate"
+  },
+  "assetsAccountSummary": "{name} · {currency} · {balance}",
+  "@assetsAccountSummary": {
+    "description": "An assets account in an editor field: name, currency and balance",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Wallet"
+      },
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      },
+      "balance": {
+        "type": "String",
+        "example": "€186.50"
+      }
+    }
+  },
+  "transactionSuggested": "Suggested: last used with {details}",
+  "@transactionSuggested": {
+    "description": "Under the title after choosing a previous title",
+    "placeholders": {
+      "details": {
+        "type": "String",
+        "example": "Groceries · Wallet"
+      }
+    }
+  },
+  "transactionTimestamps": "Added {added} · last edited {edited}",
+  "@transactionTimestamps": {
+    "description": "When an edited transaction was created and last changed",
+    "placeholders": {
+      "added": {
+        "type": "String",
+        "example": "Sep 17, 2026 6:32 PM"
+      },
+      "edited": {
+        "type": "String",
+        "example": "Sep 18, 2026 9:10 AM"
+      }
+    }
+  },
+  "transactionsAdd": "Add transaction",
+  "@transactionsAdd": {
+    "description": "Main action of the empty transactions list"
+  },
+  "transactionsImportBluecoins": "Import from Bluecoins",
+  "@transactionsImportBluecoins": {
+    "description": "Link of the empty transactions list to the Bluecoins import"
+  },
+  "labelsPickerUses": "{count, plural, =0{Not used yet} =1{1 use} other{{count} uses}}",
+  "@labelsPickerUses": {
+    "description": "How many transactions have the label, in the labels picker",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "14"
+      }
+    }
+  },
+  "labelsPickerCreatedNow": "Created just now",
+  "@labelsPickerCreatedNow": {
+    "description": "Next to a label created from the picker"
+  },
+  "labelsPickerDone": "{count, plural, =0{Done} =1{Done · 1 label} other{Done · {count} labels}}",
+  "@labelsPickerDone": {
+    "description": "Button that closes the labels picker, with the number chosen",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "labelRemove": "Remove {name}",
+  "@labelRemove": {
+    "description": "Spoken label of the ✕ of a label chip",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "vacation"
+      }
+    }
   }
 }

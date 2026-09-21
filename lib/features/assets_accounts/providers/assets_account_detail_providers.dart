@@ -5,6 +5,7 @@ import '../../../core/dates/year_month.dart';
 import '../../../data/models/assets_account.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/transaction.dart';
+import '../../../data/models/transaction_filter.dart';
 import '../../../data/providers.dart';
 import '../models/assets_account_month.dart';
 
@@ -40,7 +41,11 @@ Stream<List<Transaction>> assetsAccountTransactions(
   YearMonth month,
 ) => ref
     .watch(transactionsRepositoryProvider)
-    .watchInRange(month.start, month.end, assetsAccountId: id);
+    .watchInRange(
+      month.start,
+      month.end,
+      filter: TransactionFilter(assetsAccountId: id),
+    );
 
 @riverpod
 Stream<Map<String, int>> balancesBefore(Ref ref, DateTime before) =>
