@@ -23,6 +23,7 @@ import '../../assets_accounts/providers/assets_accounts_providers.dart';
 import '../../categories/providers/categories_providers.dart';
 import '../models/transactions_month.dart';
 import '../providers/transactions_controller.dart';
+import '../providers/transactions_drill_down.dart';
 import '../providers/transactions_providers.dart';
 import '../widgets/transaction_list_row.dart';
 import '../widgets/transactions_empty_state.dart';
@@ -47,6 +48,22 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
 
   /// The last month loaded, with the month and filter it was loaded for.
   (TransactionsMonth, YearMonth, TransactionFilter)? _shown;
+
+  @override
+  void initState() {
+    super.initState();
+    // Shows what another page drilled down to, then clears it so it is not
+    // shown again.
+    ref.listenManual(transactionsDrillDownProvider, (_, next) {
+      if (next == null) return;
+      _search.clear();
+      setState(() {
+        _month = next.month;
+        _filter = next.filter;
+      });
+      Future.microtask(ref.read(transactionsDrillDownProvider.notifier).clear);
+    }, fireImmediately: true);
+  }
 
   @override
   void dispose() {
