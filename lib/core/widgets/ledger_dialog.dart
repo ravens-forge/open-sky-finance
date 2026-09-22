@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/theme.dart';
 import '../finance_colors.dart';
 
 enum DialogKind { confirm, warning, error }
@@ -11,6 +12,7 @@ Future<T?> showLedgerDialog<T>({
   required List<Widget> actions,
   DialogKind kind = DialogKind.confirm,
   Widget? extra,
+  String? eyebrow,
 }) => showDialog<T>(
   context: context,
   builder: (context) => LedgerDialog(
@@ -19,6 +21,7 @@ Future<T?> showLedgerDialog<T>({
     actions: actions,
     kind: kind,
     extra: extra,
+    eyebrow: eyebrow,
   ),
 );
 
@@ -30,6 +33,7 @@ class LedgerDialog extends StatelessWidget {
     required this.actions,
     this.kind = DialogKind.confirm,
     this.extra,
+    this.eyebrow,
   });
 
   final String title;
@@ -39,6 +43,9 @@ class LedgerDialog extends StatelessWidget {
 
   /// Shown below [body], e.g. a file name or radio rows.
   final Widget? extra;
+
+  /// Small uppercase line above [title], e.g. "Step 2 of 2".
+  final String? eyebrow;
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +76,13 @@ class LedgerDialog extends StatelessWidget {
               child: Icon(data, size: 22, color: color),
             ),
             const SizedBox(height: 14),
+          ],
+          if (eyebrow != null) ...[
+            Text(
+              eyebrow!.toUpperCase(),
+              style: Theme.of(context).textTheme.eyebrow,
+            ),
+            const SizedBox(height: 10),
           ],
           Text(title),
         ],

@@ -32,5 +32,7 @@ Two other version numbers exist and are **not** the app version: the Drift datab
 - Balance sheet page: net worth as of a date you choose, with an assets-vs-liabilities bar, your assets and liabilities grouped by type with subtotals, credit card usage, and hidden or excluded accounts called out.
 - Net income page: income, expenses, net income and savings rate for a Month, Quarter, Year or custom Range, with income and expenses broken down by category group and category; tap a category in Month view to see its transactions.
 - The "Add" button now only appears on pages that are themselves a list of transactions (Transactions and an assets account's own detail page), not on every main tab.
+- Settings page: main currency, language, theme and first day of week; favorite assets accounts and Home section order; links to categories, labels, budget, reminders and the Trash; backups; the privacy statement, bug reports, support, source code and the app version.
+- Erase all data, from Settings: a first step lists what goes, with real counts, and offers a backup first; a second step unlocks Erase only after you confirm. Everything is deleted at once or not at all, the Trash included, and the app starts again with a Cash assets account and the default categories. Language, theme and first day of week are kept; automatic backups are turned off, and backup files outside the app are never touched.
 
 [Unreleased]: https://github.com/ravens-forge/open-sky-finance/commits/main

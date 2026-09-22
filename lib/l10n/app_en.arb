@@ -2381,5 +2381,286 @@
   "netIncomeEmpty": "No income or expenses yet",
   "@netIncomeEmpty": {
     "description": "Net income page with nothing in the period"
+  },
+  "settingsGeneral": "General",
+  "@settingsGeneral": {
+    "description": "Settings section heading"
+  },
+  "settingsManage": "Manage",
+  "@settingsManage": {
+    "description": "Settings section heading with links to categories, labels, budgets, reminders and the Trash"
+  },
+  "settingsData": "Data",
+  "@settingsData": {
+    "description": "Settings section heading with backups and erase all data"
+  },
+  "settingsAbout": "About",
+  "@settingsAbout": {
+    "description": "Settings section heading with privacy, bug reports, support and version"
+  },
+  "settingsMainCurrency": "Main currency",
+  "@settingsMainCurrency": {
+    "description": "Main currency setting label"
+  },
+  "settingsMainCurrencyHint": "{currency} · used for totals and reports",
+  "@settingsMainCurrencyHint": {
+    "description": "Subtitle of the main currency setting; {currency} is an ISO code",
+    "placeholders": {
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      }
+    }
+  },
+  "settingsFavoriteAccountsHint": "{count, plural, =0{None · the charts use every assets account} =1{1 assets account · used by the charts} other{{count} assets accounts · used by the charts}}",
+  "@settingsFavoriteAccountsHint": {
+    "description": "Subtitle of the favorite assets accounts setting",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "4"
+      }
+    }
+  },
+  "settingsHomeSections": "Section order and visibility",
+  "@settingsHomeSections": {
+    "description": "Setting that opens Arrange Home"
+  },
+  "settingsHomeSectionsNone": "Every section is hidden",
+  "@settingsHomeSectionsNone": {
+    "description": "Subtitle of the Home sections setting when none is shown"
+  },
+  "settingsTrashCount": "{count, plural, =0{Empty} =1{1 item} other{{count} items}}",
+  "@settingsTrashCount": {
+    "description": "Subtitle of the Trash link in Settings",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "3"
+      }
+    }
+  },
+  "settingsLastBackup": "Last backup: {date}",
+  "@settingsLastBackup": {
+    "description": "When the last backup was made",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Sep 10, 2026"
+      }
+    }
+  },
+  "settingsNoBackup": "No backup yet",
+  "@settingsNoBackup": {
+    "description": "Shown instead of the last backup date when there is none"
+  },
+  "settingsEraseAll": "Erase all data",
+  "@settingsEraseAll": {
+    "description": "Settings entry that erases all data"
+  },
+  "settingsEraseAllHint": "Asks for double confirmation",
+  "@settingsEraseAllHint": {
+    "description": "Subtitle of the erase all data setting"
+  },
+  "settingsPrivacy": "This app has no network access and collects no data.",
+  "@settingsPrivacy": {
+    "description": "Privacy statement in Settings"
+  },
+  "settingsReportBug": "Report a bug or suggest an idea",
+  "@settingsReportBug": {
+    "description": "Settings entry that opens the bug report screen"
+  },
+  "settingsReportBugHint": "Opens a GitHub issue form",
+  "@settingsReportBugHint": {
+    "description": "Subtitle of the report a bug setting"
+  },
+  "settingsSupport": "Support Open Sky Finance",
+  "@settingsSupport": {
+    "description": "Settings entry that opens the Support screen"
+  },
+  "settingsSupportHint": "Donations keep the app free, without ads",
+  "@settingsSupportHint": {
+    "description": "Subtitle of the support setting"
+  },
+  "settingsSource": "Source code and license",
+  "@settingsSource": {
+    "description": "Settings entry that opens the source repository in the browser"
+  },
+  "settingsVersion": "Version {version}",
+  "@settingsVersion": {
+    "description": "App version under the source code entry",
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "1.0.0"
+      }
+    }
+  },
+  "eraseTitle": "Erase all data?",
+  "@eraseTitle": {
+    "description": "Title of the first erase all data dialog"
+  },
+  "eraseIntro": "This deletes everything stored in the app on this device:",
+  "@eraseIntro": {
+    "description": "Lead-in of the list of what erase all data deletes"
+  },
+  "eraseAccountsAndTransactions": "{accounts, plural, =1{1 assets account} other{{accounts} assets accounts}} and {transactions, plural, =1{1 transaction} other{{transactions} transactions}}",
+  "@eraseAccountsAndTransactions": {
+    "description": "Item of the list of what erase all data deletes",
+    "placeholders": {
+      "accounts": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "9"
+      },
+      "transactions": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "3210"
+      }
+    }
+  },
+  "eraseRemindersBudgetsLabels": "{reminders, plural, =1{1 reminder} other{{reminders} reminders}}, {budgets, plural, =1{1 budget} other{{budgets} budgets}} and {labels, plural, =1{1 label} other{{labels} labels}}",
+  "@eraseRemindersBudgetsLabels": {
+    "description": "Item of the list of what erase all data deletes",
+    "placeholders": {
+      "reminders": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "7"
+      },
+      "budgets": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "14"
+      },
+      "labels": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "7"
+      }
+    }
+  },
+  "eraseCategoriesAndTrash": "{categories, plural, =1{1 category} other{{categories} categories}} and {trashed, plural, =1{1 item} other{{trashed} items}} in the Trash",
+  "@eraseCategoriesAndTrash": {
+    "description": "Item of the list of what erase all data deletes",
+    "placeholders": {
+      "categories": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "12"
+      },
+      "trashed": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "3"
+      }
+    }
+  },
+  "eraseBackupNote": "Backup files you saved outside the app are not touched.",
+  "@eraseBackupNote": {
+    "description": "Note in the first erase all data dialog, followed by the last backup date"
+  },
+  "eraseBackUpNow": "Back up now",
+  "@eraseBackUpNow": {
+    "description": "Link in the first erase all data dialog that opens Backups"
+  },
+  "actionContinue": "Continue",
+  "@actionContinue": {
+    "description": "Button that goes on to the next confirmation step"
+  },
+  "eraseStepTwo": "Step 2 of 2",
+  "@eraseStepTwo": {
+    "description": "Eyebrow of the second erase all data dialog"
+  },
+  "eraseStepTwoTitle": "This can't be undone",
+  "@eraseStepTwoTitle": {
+    "description": "Title of the second erase all data dialog"
+  },
+  "eraseStepTwoBody": "Everything listed in the previous step is deleted from this device, including the Trash. Only a backup file can bring it back.",
+  "@eraseStepTwoBody": {
+    "description": "Body of the second erase all data dialog"
+  },
+  "eraseUnderstand": "I understand that all my data on this device will be deleted forever",
+  "@eraseUnderstand": {
+    "description": "Checkbox that enables the Erase button"
+  },
+  "eraseAction": "Erase",
+  "@eraseAction": {
+    "description": "Destructive button that erases all data"
+  },
+  "erasingTitle": "Erasing all data",
+  "@erasingTitle": {
+    "description": "Title of the progress dialog while erasing"
+  },
+  "erasingBody": "This takes a moment. Keep the app open.",
+  "@erasingBody": {
+    "description": "Body of the progress dialog while erasing"
+  },
+  "eraseFailedTitle": "Couldn't erase your data",
+  "@eraseFailedTitle": {
+    "description": "Title of the error dialog when erasing fails"
+  },
+  "eraseFailedBody": "Nothing was deleted. Try again, and report a bug if it keeps happening.",
+  "@eraseFailedBody": {
+    "description": "Body of the error dialog when erasing fails"
+  },
+  "erasedTitle": "A clean ledger.",
+  "@erasedTitle": {
+    "description": "Headline of the screen shown after erasing all data"
+  },
+  "erasedSummary": "{accounts, plural, =1{1 assets account} other{{accounts} assets accounts}}, {transactions, plural, =1{1 transaction} other{{transactions} transactions}} and everything else were deleted from this device, including the Trash.",
+  "@erasedSummary": {
+    "description": "What erase all data deleted",
+    "placeholders": {
+      "accounts": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "9"
+      },
+      "transactions": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "3210"
+      }
+    }
+  },
+  "erasedSummaryAll": "Everything was deleted from this device, including the Trash.",
+  "@erasedSummaryAll": {
+    "description": "What erase all data deleted, when the counts are unknown"
+  },
+  "erasedReadyTitle": "Ready to start again",
+  "@erasedReadyTitle": {
+    "description": "Item title on the screen after erasing all data"
+  },
+  "erasedReadyBody": "A Cash assets account and the default category groups were created.",
+  "@erasedReadyBody": {
+    "description": "Item body on the screen after erasing all data"
+  },
+  "erasedKeptTitle": "Preferences kept",
+  "@erasedKeptTitle": {
+    "description": "Item title on the screen after erasing all data"
+  },
+  "erasedKeptBody": "Language, theme and first day of week stay as you set them.",
+  "@erasedKeptBody": {
+    "description": "Item body on the screen after erasing all data"
+  },
+  "erasedBackupsTitle": "Your backup files are safe",
+  "@erasedBackupsTitle": {
+    "description": "Item title on the screen after erasing all data"
+  },
+  "erasedBackupsBody": "Files saved outside the app were not touched. Automatic backups were turned off so they don't replace them with empty ones.",
+  "@erasedBackupsBody": {
+    "description": "Item body on the screen after erasing all data"
+  },
+  "erasedRestore": "Restore a backup instead",
+  "@erasedRestore": {
+    "description": "Link on the screen after erasing all data that opens Backups"
+  },
+  "erasedStartSetup": "Start setup",
+  "@erasedStartSetup": {
+    "description": "Button on the screen after erasing all data that opens the onboarding"
   }
 }

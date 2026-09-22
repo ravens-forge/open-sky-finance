@@ -10,6 +10,7 @@ import '../repositories/assets_accounts_repository.dart';
 import '../repositories/balances_repository.dart';
 import '../repositories/budgets_repository.dart';
 import '../repositories/categories_repository.dart';
+import '../repositories/erase_repository.dart';
 import '../repositories/exchange_rates_repository.dart';
 import '../repositories/income_expense_repository.dart';
 import '../repositories/labels_repository.dart';
@@ -46,6 +47,7 @@ part 'app_database.g.dart';
     BalancesRepository,
     BudgetsRepository,
     CategoriesRepository,
+    EraseRepository,
     ExchangeRatesRepository,
     IncomeExpenseRepository,
     LabelsRepository,
