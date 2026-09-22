@@ -15,6 +15,7 @@ import '../features/balance_sheet/pages/balance_sheet_page.dart';
 import '../features/categories/pages/categories_page.dart';
 import '../features/categories/pages/category_editor_page.dart';
 import '../features/categories/pages/category_group_editor_page.dart';
+import '../features/data_management/pages/backups_page.dart';
 import '../features/data_management/pages/erased_page.dart';
 import '../features/home/pages/arrange_home_page.dart';
 import '../features/home/pages/home_page.dart';
@@ -280,8 +281,7 @@ GoRouter router(Ref ref) {
           ),
           GoRoute(
             path: 'backups',
-            builder: (context, state) =>
-                StubPage(title: context.l10n.pageBackups),
+            builder: (context, state) => const BackupsPage(),
           ),
           GoRoute(
             path: 'report-bug',

@@ -8,6 +8,7 @@ import '../core/l10n.dart';
 import 'database/app_database.dart';
 import 'database/seed.dart';
 import 'repositories/assets_accounts_repository.dart';
+import 'repositories/backup_repository.dart';
 import 'repositories/balances_repository.dart';
 import 'repositories/budgets_repository.dart';
 import 'repositories/categories_repository.dart';
@@ -59,6 +60,10 @@ String deviceCurrency(Locale locale) {
 @Riverpod(keepAlive: true)
 AssetsAccountsRepository assetsAccountsRepository(Ref ref) =>
     ref.watch(appDatabaseProvider).assetsAccountsRepository;
+
+@Riverpod(keepAlive: true)
+BackupRepository backupRepository(Ref ref) =>
+    ref.watch(appDatabaseProvider).backupRepository;
 
 @Riverpod(keepAlive: true)
 BalancesRepository balancesRepository(Ref ref) =>

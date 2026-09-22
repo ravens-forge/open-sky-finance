@@ -1,0 +1,368 @@
+{
+  "format": "open-sky-finance-backup",
+  "schemaVersion": 1,
+  "appVersion": "1.0.0",
+  "exportedAt": "2026-09-10T19:14:00.000Z",
+  "data": {
+    "settings": {
+      "mainCurrency": "EUR",
+      "themeMode": "system",
+      "locale": null,
+      "firstDayOfWeek": 1,
+      "homeSections": [
+        {
+          "id": "favoriteAccounts",
+          "visible": true
+        },
+        {
+          "id": "summary",
+          "visible": true
+        },
+        {
+          "id": "cashFlow",
+          "visible": true
+        },
+        {
+          "id": "budgetSummary",
+          "visible": true
+        },
+        {
+          "id": "netIncome",
+          "visible": true
+        },
+        {
+          "id": "netWorth",
+          "visible": true
+        },
+        {
+          "id": "upcomingReminders",
+          "visible": false
+        }
+      ]
+    },
+    "assetsAccounts": [
+      {
+        "id": "00000000-0000-4000-8000-000000000a01",
+        "name": "Main bank",
+        "type": "bank",
+        "currency": "EUR",
+        "isHidden": false,
+        "isFavorite": true,
+        "excludeFromNetWorth": false,
+        "creditLimit": null,
+        "sortOrder": 0,
+        "notes": "",
+        "createdAt": "2026-01-01T09:00:00.000Z",
+        "updatedAt": "2026-01-01T09:00:00.000Z"
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000a02",
+        "name": "Savings",
+        "type": "bank",
+        "currency": "EUR",
+        "isHidden": false,
+        "isFavorite": false,
+        "excludeFromNetWorth": false,
+        "creditLimit": null,
+        "sortOrder": 1,
+        "notes": "Rainy days",
+        "createdAt": "2026-01-01T09:00:00.000Z",
+        "updatedAt": "2026-01-01T09:00:00.000Z"
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000a03",
+        "name": "Travel card",
+        "type": "bank",
+        "currency": "USD",
+        "isHidden": false,
+        "isFavorite": false,
+        "excludeFromNetWorth": false,
+        "creditLimit": null,
+        "sortOrder": 2,
+        "notes": "",
+        "createdAt": "2026-01-01T09:00:00.000Z",
+        "updatedAt": "2026-01-01T09:00:00.000Z"
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000a04",
+        "name": "Visa",
+        "type": "creditCard",
+        "currency": "EUR",
+        "isHidden": false,
+        "isFavorite": false,
+        "excludeFromNetWorth": false,
+        "creditLimit": 3000000000,
+        "sortOrder": 3,
+        "notes": "",
+        "createdAt": "2026-01-01T09:00:00.000Z",
+        "updatedAt": "2026-02-01T09:00:00.000Z"
+      }
+    ],
+    "categoryGroups": [
+      {
+        "id": "00000000-0000-4000-8000-000000000b01",
+        "name": "Salary",
+        "kind": "income",
+        "isHidden": false,
+        "sortOrder": 0,
+        "budget": null
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000b02",
+        "name": "Food",
+        "kind": "expense",
+        "isHidden": false,
+        "sortOrder": 1,
+        "budget": {
+          "amount": 400000000,
+          "period": "monthly",
+          "rollover": false
+        }
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000b03",
+        "name": "Housing",
+        "kind": "expense",
+        "isHidden": false,
+        "sortOrder": 2,
+        "budget": null
+      }
+    ],
+    "categories": [
+      {
+        "id": "00000000-0000-4000-8000-000000000c02",
+        "name": "Groceries",
+        "groupId": "00000000-0000-4000-8000-000000000b02",
+        "icon": "local_grocery_store",
+        "color": 4288053791,
+        "isHidden": false,
+        "sortOrder": 0,
+        "budget": {
+          "amount": 300000000,
+          "period": "monthly",
+          "rollover": false
+        }
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000c01",
+        "name": "Monthly pay",
+        "groupId": "00000000-0000-4000-8000-000000000b01",
+        "icon": "work",
+        "color": 4279196749,
+        "isHidden": false,
+        "sortOrder": 0,
+        "budget": null
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000c03",
+        "name": "Rent",
+        "groupId": "00000000-0000-4000-8000-000000000b03",
+        "icon": "home",
+        "color": 4284513675,
+        "isHidden": false,
+        "sortOrder": 0,
+        "budget": null
+      }
+    ],
+    "labels": [
+      {
+        "id": "00000000-0000-4000-8000-000000000d01",
+        "name": "home"
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000d02",
+        "name": "vacation"
+      }
+    ],
+    "reminders": [
+      {
+        "id": "00000000-0000-4000-8000-000000000e01",
+        "type": "expense",
+        "title": "Rent",
+        "amount": -850000000,
+        "assetsAccountId": "00000000-0000-4000-8000-000000000a01",
+        "toAssetsAccountId": null,
+        "toAmount": null,
+        "categoryId": "00000000-0000-4000-8000-000000000c03",
+        "currency": "EUR",
+        "notes": "",
+        "labelIds": [
+          "00000000-0000-4000-8000-000000000d01"
+        ],
+        "frequency": "monthly",
+        "interval": 1,
+        "startDate": "2026-01-25T09:00:00",
+        "nextDueAt": "2026-09-25T09:00:00",
+        "endDate": null,
+        "remainingOccurrences": null,
+        "autoPost": false,
+        "notify": false,
+        "isPaused": false,
+        "sortOrder": 0,
+        "createdAt": "2026-01-02T10:00:00.000Z",
+        "updatedAt": "2026-08-25T08:00:00.000Z"
+      }
+    ],
+    "transactions": [
+      {
+        "id": "00000000-0000-4000-8000-000000000f01",
+        "type": "openingBalance",
+        "occurredAt": "2026-01-01T00:00:00",
+        "title": "",
+        "amount": 2500000000,
+        "assetsAccountId": "00000000-0000-4000-8000-000000000a01",
+        "toAssetsAccountId": null,
+        "toAmount": null,
+        "categoryId": null,
+        "currency": "EUR",
+        "exchangeRate": null,
+        "notes": "",
+        "labelIds": [],
+        "reminderId": null,
+        "deletedAt": null,
+        "createdAt": "2026-01-01T09:00:00.000Z",
+        "updatedAt": "2026-01-01T09:00:00.000Z"
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000f02",
+        "type": "openingBalance",
+        "occurredAt": "2026-01-01T00:00:00",
+        "title": "",
+        "amount": -569700000,
+        "assetsAccountId": "00000000-0000-4000-8000-000000000a04",
+        "toAssetsAccountId": null,
+        "toAmount": null,
+        "categoryId": null,
+        "currency": "EUR",
+        "exchangeRate": null,
+        "notes": "",
+        "labelIds": [],
+        "reminderId": null,
+        "deletedAt": null,
+        "createdAt": "2026-01-01T09:00:00.000Z",
+        "updatedAt": "2026-01-01T09:00:00.000Z"
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000f03",
+        "type": "expense",
+        "occurredAt": "2026-08-25T09:00:00",
+        "title": "Rent",
+        "amount": -850000000,
+        "assetsAccountId": "00000000-0000-4000-8000-000000000a01",
+        "toAssetsAccountId": null,
+        "toAmount": null,
+        "categoryId": "00000000-0000-4000-8000-000000000c03",
+        "currency": "EUR",
+        "exchangeRate": null,
+        "notes": "",
+        "labelIds": [
+          "00000000-0000-4000-8000-000000000d01"
+        ],
+        "reminderId": "00000000-0000-4000-8000-000000000e01",
+        "deletedAt": null,
+        "createdAt": "2026-08-25T08:00:00.000Z",
+        "updatedAt": "2026-08-25T08:00:00.000Z"
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000f04",
+        "type": "income",
+        "occurredAt": "2026-08-31T08:00:00",
+        "title": "Salary",
+        "amount": 2400000000,
+        "assetsAccountId": "00000000-0000-4000-8000-000000000a01",
+        "toAssetsAccountId": null,
+        "toAmount": null,
+        "categoryId": "00000000-0000-4000-8000-000000000c01",
+        "currency": "EUR",
+        "exchangeRate": null,
+        "notes": "",
+        "labelIds": [],
+        "reminderId": null,
+        "deletedAt": null,
+        "createdAt": "2026-08-31T08:05:00.000Z",
+        "updatedAt": "2026-08-31T08:05:00.000Z"
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000f05",
+        "type": "transfer",
+        "occurredAt": "2026-09-01T10:00:00",
+        "title": "Move to savings",
+        "amount": 200000000,
+        "assetsAccountId": "00000000-0000-4000-8000-000000000a01",
+        "toAssetsAccountId": "00000000-0000-4000-8000-000000000a02",
+        "toAmount": null,
+        "categoryId": null,
+        "currency": "EUR",
+        "exchangeRate": null,
+        "notes": "",
+        "labelIds": [],
+        "reminderId": null,
+        "deletedAt": null,
+        "createdAt": "2026-09-01T08:00:00.000Z",
+        "updatedAt": "2026-09-01T08:00:00.000Z"
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000f06",
+        "type": "transfer",
+        "occurredAt": "2026-09-02T09:00:00",
+        "title": "Travel money",
+        "amount": 450000000,
+        "assetsAccountId": "00000000-0000-4000-8000-000000000a01",
+        "toAssetsAccountId": "00000000-0000-4000-8000-000000000a03",
+        "toAmount": 492300000,
+        "categoryId": null,
+        "currency": "EUR",
+        "exchangeRate": "1.094",
+        "notes": "",
+        "labelIds": [
+          "00000000-0000-4000-8000-000000000d02"
+        ],
+        "reminderId": null,
+        "deletedAt": null,
+        "createdAt": "2026-09-02T07:00:00.000Z",
+        "updatedAt": "2026-09-02T07:00:00.000Z"
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000f07",
+        "type": "expense",
+        "occurredAt": "2026-09-05T18:30:00",
+        "title": "Weekly shopping",
+        "amount": -54300000,
+        "assetsAccountId": "00000000-0000-4000-8000-000000000a04",
+        "toAssetsAccountId": null,
+        "toAmount": null,
+        "categoryId": "00000000-0000-4000-8000-000000000c02",
+        "currency": "EUR",
+        "exchangeRate": null,
+        "notes": "Market and bakery",
+        "labelIds": [
+          "00000000-0000-4000-8000-000000000d01",
+          "00000000-0000-4000-8000-000000000d02"
+        ],
+        "reminderId": null,
+        "deletedAt": null,
+        "createdAt": "2026-09-05T16:31:02.000Z",
+        "updatedAt": "2026-09-05T16:31:02.000Z"
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000f08",
+        "type": "expense",
+        "occurredAt": "2026-09-06T12:00:00",
+        "title": "Coffee",
+        "amount": -3200000,
+        "assetsAccountId": "00000000-0000-4000-8000-000000000a01",
+        "toAssetsAccountId": null,
+        "toAmount": null,
+        "categoryId": "00000000-0000-4000-8000-000000000c02",
+        "currency": "EUR",
+        "exchangeRate": null,
+        "notes": "",
+        "labelIds": [],
+        "reminderId": null,
+        "deletedAt": "2026-09-07T10:00:00.000Z",
+        "createdAt": "2026-09-06T10:00:00.000Z",
+        "updatedAt": "2026-09-07T10:00:00.000Z"
+      }
+    ]
+  }
+}
