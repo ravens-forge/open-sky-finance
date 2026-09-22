@@ -25,5 +25,6 @@ Two other version numbers exist and are **not** the app version: the Drift datab
 - Income comes before expenses everywhere, and every type is chosen with the same rounded selector.
 - Transactions page: pick a month, see its income, expenses and net in your main currency, search titles and notes, and filter by type, assets account, category or label. Future-dated transactions come first under “Scheduled”, then the rest by day with each day's net. Swipe a row to move it to the Trash, with Undo.
 - Transaction editor: income, expense or transfer; the amount is typed positive in the assets account's currency, with a refund toggle for expenses. Titles autocomplete from earlier ones and bring back their category and assets account. Transfers have From and To with a swap button and, between currencies, the amount received or the rate (either one fills the other). Date and time, labels (created on the spot) and notes. Save, “Save and add another” and Delete, with messages that say exactly what is missing.
+- Labels page: each label with its number of transactions and total for the month, in your main currency; labels without transactions that month are muted. Tap one to see its transactions. Create, rename and delete labels (long press a row); deleting a label keeps its transactions.
 
 [Unreleased]: https://github.com/ravens-forge/open-sky-finance/commits/main

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n.dart';
 import '../../../core/result.dart';
+import '../../../core/widgets/field_error.dart';
 import '../../../data/models/label.dart';
 import '../../../data/repositories/repository_data_error.dart';
 import '../providers/labels_controller.dart';
@@ -67,7 +68,7 @@ class _LabelNameDialogState extends ConsumerState<_LabelNameDialog> {
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           labelText: l10n.fieldName,
-          errorText: _error,
+          error: _error == null ? null : FieldError(_error!),
           counterText: '',
         ),
         onChanged: (_) {

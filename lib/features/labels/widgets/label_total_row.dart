@@ -5,6 +5,7 @@ import '../../../app/theme.dart';
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
 import '../../../core/money/currency_converter.dart';
+import '../../../core/money/format_money.dart';
 import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/category_avatar.dart';
 import '../../../core/widgets/choice_sheet.dart';
@@ -77,6 +78,21 @@ class LabelTotalRow extends StatelessWidget {
                       l10n.labelsCount(total.count),
                       style: theme.textTheme.rowSubtitle.copyWith(color: muted),
                     ),
+                    if (converted.notIncluded.isNotEmpty)
+                      Text(
+                        l10n.assetsAccountsNotIncluded(
+                          [
+                            for (final MapEntry(key: currency, value: micros)
+                                in converted.notIncluded.entries)
+                              formatMoney(
+                                micros,
+                                currency: currency,
+                                locale: l10n.localeName,
+                              ),
+                          ].join(', '),
+                        ),
+                        style: theme.textTheme.rowSubtitle,
+                      ),
                   ],
                 ),
               ),
