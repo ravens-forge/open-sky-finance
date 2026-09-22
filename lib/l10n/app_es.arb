@@ -354,5 +354,18 @@
   "actionRename": "Renombrar",
   "labelDeleteTitle": "¿Eliminar «{name}»?",
   "labelDeleteBody": "{count, plural, =0{Ninguna transacción la usa.} =1{Se quita de 1 transacción, que se conserva.} other{Se quita de {count} transacciones, que se conservan.}}",
-  "errorNameTaken": "Este nombre ya existe"
+  "errorNameTaken": "Este nombre ya existe",
+  "actionRestore": "Restaurar",
+  "trashEmpty": "Vaciar",
+  "trashIntro": "Las transacciones eliminadas se quedan aquí hasta que las restaures o vacíes la papelera. No cuentan en saldos, gráficos ni informes.",
+  "trashDeletedToday": "Eliminadas hoy",
+  "trashDeletedOn": "Eliminadas el {date}",
+  "trashFooter": "{count, plural, =1{1 elemento} other{{count} elementos}} · «Vaciar» los elimina para siempre tras confirmar.",
+  "trashDeletePermanently": "Eliminar definitivamente",
+  "trashDeleteTitle": "¿Eliminar esta transacción definitivamente?",
+  "trashEmptyTitle": "¿Vaciar la papelera?",
+  "trashEmptyBody": "{count, plural, =1{Se elimina 1 transacción definitivamente.} other{Se eliminan {count} transacciones definitivamente.}}",
+  "trashEmptyStateTitle": "La papelera está vacía",
+  "trashEmptyStateMessage": "Cuando eliminas una transacción, llega primero aquí para que puedas restaurarla si fue un error.",
+  "trashGoToTransactions": "Ir a transacciones"
 }
