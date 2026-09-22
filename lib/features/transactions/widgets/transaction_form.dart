@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../app/now.dart';
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
 import '../../../core/money/format_money.dart';
@@ -60,7 +61,7 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
       widget.data.assetsAccounts.where((a) => !a.isHidden).firstOrNull?.id;
   late var _toAssetsAccountId = _transaction?.transfer?.assetsAccountId;
   late var _categoryId = _transaction?.categoryId;
-  late var _occurredAt = _transaction?.occurredAt ?? DateTime.now();
+  late DateTime _occurredAt = _transaction?.occurredAt ?? ref.read(nowProvider);
   late var _labelIds = [...widget.data.labelIds];
   late var _refund =
       _transaction?.type == TransactionType.expense &&
@@ -223,7 +224,6 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
       ),
       extra: TextFormField(
         initialValue: typed,
-        autofocus: true,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         onChanged: (value) => typed = value,
       ),
@@ -458,7 +458,6 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
             currency: currency,
             color: color,
             sign: sign,
-            autofocus: t == null,
             error: _amountError,
           ),
           if (_type == TransactionType.expense)

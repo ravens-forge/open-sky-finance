@@ -224,6 +224,27 @@ void main() {
       expect(find.text('Cinema'), findsNothing);
     });
 
+    testWidgets('the editor opens without the keyboard', (tester) async {
+      final wallet = await start(tester);
+      final id = ok(
+        (await tester.runAsync(
+          () => db.transactionsRepository.save(
+            TransactionDraft(
+              type: TransactionType.expense,
+              occurredAt: DateTime.now(),
+              amount: -m(3),
+              assetsAccountId: wallet,
+            ),
+          ),
+        ))!,
+      );
+      await open(tester, Routes.newTransaction());
+      expect(tester.testTextInput.isVisible, isFalse);
+
+      await open(tester, Routes.transaction(id));
+      expect(tester.testTextInput.isVisible, isFalse);
+    });
+
     testWidgets('the editor saves an expense', (tester) async {
       final wallet = await start(tester);
       await open(tester, Routes.newTransaction());

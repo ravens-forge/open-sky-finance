@@ -2,27 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../finance_colors.dart';
+import '../../app/theme.dart';
 import '../l10n.dart';
+import 'reorderable_sections.dart';
 
 /// Drag handle, title and optional caption. With [index], drag by the handle
-/// or long-press the title.
+/// or long-press the title inside a [ReorderableSections].
 class HomeSectionHeader extends StatelessWidget {
   const HomeSectionHeader({
     super.key,
     required this.title,
     this.index,
     this.caption,
+    this.eyebrow = false,
     this.info,
     this.onMoveUp,
     this.onMoveDown,
+    this.onHandleTap,
   });
 
   final String title;
   final int? index;
-  final String? caption;
+  final Widget? caption;
+
+  /// A small uppercase title, like "FAVORITE ASSETS ACCOUNTS".
+  final bool eyebrow;
   final Widget? info;
   final VoidCallback? onMoveUp;
   final VoidCallback? onMoveDown;
+
+  /// E.g. opens Arrange Home.
+  final VoidCallback? onHandleTap;
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +46,17 @@ class HomeSectionHeader extends StatelessWidget {
         color: FinanceColors.of(context).disabled,
       ),
     );
-    Widget titleText = Text(title, style: text.headlineSmall);
+    Widget titleText = eyebrow
+        ? Text(title.toUpperCase(), style: text.eyebrow)
+        : Text(title, style: text.sectionTitle);
+    if (onHandleTap != null) {
+      handle = GestureDetector(onTap: onHandleTap, child: handle);
+    }
     if (index != null) {
-      handle = ReorderableDragStartListener(index: index!, child: handle);
-      titleText = ReorderableDelayedDragStartListener(
+      handle = SectionDragStart(index: index!, child: handle);
+      titleText = SectionDragStart(
         index: index!,
+        delayed: true,
         child: titleText,
       );
     }
@@ -68,7 +84,8 @@ class HomeSectionHeader extends StatelessWidget {
             ),
           ),
         ),
-        if (caption != null) Text(caption!, style: text.bodySmall),
+        if (caption != null)
+          DefaultTextStyle.merge(style: text.bodySmall, child: caption!),
       ],
     );
   }

@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../app/now.dart';
 import '../../../app/routes.dart';
-import '../../../core/dates/wall_clock.dart';
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
 import '../../../core/widgets/day_header.dart';
@@ -92,7 +92,7 @@ class _TrashList extends ConsumerWidget {
           in ref.watch(assetsAccountsProvider).value ?? const <AssetsAccount>[])
         a.id: a,
     };
-    final today = startOfDay(DateTime.now());
+    final today = ref.watch(todayProvider);
 
     String title(DateTime date) {
       if (date == today) return l10n.trashDeletedToday;

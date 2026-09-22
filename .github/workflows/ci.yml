@@ -64,7 +64,7 @@ jobs:
         run: flutter analyze
 
       - name: Test
-        run: flutter test
+        run: flutter test --exclude-tags golden
 
   no-internet-permission:
     name: No INTERNET permission in release

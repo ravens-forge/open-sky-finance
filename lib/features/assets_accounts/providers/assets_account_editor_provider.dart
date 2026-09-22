@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/main_currency.dart';
-import '../../../core/dates/wall_clock.dart';
+import '../../../app/now.dart';
 import '../../../data/providers.dart';
 import '../models/assets_account_editor_data.dart';
 
@@ -14,7 +14,7 @@ Future<AssetsAccountEditorData> assetsAccountEditorData(
   String? id,
 ) async {
   final repository = ref.watch(assetsAccountsRepositoryProvider);
-  final today = startOfDay(DateTime.now());
+  final today = ref.read(todayProvider);
   final account = id == null ? null : await repository.findById(id);
   if (account == null) {
     return AssetsAccountEditorData(

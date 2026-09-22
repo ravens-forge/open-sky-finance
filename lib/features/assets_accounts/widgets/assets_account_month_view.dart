@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../app/now.dart';
 import '../../../app/routes.dart';
 import '../../../core/dates/wall_clock.dart';
 import '../../../core/dates/year_month.dart';
@@ -42,7 +43,7 @@ class AssetsAccountMonthView extends ConsumerWidget {
           in ref.watch(assetsAccountsProvider).value ?? <AssetsAccount>[])
         a.id: a.name,
     };
-    final tomorrow = startOfTomorrow();
+    final tomorrow = ref.watch(tomorrowProvider);
     final day = DateFormat.MMMMEEEEd(l10n.localeName);
 
     Widget total(String label, int micros) => Expanded(

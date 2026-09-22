@@ -1,0 +1,4 @@
+# Goldens compare pixels, which depend on the platform's text rendering: CI
+# checks them on Windows, where they are generated (see ci.yml).
+tags:
+  golden:

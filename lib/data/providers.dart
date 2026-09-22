@@ -14,6 +14,7 @@ import 'repositories/categories_repository.dart';
 import 'repositories/exchange_rates_repository.dart';
 import 'repositories/income_expense_repository.dart';
 import 'repositories/labels_repository.dart';
+import 'repositories/reminders_repository.dart';
 import 'repositories/settings_repository.dart';
 import 'repositories/transactions_repository.dart';
 
@@ -81,6 +82,10 @@ IncomeExpenseRepository incomeExpenseRepository(Ref ref) =>
 @Riverpod(keepAlive: true)
 LabelsRepository labelsRepository(Ref ref) =>
     ref.watch(appDatabaseProvider).labelsRepository;
+
+@Riverpod(keepAlive: true)
+RemindersRepository remindersRepository(Ref ref) =>
+    ref.watch(appDatabaseProvider).remindersRepository;
 
 @Riverpod(keepAlive: true)
 SettingsRepository settingsRepository(Ref ref) =>

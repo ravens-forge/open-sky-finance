@@ -46,6 +46,9 @@ linked_*.ds
 unlinked.ds
 unlinked_spec.ds
 
+# Images of the goldens that no longer match, written by flutter test
+test/goldens/failures/
+
 # Android related
 **/android/**/gradle-wrapper.jar
 .gradle/

@@ -503,4 +503,36 @@ void main() {
       );
     });
   });
+
+  test(
+    'upcoming reminders: next due first, paused and finished left out',
+    () async {
+      await addReminder(
+        db,
+        'late',
+        assetsAccountId: eur,
+        nextDueAt: '2026-10-05T00:00:00',
+      );
+      await addReminder(
+        db,
+        'soon',
+        assetsAccountId: eur,
+        nextDueAt: '2026-09-01T00:00:00',
+      );
+      await addReminder(
+        db,
+        'paused',
+        assetsAccountId: eur,
+        nextDueAt: '2026-08-01T00:00:00',
+        isPaused: true,
+      );
+      await addReminder(db, 'done', assetsAccountId: eur);
+      final upcoming = await db.remindersRepository.watchUpcoming(5).first;
+      expect(upcoming.map((r) => r.id), ['soon', 'late']);
+      expect(
+        (await db.remindersRepository.watchUpcoming(1).first).map((r) => r.id),
+        ['soon'],
+      );
+    },
+  );
 }

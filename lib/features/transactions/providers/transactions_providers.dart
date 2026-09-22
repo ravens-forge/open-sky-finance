@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../core/dates/wall_clock.dart';
+import '../../../app/now.dart';
 import '../../../core/dates/year_month.dart';
 import '../../../data/models/label.dart';
 import '../../../data/models/transaction.dart';
@@ -36,7 +36,7 @@ Future<TransactionsMonth> transactionsMonth(
   TransactionFilter filter,
 ) async => TransactionsMonth.of(
   await ref.watch(transactionsInMonthProvider(month, filter).future),
-  startOfTomorrow(),
+  ref.watch(tomorrowProvider),
 );
 
 /// Every label, by name, for the labels field and the filters.

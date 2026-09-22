@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/dates/wall_clock.dart';
+import '../../../app/now.dart';
 import '../../../core/l10n.dart';
 import '../../../core/labels.dart';
 import '../../../core/money/format_money.dart';
@@ -92,7 +92,7 @@ class _FirstAssetsAccountStepState
             type: _type,
             currency: _currency,
             openingBalance: balance,
-            openingBalanceDate: startOfDay(DateTime.now()),
+            openingBalanceDate: ref.read(todayProvider),
           ),
         );
     if (!mounted) return;
