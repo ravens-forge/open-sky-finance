@@ -294,6 +294,11 @@ void main() {
         scrollable: page,
       );
       expect(find.text('Balance €40.00'), findsOneWidget);
+
+      // Its transactions are right there, so the FAB is too.
+      await tester.tap(find.text('Add'));
+      await settle(tester);
+      expect(find.text('New transaction'), findsOneWidget);
     });
 
     testWidgets('delete counts transactions and offers to hide', (

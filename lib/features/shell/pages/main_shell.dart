@@ -79,7 +79,9 @@ class _MainShellState extends State<MainShell>
         ),
       ),
       drawer: AppDrawer(onHome: () => _tabs.animateTo(MainPage.home.index)),
-      floatingActionButton: const AddFab(),
+      floatingActionButton: _tabs.index == MainPage.transactions.index
+          ? const AddFab()
+          : null,
       body: TabBarView(
         controller: _tabs,
         children: [for (final child in widget.children) _KeepAlive(child)],
