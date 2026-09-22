@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/app/app.dart';
 import 'package:open_sky_finance/app/now.dart';
@@ -22,7 +23,7 @@ import 'package:open_sky_finance/features/onboarding/models/onboarding_steps.dar
 /// later from `tester.runAsync`, so Home starts with every section hidden
 /// unless [showHome]; write what Home should show in [seed], which runs
 /// before the app is pumped. The clock stays at [now] (default: when the
-/// test starts).
+/// test starts). [overrides] replace more providers.
 Future<ProviderContainer> pumpApp(
   WidgetTester tester, {
   bool onboarded = true,
@@ -30,6 +31,7 @@ Future<ProviderContainer> pumpApp(
   bool showHome = false,
   Future<void> Function(AppDatabase db)? seed,
   DateTime? now,
+  List<Override> overrides = const [],
 }) async {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
   final db = AppDatabase(executor: NativeDatabase.memory());
@@ -59,6 +61,7 @@ Future<ProviderContainer> pumpApp(
       appDatabaseProvider.overrideWithValue(db),
       // Fixed, so no clock timer outlives the test.
       nowProvider.overrideWithValue(now ?? DateTime.now()),
+      ...overrides,
     ],
   );
   addTearDown(() async {

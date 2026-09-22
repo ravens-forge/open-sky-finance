@@ -15,12 +15,14 @@ import '../features/balance_sheet/pages/balance_sheet_page.dart';
 import '../features/categories/pages/categories_page.dart';
 import '../features/categories/pages/category_editor_page.dart';
 import '../features/categories/pages/category_group_editor_page.dart';
+import '../features/data_management/pages/erased_page.dart';
 import '../features/home/pages/arrange_home_page.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/labels/pages/labels_page.dart';
 import '../features/net_income/pages/net_income_page.dart';
 import '../features/onboarding/pages/onboarding_page.dart';
 import '../features/onboarding/providers/onboarding_provider.dart';
+import '../features/settings/pages/settings_page.dart';
 import '../features/shell/models/main_page.dart';
 import '../features/transactions/pages/transaction_editor_page.dart';
 import '../features/transactions/pages/transactions_page.dart';
@@ -270,7 +272,7 @@ GoRouter router(Ref ref) {
       ),
       GoRoute(
         path: Routes.settings,
-        builder: (context, state) => StubPage(title: context.l10n.pageSettings),
+        builder: (context, state) => const SettingsPage(),
         routes: [
           GoRoute(
             path: 'home-sections',
@@ -294,7 +296,7 @@ GoRouter router(Ref ref) {
       ),
       GoRoute(
         path: Routes.erased,
-        builder: (context, state) => StubPage(title: context.l10n.pageErased),
+        builder: (context, state) => const ErasedPage(),
       ),
       GoRoute(
         path: Routes.support,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/app/theme.dart';
 import 'package:open_sky_finance/core/l10n.dart';
@@ -59,6 +60,7 @@ void appGolden(
   double height = 844,
   bool onboarded = true,
   bool showHome = false,
+  List<Override> overrides = const [],
   Future<void> Function(AppDatabase db)? seed,
   Future<void> Function(
     WidgetTester tester,
@@ -76,6 +78,7 @@ void appGolden(
           showHome: showHome,
           locale: variant.locale,
           now: goldenNow,
+          overrides: overrides,
           seed: (db) async {
             await db.settingsRepository.set(
               SettingKeys.themeMode,

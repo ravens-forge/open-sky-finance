@@ -13,4 +13,13 @@ abstract final class SettingKeys {
   /// Months shown by the Home charts: `6` (default) or `12`.
   static const homeChartMonths = 'home_chart_months';
   static const onboardingSeenSteps = 'onboarding_seen_steps';
+
+  /// `true` while automatic backups run. Device-only.
+  static const autoBackupEnabled = 'auto_backup_enabled';
+
+  /// UTC instant (ISO 8601) of the last backup. Device-only.
+  static const lastBackupAt = 'last_backup_at';
+
+  /// Preferences that survive "Erase all data"; every other key is removed.
+  static const keptOnErase = [themeMode, locale, firstDayOfWeek];
 }

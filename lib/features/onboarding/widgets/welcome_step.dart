@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
 import '../../../core/widgets/app_logo.dart';
+import '../../../core/widgets/point_row.dart';
 import 'onboarding_step_layout.dart';
 
 class WelcomeStep extends StatelessWidget {
@@ -16,37 +17,6 @@ class WelcomeStep extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final headline = theme.textTheme.displayMedium!.copyWith(fontSize: 40);
-    Widget point(IconData icon, String title, String body) => Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: theme.colorScheme.outlineVariant),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 14,
-        children: [
-          Icon(icon, size: 22, color: theme.colorScheme.primary),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 2,
-              children: [
-                Text(title, style: theme.textTheme.labelLarge),
-                Text(
-                  body,
-                  style: theme.textTheme.bodyMedium!.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-
     return OnboardingStepLayout(
       actions: [FilledButton(onPressed: onNext, child: Text(l10n.actionNext))],
       children: [
@@ -78,20 +48,20 @@ class WelcomeStep extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        point(
-          Icons.lock_outline,
-          l10n.welcomeOfflineTitle,
-          l10n.welcomeOfflineBody,
+        PointRow(
+          icon: Icons.lock_outline,
+          title: l10n.welcomeOfflineTitle,
+          body: l10n.welcomeOfflineBody,
         ),
-        point(
-          Icons.favorite_border,
-          l10n.welcomeNoAdsTitle,
-          l10n.welcomeNoAdsBody,
+        PointRow(
+          icon: Icons.favorite_border,
+          title: l10n.welcomeNoAdsTitle,
+          body: l10n.welcomeNoAdsBody,
         ),
-        point(
-          Icons.cloud_outlined,
-          l10n.welcomeBackupsTitle,
-          l10n.welcomeBackupsBody,
+        PointRow(
+          icon: Icons.cloud_outlined,
+          title: l10n.welcomeBackupsTitle,
+          body: l10n.welcomeBackupsBody,
         ),
         const Spacer(),
         Align(

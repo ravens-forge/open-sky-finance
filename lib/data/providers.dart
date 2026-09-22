@@ -11,6 +11,7 @@ import 'repositories/assets_accounts_repository.dart';
 import 'repositories/balances_repository.dart';
 import 'repositories/budgets_repository.dart';
 import 'repositories/categories_repository.dart';
+import 'repositories/erase_repository.dart';
 import 'repositories/exchange_rates_repository.dart';
 import 'repositories/income_expense_repository.dart';
 import 'repositories/labels_repository.dart';
@@ -70,6 +71,10 @@ BudgetsRepository budgetsRepository(Ref ref) =>
 @Riverpod(keepAlive: true)
 CategoriesRepository categoriesRepository(Ref ref) =>
     ref.watch(appDatabaseProvider).categoriesRepository;
+
+@Riverpod(keepAlive: true)
+EraseRepository eraseRepository(Ref ref) =>
+    ref.watch(appDatabaseProvider).eraseRepository;
 
 @Riverpod(keepAlive: true)
 ExchangeRatesRepository exchangeRatesRepository(Ref ref) =>
