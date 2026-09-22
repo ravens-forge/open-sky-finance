@@ -9,5 +9,8 @@ abstract final class SettingKeys {
   static const mainCurrency = 'main_currency';
   static const firstDayOfWeek = 'first_day_of_week';
   static const homeSections = 'home_sections';
+
+  /// Months shown by the Home charts: `6` (default) or `12`.
+  static const homeChartMonths = 'home_chart_months';
   static const onboardingSeenSteps = 'onboarding_seen_steps';
 }

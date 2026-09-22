@@ -54,19 +54,23 @@ Future<String> addAssetsAccount(
   ),
 );
 
-/// A minimal reminder row. Reminders have no repository yet, so tests that
-/// need one write it directly.
+/// A minimal reminder row. The reminders repository has no writes yet, so
+/// tests that need one write it directly.
 Future<void> addReminder(
   AppDatabase db,
   String id, {
   required String assetsAccountId,
   String? categoryId,
+  String title = '',
+  String? nextDueAt,
+  bool isPaused = false,
 }) => db.customStatement(
-  'INSERT INTO reminders (id, type, amount, assets_account_id, category_id, '
-  'currency, frequency, start_date, created_at, updated_at) '
-  "VALUES (?, 'expense', -1000000, ?, ?, 'EUR', 'monthly', "
-  "'2026-01-01T00:00:00', 0, 0)",
-  [id, assetsAccountId, categoryId],
+  'INSERT INTO reminders (id, type, title, amount, assets_account_id, '
+  'category_id, currency, frequency, start_date, next_due_at, is_paused, '
+  'created_at, updated_at) '
+  "VALUES (?, 'expense', ?, -1000000, ?, ?, 'EUR', 'monthly', "
+  "'2026-01-01T00:00:00', ?, ?, '2026-01-01T00:00:00', '2026-01-01T00:00:00')",
+  [id, title, assetsAccountId, categoryId, nextDueAt, if (isPaused) 1 else 0],
 );
 
 /// The category a reminder written by [addReminder] points at.

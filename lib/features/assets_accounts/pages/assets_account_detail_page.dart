@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/routes.dart';
 import '../../../core/dates/year_month.dart';
 import '../../../core/l10n.dart';
+import '../../../core/widgets/balance_chart.dart';
 import '../../../core/widgets/not_found_page.dart';
 import '../../../core/widgets/page_placeholder.dart';
 import '../models/credit_usage.dart';
@@ -13,7 +14,6 @@ import '../providers/assets_accounts_controller.dart';
 import '../providers/assets_accounts_providers.dart';
 import '../widgets/assets_account_balance_header.dart';
 import '../widgets/assets_account_month_view.dart';
-import '../widgets/balance_chart.dart';
 import '../widgets/credit_usage_section.dart';
 
 /// Balance, credit usage, balance chart and the transactions of a month.
@@ -107,7 +107,11 @@ class _AssetsAccountDetailPageState
           ),
           const SizedBox(height: 12),
           if (history != null)
-            BalanceChart(history: history, currency: a.currency),
+            BalanceChart(
+              history: history,
+              currency: a.currency,
+              describe: l10n.assetsAccountBalanceChartSemantic,
+            ),
           const SizedBox(height: 20),
           AssetsAccountMonthView(
             account: a,

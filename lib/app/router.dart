@@ -14,6 +14,8 @@ import '../features/assets_accounts/pages/assets_accounts_page.dart';
 import '../features/categories/pages/categories_page.dart';
 import '../features/categories/pages/category_editor_page.dart';
 import '../features/categories/pages/category_group_editor_page.dart';
+import '../features/home/pages/arrange_home_page.dart';
+import '../features/home/pages/home_page.dart';
 import '../features/labels/pages/labels_page.dart';
 import '../features/onboarding/pages/onboarding_page.dart';
 import '../features/onboarding/providers/onboarding_provider.dart';
@@ -101,6 +103,7 @@ GoRouter router(Ref ref) {
                 GoRoute(
                   path: page.path,
                   builder: (context, state) => switch (page) {
+                    MainPage.home => const HomePage(),
                     MainPage.transactions => const TransactionsPage(),
                     MainPage.labels => const LabelsPage(),
                     _ => const SizedBox.expand(),
@@ -267,8 +270,7 @@ GoRouter router(Ref ref) {
         routes: [
           GoRoute(
             path: 'home-sections',
-            builder: (context, state) =>
-                StubPage(title: context.l10n.pageArrangeHome),
+            builder: (context, state) => const ArrangeHomePage(),
           ),
           GoRoute(
             path: 'backups',

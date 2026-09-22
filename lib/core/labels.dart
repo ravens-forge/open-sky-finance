@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/enums/assets_account_type.dart';
 import '../data/enums/budget_period.dart';
 import '../data/enums/category_kind.dart';
+import '../data/enums/home_section_id.dart';
 import '../data/enums/transaction_type.dart';
 import 'l10n.dart';
 import 'result.dart';
@@ -47,6 +48,29 @@ extension CategoryKindLabel on CategoryKind {
 extension BudgetPeriodLabel on BudgetPeriod {
   String label(AppLocalizations l10n) => switch (this) {
     BudgetPeriod.monthly => l10n.budgetPeriodMonthly,
+  };
+}
+
+extension HomeSectionIdLabel on HomeSectionId {
+  String label(AppLocalizations l10n) => switch (this) {
+    HomeSectionId.favoriteAccounts => l10n.homeSectionFavoriteAccounts,
+    HomeSectionId.summary => l10n.homeSectionSummary,
+    HomeSectionId.cashFlow => l10n.homeSectionCashFlow,
+    HomeSectionId.budgetSummary => l10n.homeSectionBudgetSummary,
+    HomeSectionId.netIncome => l10n.homeSectionNetIncome,
+    HomeSectionId.netWorth => l10n.homeSectionNetWorth,
+    HomeSectionId.upcomingReminders => l10n.homeSectionUpcomingReminders,
+  };
+
+  /// What the section shows, on Arrange Home.
+  String description(AppLocalizations l10n) => switch (this) {
+    HomeSectionId.favoriteAccounts => l10n.homeSectionFavoriteAccountsHint,
+    HomeSectionId.summary => l10n.homeSectionSummaryHint,
+    HomeSectionId.cashFlow => l10n.homeSectionCashFlowHint,
+    HomeSectionId.budgetSummary => l10n.homeSectionBudgetSummaryHint,
+    HomeSectionId.netIncome => l10n.homeSectionNetIncomeHint,
+    HomeSectionId.netWorth => l10n.homeSectionNetWorthHint,
+    HomeSectionId.upcomingReminders => l10n.homeSectionUpcomingRemindersHint,
   };
 }
 

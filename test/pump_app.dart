@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/app/app.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
+import 'package:open_sky_finance/data/enums/home_section_id.dart';
+import 'package:open_sky_finance/data/models/home_section.dart';
 import 'package:open_sky_finance/data/repositories/setting_keys.dart';
 import 'package:open_sky_finance/data/providers.dart';
 import 'package:open_sky_finance/features/onboarding/models/onboarding_steps.dart';
@@ -14,10 +16,17 @@ import 'package:open_sky_finance/features/onboarding/models/onboarding_steps.dar
 /// Pumps the app on an in-memory database; [onboarded] marks every
 /// onboarding step as seen first, and [locale] pins the language instead
 /// of following the device.
+///
+/// Home's sections watch transactions, and their queries block writes made
+/// later from `tester.runAsync`, so Home starts with every section hidden
+/// unless [showHome]; write what Home should show in [seed], which runs
+/// before the app is pumped.
 Future<ProviderContainer> pumpApp(
   WidgetTester tester, {
   bool onboarded = true,
   String? locale,
+  bool showHome = false,
+  Future<void> Function(AppDatabase db)? seed,
 }) async {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
   final db = AppDatabase(executor: NativeDatabase.memory());
@@ -34,6 +43,14 @@ Future<ProviderContainer> pumpApp(
       () => db.settingsRepository.set(SettingKeys.locale, locale),
     );
   }
+  if (!showHome) {
+    await tester.runAsync(
+      () => db.settingsRepository.setHomeSections([
+        for (final id in HomeSectionId.values) HomeSection(id, visible: false),
+      ]),
+    );
+  }
+  if (seed != null) await tester.runAsync(() => seed(db));
   final container = ProviderContainer(
     overrides: [appDatabaseProvider.overrideWithValue(db)],
   );

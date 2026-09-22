@@ -1937,5 +1937,287 @@
   "trashGoToTransactions": "Go to transactions",
   "@trashGoToTransactions": {
     "description": "Button of the empty Trash that opens the Transactions page"
+  },
+  "homeDropHere": "Drop here",
+  "@homeDropHere": {
+    "description": "Text inside the drop slot while a Home section is dragged"
+  },
+  "chartOpenMonth": "Open {month}",
+  "@chartOpenMonth": {
+    "description": "Screen reader action on a chart that opens the transactions of a month",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "September 2026"
+      }
+    }
+  },
+  "homeSectionFavoriteAccounts": "Favorite assets accounts",
+  "@homeSectionFavoriteAccounts": {
+    "description": "Home section title"
+  },
+  "homeSectionSummary": "Summary",
+  "@homeSectionSummary": {
+    "description": "Home section name on Arrange Home"
+  },
+  "homeSectionCashFlow": "Cash flow",
+  "@homeSectionCashFlow": {
+    "description": "Home section title"
+  },
+  "homeSectionBudgetSummary": "Budget summary",
+  "@homeSectionBudgetSummary": {
+    "description": "Home section title"
+  },
+  "homeSectionNetIncome": "Net income",
+  "@homeSectionNetIncome": {
+    "description": "Home section title"
+  },
+  "homeSectionNetWorth": "Net worth",
+  "@homeSectionNetWorth": {
+    "description": "Home section title and summary label"
+  },
+  "homeSectionUpcomingReminders": "Upcoming reminders",
+  "@homeSectionUpcomingReminders": {
+    "description": "Home section title"
+  },
+  "homeSectionFavoriteAccountsHint": "Assets account picker for the charts",
+  "@homeSectionFavoriteAccountsHint": {
+    "description": "What the section shows, on Arrange Home"
+  },
+  "homeSectionSummaryHint": "Net worth and this month's net income",
+  "@homeSectionSummaryHint": {
+    "description": "What the section shows, on Arrange Home"
+  },
+  "homeSectionCashFlowHint": "Bars per month",
+  "@homeSectionCashFlowHint": {
+    "description": "What the section shows, on Arrange Home"
+  },
+  "homeSectionBudgetSummaryHint": "Pie for the month",
+  "@homeSectionBudgetSummaryHint": {
+    "description": "What the section shows, on Arrange Home"
+  },
+  "homeSectionNetIncomeHint": "Income − expenses per month",
+  "@homeSectionNetIncomeHint": {
+    "description": "What the section shows, on Arrange Home"
+  },
+  "homeSectionNetWorthHint": "Line per month",
+  "@homeSectionNetWorthHint": {
+    "description": "What the section shows, on Arrange Home"
+  },
+  "homeSectionUpcomingRemindersHint": "Next due reminders",
+  "@homeSectionUpcomingRemindersHint": {
+    "description": "What the section shows, on Arrange Home"
+  },
+  "homeFavoritesEmpty": "Star the assets accounts you check most to see them here.",
+  "@homeFavoritesEmpty": {
+    "description": "Favorite assets accounts section with no favorite"
+  },
+  "homeFavoritesIntro": "The Home charts only use these assets accounts. If none is selected, all assets accounts are used.",
+  "@homeFavoritesIntro": {
+    "description": "Intro of the favorite assets accounts sheet"
+  },
+  "homeFavoritesDone": "{count, plural, =0{Done} =1{Done · 1 selected} other{Done · {count} selected}}",
+  "@homeFavoritesDone": {
+    "description": "Button that closes the favorite assets accounts sheet",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "homeFavoriteSubtitle": "{type} · {balance}",
+  "@homeFavoriteSubtitle": {
+    "description": "Row subtitle in the favorite assets accounts sheet",
+    "placeholders": {
+      "type": {
+        "type": "String",
+        "example": "Bank"
+      },
+      "balance": {
+        "type": "String",
+        "example": "€8,940.22"
+      }
+    }
+  },
+  "homeNetIncomeMonth": "Net income · {month}",
+  "@homeNetIncomeMonth": {
+    "description": "Summary label above this month's net income",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "Sep"
+      }
+    }
+  },
+  "homeLastMonths": "{count, plural, =1{Last month} other{Last {count} months}}",
+  "@homeLastMonths": {
+    "description": "Caption of the monthly Home charts; tapping it switches between 6 and 12 months",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "6"
+      }
+    }
+  },
+  "homeShowMonths": "{count, plural, =1{Show 1 month} other{Show {count} months}}",
+  "@homeShowMonths": {
+    "description": "Screen reader hint of the months caption",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "homeCashFlowEmpty": "No income or expenses yet. The chart appears after your first transaction.",
+  "@homeCashFlowEmpty": {
+    "description": "Cash flow and net income charts with no data"
+  },
+  "homeCashFlowSemantic": "Income and expenses per month: {values}",
+  "@homeCashFlowSemantic": {
+    "description": "Spoken summary of the cash flow chart",
+    "placeholders": {
+      "values": {
+        "type": "String",
+        "example": "September 2026: income €3,200.00, expenses €2,410.00"
+      }
+    }
+  },
+  "homeCashFlowPointSemantic": "{month}: income {income}, expenses {expenses}",
+  "@homeCashFlowPointSemantic": {
+    "description": "One month of the spoken cash flow summary",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "September 2026"
+      },
+      "income": {
+        "type": "String",
+        "example": "€3,200.00"
+      },
+      "expenses": {
+        "type": "String",
+        "example": "€2,410.00"
+      }
+    }
+  },
+  "homeNetIncomeSemantic": "Net income per month: {values}",
+  "@homeNetIncomeSemantic": {
+    "description": "Spoken summary of the net income chart",
+    "placeholders": {
+      "values": {
+        "type": "String",
+        "example": "September 2026: €790.00"
+      }
+    }
+  },
+  "homeNetWorthSemantic": "Net worth at the end of each month: {values}",
+  "@homeNetWorthSemantic": {
+    "description": "Spoken summary of the net worth chart",
+    "placeholders": {
+      "values": {
+        "type": "String",
+        "example": "September 2026: €48,230.15"
+      }
+    }
+  },
+  "homeNetWorthEmpty": "Not enough history yet. Come back next month to see the trend.",
+  "@homeNetWorthEmpty": {
+    "description": "Net worth chart with less than two months of data"
+  },
+  "homeNetWorthChange": "{amount} in {count, plural, =1{1 month} other{{count} months}}",
+  "@homeNetWorthChange": {
+    "description": "Net worth change over the chart period",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "+€7,030.15"
+      },
+      "count": {
+        "type": "int",
+        "example": "6"
+      }
+    }
+  },
+  "homeBudgetEmpty": "No budgets set. Give a category a monthly limit to track it here.",
+  "@homeBudgetEmpty": {
+    "description": "Budget summary section with no budget"
+  },
+  "homeBudgetSet": "Set a budget",
+  "@homeBudgetSet": {
+    "description": "Button of the empty budget summary"
+  },
+  "homeBudgetRemaining": "Remaining",
+  "@homeBudgetRemaining": {
+    "description": "Legend of the remaining slice of the budget pie"
+  },
+  "homeBudgetSpent": "Spent {spent} of {budgeted}",
+  "@homeBudgetSpent": {
+    "description": "Line below the budget pie",
+    "placeholders": {
+      "spent": {
+        "type": "String",
+        "example": "€1,872.20"
+      },
+      "budgeted": {
+        "type": "String",
+        "example": "€2,070.00"
+      }
+    }
+  },
+  "homeBudgetDetails": "Details",
+  "@homeBudgetDetails": {
+    "description": "Link from the budget summary to the Budget page"
+  },
+  "homeBudgetSemantic": "Budget spent per category this month: {values}",
+  "@homeBudgetSemantic": {
+    "description": "Spoken summary of the budget pie",
+    "placeholders": {
+      "values": {
+        "type": "String",
+        "example": "Housing: €800.00, Remaining: €190.00"
+      }
+    }
+  },
+  "homeRemindersEmpty": "No upcoming reminders.",
+  "@homeRemindersEmpty": {
+    "description": "Upcoming reminders section with nothing due"
+  },
+  "homeRemindersAll": "All",
+  "@homeRemindersAll": {
+    "description": "Link from the upcoming reminders section to the Reminders page"
+  },
+  "homeReminderDue": "Due {date}",
+  "@homeReminderDue": {
+    "description": "Due date of a reminder on Home",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Sep 30"
+      }
+    }
+  },
+  "homeAllHidden": "Every Home section is hidden",
+  "@homeAllHidden": {
+    "description": "Home with no visible section"
+  },
+  "arrangeHomeIntro": "Drag sections to change their order and uncheck the ones you don't want to see. You can also long press a section title directly on Home.",
+  "@arrangeHomeIntro": {
+    "description": "Intro of Arrange Home"
+  },
+  "arrangeHomeReset": "Reset to default order",
+  "@arrangeHomeReset": {
+    "description": "Button on Arrange Home"
+  },
+  "arrangeHomeShow": "Show {name}",
+  "@arrangeHomeShow": {
+    "description": "Spoken label of a section visibility checkbox",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Cash flow"
+      }
+    }
   }
 }

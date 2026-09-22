@@ -199,6 +199,16 @@ extension LedgerTextTheme on TextTheme {
   TextStyle get rowSubtitle => bodySmall!;
   TextStyle get rowAmount => bodyLarge!.copyWith(fontWeight: FontWeight.w600);
   TextStyle get tab => titleSmall!;
+
+  /// Serif italic value on the last point of a line chart.
+  TextStyle get chartValue => titleMedium!.copyWith(
+    fontSize: 13,
+    fontStyle: FontStyle.italic,
+    fontWeight: FontWeight.w400,
+  );
+
+  /// Serif figures of the Home summary.
+  TextStyle get summaryFigure => headlineMedium!.copyWith(height: 1.1);
 }
 
 const _pill = StadiumBorder();
