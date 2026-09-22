@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/main_currency.dart';
-import '../../../core/dates/wall_clock.dart';
+import '../../../app/now.dart';
 import '../../../core/dates/year_month.dart';
 import '../../../core/money/currency_converter.dart';
 import '../../../data/models/budget_progress.dart';
@@ -38,7 +38,7 @@ Stream<int> homeChartMonths(Ref ref) => ref
 @riverpod
 Stream<List<CashFlowMonth>> homeCashFlow(Ref ref, int months) async* {
   final converter = await ref.watch(currencyConverterProvider.future);
-  final now = YearMonth.of(DateTime.now());
+  final now = ref.watch(currentMonthProvider);
   yield* ref
       .watch(incomeExpenseRepositoryProvider)
       .watchCashFlow(now.plus(1 - months), now.plus(1))
@@ -59,13 +59,13 @@ Stream<List<CashFlowMonth>> homeCashFlow(Ref ref, int months) async* {
 @riverpod
 Stream<Map<YearMonth, int>> homeNetWorth(Ref ref, int months) async* {
   final converter = await ref.watch(currencyConverterProvider.future);
-  final now = YearMonth.of(DateTime.now());
+  final now = ref.watch(currentMonthProvider);
   yield* ref
       .watch(balancesRepositoryProvider)
       .watchNetWorthHistory(
         now.plus(1 - months),
         now,
-        before: startOfTomorrow(),
+        before: ref.watch(tomorrowProvider),
       )
       .map(
         (history) => history.map(
@@ -78,10 +78,10 @@ Stream<Map<YearMonth, int>> homeNetWorth(Ref ref, int months) async* {
 @riverpod
 Stream<ConvertedTotal> homeNetWorthToday(Ref ref) async* {
   final converter = await ref.watch(currencyConverterProvider.future);
-  final now = YearMonth.of(DateTime.now());
+  final now = ref.watch(currentMonthProvider);
   yield* ref
       .watch(balancesRepositoryProvider)
-      .watchNetWorthHistory(now, now, before: startOfTomorrow())
+      .watchNetWorthHistory(now, now, before: ref.watch(tomorrowProvider))
       .map((history) => converter.convert(history[now]!));
 }
 
@@ -89,7 +89,7 @@ Stream<ConvertedTotal> homeNetWorthToday(Ref ref) async* {
 @riverpod
 Stream<ConvertedTotal> homeNetIncomeThisMonth(Ref ref) async* {
   final converter = await ref.watch(currencyConverterProvider.future);
-  final now = YearMonth.of(DateTime.now());
+  final now = ref.watch(currentMonthProvider);
   yield* ref
       .watch(incomeExpenseRepositoryProvider)
       .watchCashFlow(now, now.plus(1))
@@ -99,7 +99,7 @@ Stream<ConvertedTotal> homeNetIncomeThisMonth(Ref ref) async* {
 @riverpod
 Stream<List<BudgetProgress>> homeBudgetProgress(Ref ref) => ref
     .watch(budgetsRepositoryProvider)
-    .watchProgress(YearMonth.of(DateTime.now()));
+    .watchProgress(ref.watch(currentMonthProvider));
 
 /// This month's spending per budget and what is left, in the main currency.
 @riverpod

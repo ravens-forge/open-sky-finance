@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/main_currency.dart';
+import '../../../app/now.dart';
 import '../../../app/routes.dart';
 import '../../../core/dates/wall_clock.dart';
 import '../../../core/dates/year_month.dart';
@@ -42,7 +43,7 @@ class TransactionsPage extends ConsumerStatefulWidget {
 }
 
 class _TransactionsPageState extends ConsumerState<TransactionsPage> {
-  var _month = YearMonth.of(DateTime.now());
+  late var _month = ref.read(currentMonthProvider);
   var _filter = const TransactionFilter();
   final _search = TextEditingController();
 
@@ -161,7 +162,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
     final labels =
         ref.watch(transactionLabelsProvider(_month)).value ??
         const <String, List<Label>>{};
-    final tomorrow = startOfTomorrow();
+    final tomorrow = ref.watch(tomorrowProvider);
     final day = DateFormat.MMMMEEEEd(l10n.localeName);
 
     Widget total(Map<String, int> net) {

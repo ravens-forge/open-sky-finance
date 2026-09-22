@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/main_currency.dart';
+import '../../../app/now.dart';
 import '../../../app/routes.dart';
 import '../../../core/dates/year_month.dart';
 import '../../../core/l10n.dart';
@@ -29,7 +30,7 @@ class LabelsPage extends ConsumerStatefulWidget {
 }
 
 class _LabelsPageState extends ConsumerState<LabelsPage> {
-  var _month = YearMonth.of(DateTime.now());
+  late var _month = ref.read(currentMonthProvider);
 
   Future<void> _pickMonth() async {
     final picked = await showDatePicker(

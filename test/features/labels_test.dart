@@ -73,6 +73,7 @@ void main() {
 
     await tester.tap(find.text('New label'));
     await settle(tester);
+    expect(tester.testTextInput.isVisible, isFalse);
     await tester.enterText(find.byType(TextField), 'VACATION');
     await tester.tap(find.text('Save'));
     await settle(tester);

@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../core/dates/wall_clock.dart';
+import '../../../app/now.dart';
 import '../../../core/dates/year_month.dart';
 import '../../../data/models/assets_account.dart';
 import '../../../data/models/category.dart';
@@ -23,14 +23,14 @@ Stream<AssetsAccount?> assetsAccount(Ref ref, String id) =>
 /// month ends today.
 @riverpod
 Stream<Map<YearMonth, int>> assetsAccountBalanceHistory(Ref ref, String id) {
-  final now = YearMonth.of(DateTime.now());
+  final now = ref.watch(currentMonthProvider);
   return ref
       .watch(balancesRepositoryProvider)
       .watchBalanceHistory(
         id,
         now.plus(1 - balanceChartMonths),
         now,
-        before: startOfTomorrow(),
+        before: ref.watch(tomorrowProvider),
       );
 }
 

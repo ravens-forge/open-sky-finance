@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/now.dart';
 import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
 import '../models/home_section_place.dart';
@@ -20,6 +21,7 @@ class UpcomingRemindersSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final reminders = ref.watch(homeUpcomingRemindersProvider).value;
+    final today = ref.watch(todayProvider);
     return HomeSectionFrame(
       title: l10n.homeSectionUpcomingReminders,
       place: place,
@@ -35,6 +37,7 @@ class UpcomingRemindersSection extends ConsumerWidget {
             for (final r in reminders)
               UpcomingReminderRow(
                 reminder: r,
+                today: today,
                 onTap: () => context.push(Routes.reminder(r.id)),
               ),
           ],

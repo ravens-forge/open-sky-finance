@@ -3,10 +3,10 @@ import 'dart:ui';
 import 'package:decimal/decimal.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../core/dates/wall_clock.dart';
 import '../core/money/currency_converter.dart';
 import '../data/repositories/setting_keys.dart';
 import '../data/providers.dart';
+import 'now.dart';
 
 part 'main_currency.g.dart';
 
@@ -21,10 +21,9 @@ Stream<String> mainCurrency(Ref ref) => ref
 /// Units of the main currency per unit of each other currency, as of today.
 @riverpod
 Stream<Map<String, Decimal>> exchangeRates(Ref ref) async* {
+  final tomorrow = ref.watch(tomorrowProvider);
   final main = await ref.watch(mainCurrencyProvider.future);
-  yield* ref
-      .watch(exchangeRatesRepositoryProvider)
-      .watchRates(main, startOfTomorrow());
+  yield* ref.watch(exchangeRatesRepositoryProvider).watchRates(main, tomorrow);
 }
 
 /// Converts totals of any currency into the main one.

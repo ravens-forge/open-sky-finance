@@ -19,7 +19,6 @@ class TransactionAmountField extends StatelessWidget {
     required this.color,
     this.sign,
     this.large = true,
-    this.autofocus = false,
     this.onChanged,
     this.error,
     this.helper,
@@ -33,7 +32,6 @@ class TransactionAmountField extends StatelessWidget {
   /// `−`, `+` or `⇄`; left out for the amount received.
   final String? sign;
   final bool large;
-  final bool autofocus;
   final ValueChanged<String>? onChanged;
   final String? error;
   final Widget? helper;
@@ -84,7 +82,6 @@ class TransactionAmountField extends StatelessWidget {
                     symbolAfter,
                     TextField(
                       controller: controller,
-                      autofocus: autofocus,
                       onChanged: onChanged,
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,

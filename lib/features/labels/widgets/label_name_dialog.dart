@@ -62,7 +62,6 @@ class _LabelNameDialogState extends ConsumerState<_LabelNameDialog> {
       title: Text(widget.label == null ? l10n.labelsNew : l10n.labelsRename),
       content: TextField(
         controller: _name,
-        autofocus: true,
         maxLength: 100,
         textCapitalization: TextCapitalization.sentences,
         textInputAction: TextInputAction.done,

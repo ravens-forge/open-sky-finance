@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/main_currency.dart';
-import '../../../core/dates/wall_clock.dart';
+import '../../../app/now.dart';
 import '../../../data/models/assets_account.dart';
 import '../../../data/providers.dart';
 import '../models/assets_account_with_balance.dart';
@@ -16,8 +16,9 @@ Stream<List<AssetsAccount>> assetsAccounts(Ref ref) =>
 
 /// Balance of every assets account as of today, in its own currency.
 @riverpod
-Stream<Map<String, int>> assetsAccountBalances(Ref ref) =>
-    ref.watch(balancesRepositoryProvider).watchBalances(startOfTomorrow());
+Stream<Map<String, int>> assetsAccountBalances(Ref ref) => ref
+    .watch(balancesRepositoryProvider)
+    .watchBalances(ref.watch(tomorrowProvider));
 
 @riverpod
 Future<List<AssetsAccountWithBalance>> assetsAccountsWithBalance(

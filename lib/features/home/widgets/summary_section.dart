@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/main_currency.dart';
+import '../../../app/now.dart';
 import '../../../app/theme.dart';
 import '../../../core/l10n.dart';
 import '../../../core/money/currency_converter.dart';
@@ -22,7 +23,8 @@ class SummarySection extends ConsumerWidget {
     final currency = ref.watch(mainCurrencyProvider).value;
     final netWorth = ref.watch(homeNetWorthTodayProvider).value;
     final netIncome = ref.watch(homeNetIncomeThisMonthProvider).value;
-    final month = DateFormat.MMM(l10n.localeName).format(DateTime.now());
+    final month = DateFormat.MMM(l10n.localeName)
+        .format(ref.watch(currentMonthProvider).start);
 
     Widget figure(
       String label,

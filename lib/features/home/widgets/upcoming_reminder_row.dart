@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/theme.dart';
-import '../../../core/dates/wall_clock.dart';
 import '../../../core/l10n.dart';
 import '../../../core/labels.dart';
 import '../../../core/widgets/amount_text.dart';
@@ -16,10 +15,14 @@ class UpcomingReminderRow extends StatelessWidget {
   const UpcomingReminderRow({
     super.key,
     required this.reminder,
+    required this.today,
     required this.onTap,
   });
 
   final Reminder reminder;
+
+  /// Midnight today: due before it is overdue.
+  final DateTime today;
   final VoidCallback onTap;
 
   @override
@@ -27,7 +30,7 @@ class UpcomingReminderRow extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final due = reminder.schedule.nextDueAt!;
-    final overdue = due.isBefore(startOfDay(DateTime.now()));
+    final overdue = due.isBefore(today);
     final transfer = reminder.type == TransactionType.transfer;
     return InkWell(
       onTap: onTap,

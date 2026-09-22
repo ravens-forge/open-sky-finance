@@ -93,7 +93,9 @@ fvm dart run build_runner watch --delete-conflicting-outputs   # during developm
 fvm dart run drift_dev make-migrations                          # after bumping schemaVersion
 fvm flutter gen-l10n
 fvm flutter analyze
-fvm flutter test
+fvm flutter test --exclude-tags golden
+fvm flutter test --tags golden                                  # screen goldens (Windows)
+fvm flutter test --tags golden --update-goldens                 # after an intended UI change
 fvm dart format .
 ```
 
@@ -148,7 +150,13 @@ presentation → providers → services/repositories → Drift.
   Both take the active locale.
 - Dates are formatted only with `DateFormat` skeletons and the active locale.
 - Dates of transactions are **local wall-clock times** (no time zone).
+- The current time comes from `nowProvider` (`app/now.dart`), never `DateTime.now()` in
+  widgets or providers: watch `todayProvider`, `tomorrowProvider` or `currentMonthProvider`
+  so screens follow midnight, and tests fix it (`pumpApp(now: …)`). Repositories may stamp
+  writes with `DateTime.now()`.
 - Route parameters carry only IDs and enum values — never names, amounts or notes.
+- No `autofocus` on pages, sheets or dialogs: the keyboard opens only when the user taps a
+  field.
 - Colours, income/expense/transfer semantics and chart series come from the theme
   (`FinanceColors` theme extension), never hard-coded in widgets, and meaning is never
   conveyed by colour alone.
@@ -192,7 +200,7 @@ presentation → providers → services/repositories → Drift.
 | Migrations    | unit          | Drift schema verifier |
 | Backup codec  | unit          | Round-trip: snapshot → JSON → snapshot is identical |
 | Bluecoins     | unit          | Synthetic `.fydb` built at test time from a committed SQL script |
-| Screens       | widget/golden | Key flows, goldens in en/es/fr, light and dark |
+| Screens       | widget/golden | Key flows; goldens (`test/goldens/`, tag `golden`) in en light and dark, es and fr, taken and checked on Windows |
 
 See also: [CONTRIBUTING.md](CONTRIBUTING.md) for setup and pull request rules, and
 [SECURITY.md](SECURITY.md) for the privacy guarantees the code must keep true.

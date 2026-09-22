@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/main_currency.dart';
+import '../../../app/now.dart';
 import '../../../app/routes.dart';
 import '../../../core/dates/wall_clock.dart';
 import '../../../core/l10n.dart';
@@ -31,7 +32,9 @@ class BudgetSummarySection extends ConsumerWidget {
       title: l10n.homeSectionBudgetSummary,
       place: place,
       caption: Text(
-        capitalizeFirst(DateFormat.MMMM(locale).format(DateTime.now())),
+        capitalizeFirst(
+          DateFormat.MMMM(locale).format(ref.watch(currentMonthProvider).start),
+        ),
       ),
       child: switch ((summary, currency)) {
         (final summary?, final currency?) when summary.budgeted > 0 => Column(

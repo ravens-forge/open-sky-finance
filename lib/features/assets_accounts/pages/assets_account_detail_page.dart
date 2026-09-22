@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/now.dart';
 import '../../../app/routes.dart';
-import '../../../core/dates/year_month.dart';
 import '../../../core/l10n.dart';
 import '../../../core/widgets/balance_chart.dart';
 import '../../../core/widgets/not_found_page.dart';
@@ -29,7 +29,7 @@ class AssetsAccountDetailPage extends ConsumerStatefulWidget {
 
 class _AssetsAccountDetailPageState
     extends ConsumerState<AssetsAccountDetailPage> {
-  var _month = YearMonth.of(DateTime.now());
+  late var _month = ref.read(currentMonthProvider);
 
   @override
   Widget build(BuildContext context) {
