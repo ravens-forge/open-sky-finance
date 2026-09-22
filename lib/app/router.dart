@@ -14,6 +14,7 @@ import '../features/assets_accounts/pages/assets_accounts_page.dart';
 import '../features/categories/pages/categories_page.dart';
 import '../features/categories/pages/category_editor_page.dart';
 import '../features/categories/pages/category_group_editor_page.dart';
+import '../features/labels/pages/labels_page.dart';
 import '../features/onboarding/pages/onboarding_page.dart';
 import '../features/onboarding/providers/onboarding_provider.dart';
 import '../features/shell/models/main_page.dart';
@@ -98,9 +99,9 @@ GoRouter router(Ref ref) {
               routes: [
                 GoRoute(
                   path: page.path,
-                  // ponytail: empty until each main page is built.
                   builder: (context, state) => switch (page) {
                     MainPage.transactions => const TransactionsPage(),
+                    MainPage.labels => const LabelsPage(),
                     _ => const SizedBox.expand(),
                   },
                   routes: switch (page) {
@@ -141,8 +142,6 @@ GoRouter router(Ref ref) {
                           StubPage(title: context.l10n.editorNewReminder),
                         ),
                       ),
-                      // ponytail: no reminder lookup until the reminders
-                      // repository exists; gate it like the others then.
                       GoRoute(
                         path: ':reminderId',
                         parentNavigatorKey: rootKey,

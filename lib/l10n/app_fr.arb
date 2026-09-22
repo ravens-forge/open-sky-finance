@@ -341,5 +341,18 @@
   "labelsPickerUses": "{count, plural, =0{Pas encore utilisée} one{{count} utilisation} other{{count} utilisations}}",
   "labelsPickerCreatedNow": "Créée à l'instant",
   "labelsPickerDone": "{count, plural, =0{Terminé} one{Terminé · {count} étiquette} other{Terminé · {count} étiquettes}}",
-  "labelRemove": "Retirer {name}"
+  "labelRemove": "Retirer {name}",
+  "labelsIntro": "Totaux des transactions portant chaque étiquette sur cette période. Touchez une étiquette pour voir ses transactions.",
+  "labelsInfoLabel": "À propos des étiquettes",
+  "labelsInfoEyebrow": "Étiquettes et catégories",
+  "labelsInfo": "Les étiquettes sont des repères libres qui traversent les catégories. Une transaction a une seule catégorie mais peut porter plusieurs étiquettes : ces totaux peuvent donc se recouper.",
+  "labelsCount": "{count, plural, =0{Aucune transaction ce mois-ci} =1{1 transaction} other{{count} transactions}}",
+  "labelsEmpty": "Aucune étiquette pour l'instant",
+  "labelsEmptyMessage": "Les étiquettes regroupent des transactions de plusieurs catégories, comme un voyage ou un projet.",
+  "labelsNew": "Nouvelle étiquette",
+  "labelsRename": "Renommer l'étiquette",
+  "actionRename": "Renommer",
+  "labelDeleteTitle": "Supprimer « {name} » ?",
+  "labelDeleteBody": "{count, plural, =0{Aucune transaction ne l'utilise.} one{Elle est retirée de {count} transaction, qui est conservée.} other{Elle est retirée de {count} transactions, qui sont conservées.}}",
+  "errorNameTaken": "Ce nom est déjà utilisé"
 }

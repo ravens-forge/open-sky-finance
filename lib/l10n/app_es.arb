@@ -341,5 +341,18 @@
   "labelsPickerUses": "{count, plural, =0{Sin usar} =1{1 uso} other{{count} usos}}",
   "labelsPickerCreatedNow": "Creada ahora mismo",
   "labelsPickerDone": "{count, plural, =0{Hecho} =1{Hecho · 1 etiqueta} other{Hecho · {count} etiquetas}}",
-  "labelRemove": "Quitar {name}"
+  "labelRemove": "Quitar {name}",
+  "labelsIntro": "Totales de las transacciones con cada etiqueta en este periodo. Toca una etiqueta para ver sus transacciones.",
+  "labelsInfoLabel": "Sobre las etiquetas",
+  "labelsInfoEyebrow": "Etiquetas y categorías",
+  "labelsInfo": "Las etiquetas son marcas libres que atraviesan las categorías. Una transacción tiene una sola categoría pero puede llevar varias etiquetas, así que estos totales pueden solaparse.",
+  "labelsCount": "{count, plural, =0{Sin transacciones este mes} =1{1 transacción} other{{count} transacciones}}",
+  "labelsEmpty": "Aún no hay etiquetas",
+  "labelsEmptyMessage": "Las etiquetas agrupan transacciones de distintas categorías, como un viaje o un proyecto.",
+  "labelsNew": "Nueva etiqueta",
+  "labelsRename": "Renombrar etiqueta",
+  "actionRename": "Renombrar",
+  "labelDeleteTitle": "¿Eliminar «{name}»?",
+  "labelDeleteBody": "{count, plural, =0{Ninguna transacción la usa.} =1{Se quita de 1 transacción, que se conserva.} other{Se quita de {count} transacciones, que se conservan.}}",
+  "errorNameTaken": "Este nombre ya existe"
 }
