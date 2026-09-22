@@ -146,22 +146,26 @@ void main() {
     },
   );
 
-  test('spending by category group', () async {
+  test('spending by category and its group', () async {
     final march = YearMonth(2026, 3);
     expect(
       await db.incomeExpenseRepository
-          .watchTotalsByGroup(CategoryKind.expense, march.start, march.end)
+          .watchCategoryTotals(CategoryKind.expense, march.start, march.end)
           .first,
       {
-        food: {'EUR': -m(30)},
+        food: {
+          groceries: {'EUR': -m(30)},
+        },
       },
     );
     expect(
       await db.incomeExpenseRepository
-          .watchTotalsByGroup(CategoryKind.income, march.start, march.end)
+          .watchCategoryTotals(CategoryKind.income, march.start, march.end)
           .first,
       {
-        null: {'EUR': m(50)},
+        null: {
+          null: {'EUR': m(50)},
+        },
       },
     );
   });
