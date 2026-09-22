@@ -29,5 +29,8 @@ Two other version numbers exist and are **not** the app version: the Drift datab
 - Trash page: deleted transactions grouped by the day they were deleted, each with Restore and Delete permanently (after confirming); “Empty” deletes them all after confirming. The drawer shows how many items the Trash holds.
 - Home page: favorite assets accounts, net worth and this month's net income, cash flow, budget summary, net income and net worth charts for the last 6 or 12 months, and upcoming reminders (hidden by default). Charts use your favorite assets accounts (or all visible ones), are read aloud as lists of figures, and tapping a month opens its transactions. Drag a section by its handle or long press its title to move it, with a dashed slot showing where it lands; "Arrange Home" moves, hides and shows sections and resets the default order.
 - Editors and dialogs open without the keyboard: it appears only when you tap a field.
+- Balance sheet page: net worth as of a date you choose, with an assets-vs-liabilities bar, your assets and liabilities grouped by type with subtotals, credit card usage, and hidden or excluded accounts called out.
+- Net income page: income, expenses, net income and savings rate for a Month, Quarter, Year or custom Range, with income and expenses broken down by category group and category; tap a category in Month view to see its transactions.
+- The "Add" button now only appears on pages that are themselves a list of transactions (Transactions and an assets account's own detail page), not on every main tab.
 
 [Unreleased]: https://github.com/ravens-forge/open-sky-finance/commits/main
