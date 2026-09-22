@@ -42,19 +42,25 @@ void main() {
     expect(tabs.index, 6);
   });
 
-  testWidgets('FAB opens the editor above the shell', (tester) async {
-    final router = (await pumpApp(tester)).read(routerProvider);
+  testWidgets(
+    'FAB only shows on Transactions, and opens the editor above the shell',
+    (tester) async {
+      final router = (await pumpApp(tester)).read(routerProvider);
+      expect(find.text('Add'), findsNothing);
 
-    await tester.tap(find.text('Add'));
-    await settle(tester);
-    expect(location(router), Routes.newTransaction());
-    expect(find.text('New transaction'), findsOneWidget);
-    expect(find.byType(TabBar), findsNothing);
+      await tester.tap(find.text('Transactions'));
+      await settle(tester);
+      await tester.tap(find.text('Add'));
+      await settle(tester);
+      expect(location(router), Routes.newTransaction());
+      expect(find.text('New transaction'), findsOneWidget);
+      expect(find.byType(TabBar), findsNothing);
 
-    await tester.tap(find.byTooltip('Close'));
-    await settle(tester);
-    expect(location(router), Routes.home);
-  });
+      await tester.tap(find.byTooltip('Close'));
+      await settle(tester);
+      expect(location(router), Routes.transactions);
+    },
+  );
 
   testWidgets('drawer opens other pages', (tester) async {
     final router = (await pumpApp(tester)).read(routerProvider);

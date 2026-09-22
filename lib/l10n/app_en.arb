@@ -2223,5 +2223,163 @@
         "example": "Cash flow"
       }
     }
+  },
+  "balanceSheetAsOf": "As of",
+  "@balanceSheetAsOf": {
+    "description": "Eyebrow label of the Balance sheet date, and the date picker's title"
+  },
+  "balanceSheetNetWorth": "Net worth",
+  "@balanceSheetNetWorth": {
+    "description": "Eyebrow label of the net worth figure on Balance sheet"
+  },
+  "balanceSheetNetWorthInfoLabel": "About net worth",
+  "@balanceSheetNetWorthInfoLabel": {
+    "description": "Spoken label of the net worth info tooltip icon"
+  },
+  "balanceSheetNetWorthInfo": "Everything in your assets accounts minus everything you owe on liability accounts, on the date above. Transactions sitting in the trash are left out.",
+  "@balanceSheetNetWorthInfo": {
+    "description": "Net worth info tooltip body on Balance sheet"
+  },
+  "balanceSheetAssetsShare": "Assets {percent}",
+  "@balanceSheetAssetsShare": {
+    "description": "Under the net worth proportion bar",
+    "placeholders": {
+      "percent": {
+        "type": "String",
+        "example": "81.5%"
+      }
+    }
+  },
+  "balanceSheetLiabilitiesShare": "Liabilities {percent}",
+  "@balanceSheetLiabilitiesShare": {
+    "description": "Under the net worth proportion bar",
+    "placeholders": {
+      "percent": {
+        "type": "String",
+        "example": "18.5%"
+      }
+    }
+  },
+  "balanceSheetCreditLimitUsed": "{percent} of {limit} credit limit",
+  "@balanceSheetCreditLimitUsed": {
+    "description": "Under a credit card row on Balance sheet",
+    "placeholders": {
+      "percent": {
+        "type": "String",
+        "example": "22.7%"
+      },
+      "limit": {
+        "type": "String",
+        "example": "€3,000.00"
+      }
+    }
+  },
+  "balanceSheetHiddenNote": "{count, plural, =1{1 hidden assets account not included} other{{count} hidden assets accounts not included}}",
+  "@balanceSheetHiddenNote": {
+    "description": "Note at the end of Balance sheet when accounts are hidden",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "balanceSheetViewAssetsAccounts": "View assets accounts",
+  "@balanceSheetViewAssetsAccounts": {
+    "description": "Link next to the hidden accounts note on Balance sheet"
+  },
+  "netIncomePreviousPeriod": "Previous period",
+  "@netIncomePreviousPeriod": {
+    "description": "Spoken label of the previous-period arrow on Net income"
+  },
+  "netIncomeNextPeriod": "Next period",
+  "@netIncomeNextPeriod": {
+    "description": "Spoken label of the next-period arrow on Net income"
+  },
+  "netIncomeQuarterLabel": "Q{quarter} {year}",
+  "@netIncomeQuarterLabel": {
+    "description": "Period switcher label for a quarter on Net income",
+    "placeholders": {
+      "quarter": {
+        "type": "int",
+        "example": "3"
+      },
+      "year": {
+        "type": "int",
+        "example": "2026"
+      }
+    }
+  },
+  "netIncomeRangeLabel": "{from} – {to}",
+  "@netIncomeRangeLabel": {
+    "description": "Period switcher label for a custom range on Net income",
+    "placeholders": {
+      "from": {
+        "type": "String",
+        "example": "Sep 1, 2026"
+      },
+      "to": {
+        "type": "String",
+        "example": "Sep 17, 2026"
+      }
+    }
+  },
+  "netIncomePeriodMonth": "Month",
+  "@netIncomePeriodMonth": {
+    "description": "Period kind chip on Net income"
+  },
+  "netIncomePeriodQuarter": "Quarter",
+  "@netIncomePeriodQuarter": {
+    "description": "Period kind chip on Net income"
+  },
+  "netIncomePeriodYear": "Year",
+  "@netIncomePeriodYear": {
+    "description": "Period kind chip on Net income"
+  },
+  "netIncomePeriodRange": "Range",
+  "@netIncomePeriodRange": {
+    "description": "Period kind chip on Net income"
+  },
+  "netIncomeIncome": "Income",
+  "@netIncomeIncome": {
+    "description": "Income row label and section title on Net income"
+  },
+  "netIncomeExpenses": "Expenses",
+  "@netIncomeExpenses": {
+    "description": "Expenses row label and section title on Net income"
+  },
+  "netIncomeNet": "Net income",
+  "@netIncomeNet": {
+    "description": "Net income hero figure label, matching the page title's own wording"
+  },
+  "netIncomeInfoLabel": "About net income",
+  "@netIncomeInfoLabel": {
+    "description": "Spoken label of the net income info tooltip icon"
+  },
+  "netIncomeInfo": "Income minus expenses for this period. A transfer between two of your own assets accounts is neither, so it never changes this figure.",
+  "@netIncomeInfo": {
+    "description": "Net income info tooltip body"
+  },
+  "netIncomeSavingsRateLabel": "Savings rate {percent}",
+  "@netIncomeSavingsRateLabel": {
+    "description": "Savings rate row on Net income",
+    "placeholders": {
+      "percent": {
+        "type": "String",
+        "example": "36.6%"
+      }
+    }
+  },
+  "netIncomeSavingsRateInfoLabel": "About savings rate",
+  "@netIncomeSavingsRateInfoLabel": {
+    "description": "Spoken label of the savings rate info tooltip icon"
+  },
+  "netIncomeSavingsRateInfo": "Net income as a share of income for the period.",
+  "@netIncomeSavingsRateInfo": {
+    "description": "Savings rate info tooltip body"
+  },
+  "netIncomeEmpty": "No income or expenses yet",
+  "@netIncomeEmpty": {
+    "description": "Net income page with nothing in the period"
   }
 }

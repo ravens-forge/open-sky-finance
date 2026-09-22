@@ -8,6 +8,7 @@ import '../../../core/l10n.dart';
 import '../../../core/widgets/balance_chart.dart';
 import '../../../core/widgets/not_found_page.dart';
 import '../../../core/widgets/page_placeholder.dart';
+import '../../shell/widgets/add_fab.dart';
 import '../models/credit_usage.dart';
 import '../providers/assets_account_detail_providers.dart';
 import '../providers/assets_accounts_controller.dart';
@@ -77,6 +78,7 @@ class _AssetsAccountDetailPageState
           ),
         ],
       ),
+      floatingActionButton: const AddFab(),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
         children: [

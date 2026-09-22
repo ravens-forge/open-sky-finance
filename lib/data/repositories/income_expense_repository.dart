@@ -77,22 +77,23 @@ GROUP BY 1, 2, 3''',
     return into;
   }
 
-  /// Expense (or income) totals per category group of non-hidden assets accounts
-  /// in [from, to); a group includes every category inside it. The `null` key
-  /// is uncategorized.
-  Stream<Map<String?, Map<String, int>>> watchTotalsByGroup(
+  /// Expense (or income) totals per category and its group, of non-hidden
+  /// assets accounts in [from, to). The outer `null` key is uncategorized
+  /// (its inner map then has a single `null` category key); group totals are
+  /// the sum of their categories.
+  Stream<Map<String?, Map<String?, Map<String, int>>>> watchCategoryTotals(
     CategoryKind kind,
     DateTime from,
     DateTime to,
   ) =>
       customSelect(
         '''
-SELECT c.group_id AS group_id, t.currency AS currency,
-  SUM(t.amount) AS total
+SELECT c.group_id AS group_id, t.category_id AS category_id,
+  t.currency AS currency, SUM(t.amount) AS total
 FROM transactions t LEFT JOIN categories c ON c.id = t.category_id
 WHERE t.deleted_at IS NULL AND t.type = ?1
   AND t.occurred_at >= ?2 AND t.occurred_at < ?3 AND t.$visibleAccounts
-GROUP BY 1, 2''',
+GROUP BY 1, 2, 3''',
         variables: [
           Variable(kind.name),
           wallClockVariable(from),
@@ -100,10 +101,12 @@ GROUP BY 1, 2''',
         ],
         readsFrom: {assetsAccountsTable, categoriesTable, transactionsTable},
       ).watch().map((rows) {
-        final groups = <String?, Map<String, int>>{};
+        final groups = <String?, Map<String?, Map<String, int>>>{};
         for (final r in rows) {
-          final group = groups[r.readNullable<String>('group_id')] ??= {};
-          group[r.read<String>('currency')] = r.read<int>('total');
+          final categories = groups[r.readNullable<String>('group_id')] ??= {};
+          final byCurrency =
+              categories[r.readNullable<String>('category_id')] ??= {};
+          byCurrency[r.read<String>('currency')] = r.read<int>('total');
         }
         return groups;
       });

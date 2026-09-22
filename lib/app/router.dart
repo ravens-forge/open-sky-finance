@@ -11,12 +11,14 @@ import '../data/providers.dart';
 import '../features/assets_accounts/pages/assets_account_detail_page.dart';
 import '../features/assets_accounts/pages/assets_account_editor_page.dart';
 import '../features/assets_accounts/pages/assets_accounts_page.dart';
+import '../features/balance_sheet/pages/balance_sheet_page.dart';
 import '../features/categories/pages/categories_page.dart';
 import '../features/categories/pages/category_editor_page.dart';
 import '../features/categories/pages/category_group_editor_page.dart';
 import '../features/home/pages/arrange_home_page.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/labels/pages/labels_page.dart';
+import '../features/net_income/pages/net_income_page.dart';
 import '../features/onboarding/pages/onboarding_page.dart';
 import '../features/onboarding/providers/onboarding_provider.dart';
 import '../features/shell/models/main_page.dart';
@@ -105,6 +107,8 @@ GoRouter router(Ref ref) {
                   builder: (context, state) => switch (page) {
                     MainPage.home => const HomePage(),
                     MainPage.transactions => const TransactionsPage(),
+                    MainPage.balanceSheet => const BalanceSheetPage(),
+                    MainPage.netIncome => const NetIncomePage(),
                     MainPage.labels => const LabelsPage(),
                     _ => const SizedBox.expand(),
                   },
