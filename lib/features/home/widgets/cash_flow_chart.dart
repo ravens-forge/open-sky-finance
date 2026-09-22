@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +8,7 @@ import '../../../core/dates/year_month.dart';
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
 import '../../../core/money/format_money.dart';
+import '../../../core/widgets/chart_range.dart';
 import '../../../core/widgets/chart_semantics.dart';
 import '../../../core/widgets/month_chart_axes.dart';
 import '../models/cash_flow_month.dart';
@@ -31,7 +34,13 @@ class CashFlowChart extends StatelessWidget {
     final locale = l10n.localeName;
     final theme = Theme.of(context);
     final finance = FinanceColors.of(context);
-    final axes = MonthChartAxes(context, [for (final m in months) m.month]);
+    final top = months.fold(
+      0.0,
+      (top, m) => math.max(top, math.max(m.income, -m.expense) / microsPerUnit),
+    );
+    final axes = MonthChartAxes(context, [
+      for (final m in months) m.month,
+    ], ChartRange.around(0, top));
     final monthLong = DateFormat.yMMMM(locale);
     final width = months.length > 6 ? 6.0 : 13.0;
     String money(int micros) =>
@@ -77,6 +86,8 @@ class CashFlowChart extends StatelessWidget {
                 borderData: axes.border,
                 gridData: axes.grid,
                 titlesData: axes.titles,
+                minY: axes.range.min,
+                maxY: axes.range.max,
                 extraLinesData: axes.baseline,
                 alignment: BarChartAlignment.spaceAround,
                 barTouchData: BarTouchData(

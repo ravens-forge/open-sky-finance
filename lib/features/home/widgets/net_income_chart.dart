@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +8,7 @@ import '../../../core/dates/year_month.dart';
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
 import '../../../core/money/format_money.dart';
+import '../../../core/widgets/chart_range.dart';
 import '../../../core/widgets/chart_semantics.dart';
 import '../../../core/widgets/month_chart_axes.dart';
 import '../models/cash_flow_month.dart';
@@ -31,7 +34,14 @@ class NetIncomeChart extends StatelessWidget {
     final locale = l10n.localeName;
     final theme = Theme.of(context);
     final finance = FinanceColors.of(context);
-    final axes = MonthChartAxes(context, [for (final m in months) m.month]);
+    final nets = [for (final m in months) m.net / microsPerUnit];
+    final low = nets.fold(0.0, math.min);
+    final high = nets.fold(0.0, math.max);
+    // Room above and below the bars for their value labels.
+    final pad = (high - low) * 0.25;
+    final axes = MonthChartAxes(context, [
+      for (final m in months) m.month,
+    ], ChartRange.around(low < 0 ? low - pad : 0, high + pad));
     final monthLong = DateFormat.yMMMM(locale);
     final whole = NumberFormat.decimalPattern(locale)
       ..maximumFractionDigits = 0;
@@ -57,6 +67,8 @@ class NetIncomeChart extends StatelessWidget {
             borderData: axes.border,
             gridData: axes.grid,
             titlesData: axes.titles,
+            minY: axes.range.min,
+            maxY: axes.range.max,
             extraLinesData: axes.baseline,
             alignment: BarChartAlignment.spaceAround,
             barTouchData: BarTouchData(

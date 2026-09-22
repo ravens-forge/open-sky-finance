@@ -32,7 +32,7 @@ class BudgetPieChart extends StatelessWidget {
       // A proportion for display only.
       value: micros.toDouble(),
       color: color,
-      radius: 70,
+      radius: 75,
       showTitle: false,
     );
 
@@ -51,7 +51,7 @@ class BudgetPieChart extends StatelessWidget {
         spacing: 18,
         children: [
           SizedBox.square(
-            dimension: 140,
+            dimension: 150,
             child: PieChart(
               PieChartData(
                 sectionsSpace: 0,

@@ -9,6 +9,7 @@ import '../../../data/models/home_section.dart';
 import '../providers/home_controller.dart';
 import '../providers/home_providers.dart';
 import '../widgets/arrange_home_row.dart';
+import '../widgets/section_link.dart';
 
 /// Every Home section in order with its visibility; changes are saved at once.
 class ArrangeHomePage extends ConsumerWidget {
@@ -81,9 +82,10 @@ class ArrangeHomePage extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 10),
-          TextButton(
+          SectionLink(
+            l10n.arrangeHomeReset,
+            color: theme.colorScheme.primary,
             onPressed: controller.reset,
-            child: Text(l10n.arrangeHomeReset),
           ),
         ],
       ),

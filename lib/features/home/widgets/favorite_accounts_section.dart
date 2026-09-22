@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
 import '../../../core/widgets/ledger_chip.dart';
 import '../../assets_accounts/providers/assets_accounts_providers.dart';
@@ -10,6 +8,7 @@ import '../models/home_section_place.dart';
 import 'chart_empty_note.dart';
 import 'favorite_accounts_sheet.dart';
 import 'home_section_frame.dart';
+import 'section_link.dart';
 
 class FavoriteAccountsSection extends ConsumerWidget {
   const FavoriteAccountsSection({super.key, required this.place});
@@ -27,9 +26,9 @@ class FavoriteAccountsSection extends ConsumerWidget {
       eyebrow: true,
       caption: favorites.isEmpty
           ? null
-          : TextButton(
+          : SectionLink(
+              l10n.actionEdit,
               onPressed: () => showFavoriteAccountsSheet(context),
-              child: Text(l10n.actionEdit),
             ),
       child: accounts == null
           ? const SizedBox(height: 30)
@@ -38,18 +37,15 @@ class FavoriteAccountsSection extends ConsumerWidget {
               l10n.homeFavoritesEmpty,
               action: OutlinedButton(
                 onPressed: () => showFavoriteAccountsSheet(context),
-                child: Text(l10n.actionChoose),
+                child: Text(l10n.homeFavoritesChoose),
               ),
             )
           : Wrap(
               spacing: 6,
+              runSpacing: 6,
               children: [
                 for (final a in favorites)
-                  LedgerChip.label(
-                    a.name,
-                    icon: Icons.star,
-                    onPressed: () => context.push(Routes.assetsAccount(a.id)),
-                  ),
+                  LedgerChip.label(a.name, icon: Icons.star),
               ],
             ),
     );

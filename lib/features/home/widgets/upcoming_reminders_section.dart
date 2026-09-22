@@ -8,6 +8,7 @@ import '../models/home_section_place.dart';
 import '../providers/home_providers.dart';
 import 'chart_empty_note.dart';
 import 'home_section_frame.dart';
+import 'section_link.dart';
 import 'upcoming_reminder_row.dart';
 
 class UpcomingRemindersSection extends ConsumerWidget {
@@ -22,9 +23,9 @@ class UpcomingRemindersSection extends ConsumerWidget {
     return HomeSectionFrame(
       title: l10n.homeSectionUpcomingReminders,
       place: place,
-      caption: TextButton(
+      caption: SectionLink(
+        l10n.homeRemindersAll,
         onPressed: () => context.go(Routes.reminders),
-        child: Text(l10n.homeRemindersAll),
       ),
       child: switch (reminders) {
         null => const SizedBox(height: 56),

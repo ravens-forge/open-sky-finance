@@ -202,7 +202,7 @@ class _DropSlot extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return CustomPaint(
-      painter: _DashedRect(scheme.primary),
+      foregroundPainter: _DashedRect(scheme.primary),
       child: Container(
         height: height,
         color: scheme.primaryContainer,

@@ -1996,7 +1996,7 @@
   "@homeSectionBudgetSummaryHint": {
     "description": "What the section shows, on Arrange Home"
   },
-  "homeSectionNetIncomeHint": "Income − expenses per month",
+  "homeSectionNetIncomeHint": "Bars per month",
   "@homeSectionNetIncomeHint": {
     "description": "What the section shows, on Arrange Home"
   },
@@ -2004,13 +2004,17 @@
   "@homeSectionNetWorthHint": {
     "description": "What the section shows, on Arrange Home"
   },
-  "homeSectionUpcomingRemindersHint": "Next due reminders",
+  "homeSectionUpcomingRemindersHint": "Hidden by default",
   "@homeSectionUpcomingRemindersHint": {
     "description": "What the section shows, on Arrange Home"
   },
   "homeFavoritesEmpty": "Star the assets accounts you check most to see them here.",
   "@homeFavoritesEmpty": {
     "description": "Favorite assets accounts section with no favorite"
+  },
+  "homeFavoritesChoose": "Choose",
+  "@homeFavoritesChoose": {
+    "description": "Button of the empty favorite assets accounts section that opens the picker"
   },
   "homeFavoritesIntro": "The Home charts only use these assets accounts. If none is selected, all assets accounts are used.",
   "@homeFavoritesIntro": {

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +8,7 @@ import '../../app/theme.dart';
 import '../dates/year_month.dart';
 import '../l10n.dart';
 import '../money/format_money.dart';
+import 'chart_range.dart';
 import 'chart_semantics.dart';
 import 'month_chart_axes.dart';
 
@@ -43,7 +46,21 @@ class _BalanceChartState extends State<BalanceChart> {
         FlSpot(i.toDouble(), widget.history[m]! / microsPerUnit),
     ];
     final monthLong = DateFormat.yMMMM(locale);
-    final axes = MonthChartAxes(context, months);
+    final values = [for (final s in spots) s.y];
+    final low = values.reduce(math.min);
+    final high = values.reduce(math.max);
+    final axes = MonthChartAxes(
+      context,
+      months,
+      // Room above the top point for its label.
+      ChartRange.around(low, high + (high - low) * 0.2),
+    );
+    // The point label rounds to whole units, like "€48,230".
+    final whole = NumberFormat.simpleCurrency(
+      locale: locale,
+      name: widget.currency,
+      decimalDigits: 0,
+    );
     String money(int micros) =>
         formatMoney(micros, currency: widget.currency, locale: locale);
     final bar = LineChartBarData(
@@ -79,8 +96,11 @@ class _BalanceChartState extends State<BalanceChart> {
         height: 160,
         child: LineChart(
           LineChartData(
-            minX: 0,
-            maxX: (months.length - 1).toDouble(),
+            // Half a month on each side keeps the end points off the edges.
+            minX: -0.5,
+            maxX: months.length - 0.5,
+            minY: axes.range.min,
+            maxY: axes.range.max,
             borderData: axes.border,
             gridData: axes.grid,
             titlesData: axes.titles,
@@ -111,7 +131,7 @@ class _BalanceChartState extends State<BalanceChart> {
                 getTooltipItems: (spots) => [
                   for (final s in spots)
                     LineTooltipItem(
-                      money(widget.history[months[s.x.round()]]!),
+                      whole.format(s.y).replaceFirst('-', '−'),
                       theme.textTheme.chartValue,
                     ),
                 ],

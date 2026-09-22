@@ -194,7 +194,7 @@ void main() {
 
   testWidgets('favorites are picked from the sheet', (tester) async {
     await start(tester);
-    await tester.tap(find.text('Choose…'));
+    await tester.tap(find.text('Choose'));
     await settle(tester);
     await tester.tap(find.widgetWithText(CheckboxListTile, 'Wallet'));
     await settle(tester);

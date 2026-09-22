@@ -5,17 +5,20 @@ import 'package:intl/intl.dart';
 import '../dates/year_month.dart';
 import '../finance_colors.dart';
 import '../l10n.dart';
+import 'chart_range.dart';
 
 /// Grid, borders and axis titles shared by the monthly charts: dashed
-/// `outline` grid lines, no border, compact values on the left and month names
-/// below, the current month in bold ink. Twelve months label every other one.
+/// `outline` grid lines on the round steps of [range], no border, compact
+/// values on the left and month names below, the current month in bold ink.
+/// Twelve months label every other one.
 class MonthChartAxes {
-  MonthChartAxes(BuildContext context, this.months)
+  MonthChartAxes(BuildContext context, this.months, this.range)
     : _theme = Theme.of(context),
       _locale = context.l10n.localeName,
       _muted = FinanceColors.of(context).muted;
 
   final List<YearMonth> months;
+  final ChartRange range;
   final ThemeData _theme;
   final String _locale;
   final Color _muted;
@@ -27,6 +30,7 @@ class MonthChartAxes {
 
   FlGridData get grid => FlGridData(
     drawVerticalLine: false,
+    horizontalInterval: range.step,
     getDrawingHorizontalLine: (_) => FlLine(
       color: _theme.colorScheme.outlineVariant,
       strokeWidth: 1,
@@ -45,9 +49,13 @@ class MonthChartAxes {
         sideTitles: SideTitles(
           showTitles: true,
           reservedSize: 44,
+          interval: range.step,
           getTitlesWidget: (value, meta) => SideTitleWidget(
             meta: meta,
-            child: Text(compact.format(value), style: _axis),
+            child: Text(
+              compact.format(value).replaceFirst('-', '−'),
+              style: _axis,
+            ),
           ),
         ),
       ),

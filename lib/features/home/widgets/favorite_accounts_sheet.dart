@@ -31,6 +31,11 @@ class FavoriteAccountsSheet extends ConsumerWidget {
     );
     Widget row(AssetsAccountWithBalance item) {
       final a = item.account;
+      final balance = formatMoney(
+        item.balance.abs(),
+        currency: a.currency,
+        locale: l10n.localeName,
+      );
       return CheckboxListTile(
         controlAffinity: ListTileControlAffinity.leading,
         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -42,11 +47,7 @@ class FavoriteAccountsSheet extends ConsumerWidget {
         subtitle: Text(
           l10n.homeFavoriteSubtitle(
             a.type.label(l10n),
-            formatMoney(
-              item.balance,
-              currency: a.currency,
-              locale: l10n.localeName,
-            ),
+            item.balance < 0 ? '−$balance' : balance,
           ),
         ),
       );
@@ -56,20 +57,21 @@ class FavoriteAccountsSheet extends ConsumerWidget {
     final liabilities = accounts.where((a) => a.account.type.isLiability);
     return PickerSheet(
       title: l10n.homeSectionFavoriteAccounts,
-      header: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Text(
-          l10n.homeFavoritesIntro,
-          style: theme.textTheme.bodyMedium!.copyWith(
-            height: 1.5,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+      header: Text(
+        l10n.homeFavoritesIntro,
+        style: theme.textTheme.bodyMedium!.copyWith(
+          height: 1.5,
+          color: theme.colorScheme.onSurfaceVariant,
         ),
       ),
       footer: [
-        FilledButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.homeFavoritesDone(selected)),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+            onPressed: () => Navigator.pop(context),
+            style: FilledButton.styleFrom(minimumSize: const Size(0, 52)),
+            child: Text(l10n.homeFavoritesDone(selected)),
+          ),
         ),
       ],
       children: [

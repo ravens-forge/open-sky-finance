@@ -13,6 +13,7 @@ import '../providers/home_providers.dart';
 import 'budget_pie_chart.dart';
 import 'chart_empty_note.dart';
 import 'home_section_frame.dart';
+import 'section_link.dart';
 
 class BudgetSummarySection extends ConsumerWidget {
   const BudgetSummarySection({super.key, required this.place});
@@ -45,25 +46,20 @@ class BudgetSummarySection extends ConsumerWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    l10n.homeBudgetSpent(
-                      formatMoney(
-                        summary.spent,
-                        currency: currency,
-                        locale: locale,
-                      ),
-                      formatMoney(
-                        summary.budgeted,
-                        currency: currency,
-                        locale: locale,
-                      ),
+                  child: _SpentLine(
+                    spent: formatMoney(
+                      summary.spent,
+                      currency: currency,
+                      locale: locale,
+                    ),
+                    budgeted: formatMoney(
+                      summary.budgeted,
+                      currency: currency,
+                      locale: locale,
                     ),
                   ),
                 ),
-                TextButton(
-                  onPressed: openBudgets,
-                  child: Text(l10n.homeBudgetDetails),
-                ),
+                SectionLink(l10n.homeBudgetDetails, onPressed: openBudgets),
               ],
             ),
           ],
@@ -77,6 +73,33 @@ class BudgetSummarySection extends ConsumerWidget {
         ),
         _ => const SizedBox(height: 140),
       },
+    );
+  }
+}
+
+/// "Spent €1,872.20 of €2,070.00", the spent amount in bold.
+class _SpentLine extends StatelessWidget {
+  const _SpentLine({required this.spent, required this.budgeted});
+
+  final String spent;
+  final String budgeted;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = context.l10n.homeBudgetSpent(spent, budgeted);
+    final at = text.indexOf(spent);
+    return Text.rich(
+      TextSpan(
+        style: Theme.of(context).textTheme.bodyMedium,
+        children: [
+          TextSpan(text: text.substring(0, at)),
+          TextSpan(
+            text: spent,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+          TextSpan(text: text.substring(at + spent.length)),
+        ],
+      ),
     );
   }
 }
