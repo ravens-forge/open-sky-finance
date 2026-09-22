@@ -13,9 +13,6 @@ import '../../../data/models/category.dart';
 import '../../../data/models/label.dart';
 import '../../../data/models/transaction.dart';
 
-/// A transaction in the ledger: category icon, title, category and assets
-/// account (`From -> To` for transfers), label chips and the signed amount.
-/// Scheduled rows lead with their date, since they sit outside the day groups.
 class TransactionListRow extends StatelessWidget {
   const TransactionListRow({
     super.key,
@@ -24,7 +21,8 @@ class TransactionListRow extends StatelessWidget {
     required this.assetsAccounts,
     required this.labels,
     required this.scheduled,
-    required this.onTap,
+    this.trashed = false,
+    this.onTap,
   });
 
   final Transaction transaction;
@@ -32,7 +30,8 @@ class TransactionListRow extends StatelessWidget {
   final Map<String, AssetsAccount> assetsAccounts;
   final List<Label> labels;
   final bool scheduled;
-  final VoidCallback onTap;
+  final bool trashed;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +75,7 @@ class TransactionListRow extends StatelessWidget {
       icon: icon,
       iconColor: color,
       title: title,
-      subtitle: scheduled
+      subtitle: scheduled || trashed
           ? l10n.transactionSubtitleDated(
               DateFormat.MMMd(l10n.localeName).format(t.occurredAt),
               subtitle,
@@ -84,6 +83,7 @@ class TransactionListRow extends StatelessWidget {
           : subtitle,
       labels: [for (final label in labels) label.name],
       scheduled: scheduled,
+      struckThrough: trashed,
       onTap: onTap,
       amount: AmountText(
         t.amount.micros,

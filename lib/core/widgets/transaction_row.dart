@@ -14,6 +14,7 @@ class TransactionRow extends StatelessWidget {
     required this.amount,
     this.labels = const [],
     this.scheduled = false,
+    this.struckThrough = false,
     this.onTap,
   });
 
@@ -24,6 +25,7 @@ class TransactionRow extends StatelessWidget {
   final Widget amount;
   final List<String> labels;
   final bool scheduled;
+  final bool struckThrough;
   final VoidCallback? onTap;
 
   @override
@@ -54,6 +56,9 @@ class TransactionRow extends StatelessWidget {
                     style: text.bodyLarge!.copyWith(
                       fontWeight: FontWeight.w500,
                       fontStyle: scheduled ? FontStyle.italic : null,
+                      decoration: struckThrough
+                          ? TextDecoration.lineThrough
+                          : null,
                     ),
                   ),
                   Text(subtitle, style: text.bodySmall),

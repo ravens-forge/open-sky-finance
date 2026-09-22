@@ -1867,5 +1867,75 @@
   "errorNameTaken": "This name is already used",
   "@errorNameTaken": {
     "description": "Error under a name field when another item has the same name"
+  },
+  "actionRestore": "Restore",
+  "@actionRestore": {
+    "description": "Button that takes a transaction out of the Trash"
+  },
+  "trashEmpty": "Empty",
+  "@trashEmpty": {
+    "description": "Top bar action of the Trash that deletes everything in it permanently"
+  },
+  "trashIntro": "Deleted transactions stay here until you restore them or empty the trash. They don't count in balances, charts or reports.",
+  "@trashIntro": {
+    "description": "Note at the top of the Trash"
+  },
+  "trashDeletedToday": "Deleted today",
+  "@trashDeletedToday": {
+    "description": "Heading of the transactions moved to the Trash today"
+  },
+  "trashDeletedOn": "Deleted on {date}",
+  "@trashDeletedOn": {
+    "description": "Heading of the transactions moved to the Trash on a past day",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Sep 12"
+      }
+    }
+  },
+  "trashFooter": "{count, plural, =1{1 item} other{{count} items}} · “Empty” deletes them forever after confirming.",
+  "@trashFooter": {
+    "description": "Footer of the Trash list",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "trashDeletePermanently": "Delete permanently",
+  "@trashDeletePermanently": {
+    "description": "Button and tooltip that delete one trashed transaction for good"
+  },
+  "trashDeleteTitle": "Delete this transaction permanently?",
+  "@trashDeleteTitle": {
+    "description": "Title of the confirmation before deleting one trashed transaction"
+  },
+  "trashEmptyTitle": "Empty the trash?",
+  "@trashEmptyTitle": {
+    "description": "Title of the confirmation before emptying the Trash"
+  },
+  "trashEmptyBody": "{count, plural, =1{1 transaction is deleted permanently.} other{{count} transactions are deleted permanently.}}",
+  "@trashEmptyBody": {
+    "description": "Body of the confirmation before emptying the Trash",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "trashEmptyStateTitle": "The trash is empty",
+  "@trashEmptyStateTitle": {
+    "description": "Title of the Trash with nothing in it"
+  },
+  "trashEmptyStateMessage": "When you delete a transaction it comes here first, so you can restore it if it was a mistake.",
+  "@trashEmptyStateMessage": {
+    "description": "Message of the Trash with nothing in it"
+  },
+  "trashGoToTransactions": "Go to transactions",
+  "@trashGoToTransactions": {
+    "description": "Button of the empty Trash that opens the Transactions page"
   }
 }

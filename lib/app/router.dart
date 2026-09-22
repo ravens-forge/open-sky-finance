@@ -20,6 +20,7 @@ import '../features/onboarding/providers/onboarding_provider.dart';
 import '../features/shell/models/main_page.dart';
 import '../features/transactions/pages/transaction_editor_page.dart';
 import '../features/transactions/pages/transactions_page.dart';
+import '../features/trash/pages/trash_page.dart';
 import '../features/shell/pages/main_shell.dart';
 import '../features/shell/pages/stub_page.dart';
 import 'routes.dart';
@@ -258,7 +259,7 @@ GoRouter router(Ref ref) {
       ),
       GoRoute(
         path: Routes.trash,
-        builder: (context, state) => StubPage(title: context.l10n.pageTrash),
+        builder: (context, state) => const TrashPage(),
       ),
       GoRoute(
         path: Routes.settings,
