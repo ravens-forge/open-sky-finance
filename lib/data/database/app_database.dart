@@ -7,6 +7,7 @@ import '../enums/category_kind.dart';
 import '../enums/reminder_frequency.dart';
 import '../enums/transaction_type.dart';
 import '../repositories/assets_accounts_repository.dart';
+import '../repositories/backup_repository.dart';
 import '../repositories/balances_repository.dart';
 import '../repositories/budgets_repository.dart';
 import '../repositories/categories_repository.dart';
@@ -44,6 +45,7 @@ part 'app_database.g.dart';
   ],
   daos: [
     AssetsAccountsRepository,
+    BackupRepository,
     BalancesRepository,
     BudgetsRepository,
     CategoriesRepository,

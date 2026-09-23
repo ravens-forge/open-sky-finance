@@ -45,25 +45,32 @@ SELECT
   Future<void> eraseAll(AppLocalizations l10n, {required String currency}) =>
       transaction(() async {
         final db = attachedDatabase;
-        // Children first, for the foreign keys. Typed deletes, so open
-        // streams update.
-        for (final table in <TableInfo<Table, Object?>>[
-          db.transactionLabelsTable,
-          db.reminderLabelsTable,
-          db.transactionsTable,
-          db.remindersTable,
-          db.labelsTable,
-          db.categoriesTable,
-          db.categoryGroupsTable,
-          db.assetsAccountsTable,
-        ]) {
-          await delete(table).go();
-        }
+        await deleteFinancialRows();
         await (delete(
           db.settingsTable,
         )..where((s) => s.key.isNotIn(SettingKeys.keptOnErase))).go();
         await seedDefaults(db, l10n, currency: currency);
       });
+
+  /// Deletes every row but the settings. Callers run it inside their own
+  /// transaction.
+  Future<void> deleteFinancialRows() async {
+    final db = attachedDatabase;
+    // Children first, for the foreign keys. Typed deletes, so open streams
+    // update.
+    for (final table in <TableInfo<Table, Object?>>[
+      db.transactionLabelsTable,
+      db.reminderLabelsTable,
+      db.transactionsTable,
+      db.remindersTable,
+      db.labelsTable,
+      db.categoriesTable,
+      db.categoryGroupsTable,
+      db.assetsAccountsTable,
+    ]) {
+      await delete(table).go();
+    }
+  }
 
   /// Rewrites the file so deleted rows do not linger in it. Not allowed
   /// inside a transaction.

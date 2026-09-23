@@ -2662,5 +2662,388 @@
   "erasedStartSetup": "Start setup",
   "@erasedStartSetup": {
     "description": "Button on the screen after erasing all data that opens the onboarding"
+  },
+  "backupsLastBackup": "Last backup",
+  "@backupsLastBackup": {
+    "description": "Eyebrow over the date of the last backup on the Backups screen"
+  },
+  "backupToday": "Today, {time}",
+  "@backupToday": {
+    "description": "When the last backup was made, today",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "9:12 AM"
+      }
+    }
+  },
+  "backupYesterday": "Yesterday, {time}",
+  "@backupYesterday": {
+    "description": "When the last backup was made, yesterday",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "9:12 AM"
+      }
+    }
+  },
+  "backupDateTime": "{date} · {time}",
+  "@backupDateTime": {
+    "description": "A date and a time, e.g. when a backup was made",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Sep 10, 2026"
+      },
+      "time": {
+        "type": "String",
+        "example": "9:14 PM"
+      }
+    }
+  },
+  "backupDestinationSaved": "Saved to a file",
+  "@backupDestinationSaved": {
+    "description": "Where the last backup went: the Save to… dialog"
+  },
+  "backupDestinationShared": "Shared",
+  "@backupDestinationShared": {
+    "description": "Where the last backup went: the share sheet"
+  },
+  "backupDetails": "{destination} · {size}",
+  "@backupDetails": {
+    "description": "Where the last backup went and its size",
+    "placeholders": {
+      "destination": {
+        "type": "String",
+        "example": "Saved to a file"
+      },
+      "size": {
+        "type": "String",
+        "example": "214 KB"
+      }
+    }
+  },
+  "fileSizeKb": "{size} KB",
+  "@fileSizeKb": {
+    "description": "A file size in kilobytes",
+    "placeholders": {
+      "size": {
+        "type": "String",
+        "example": "214"
+      }
+    }
+  },
+  "fileSizeMb": "{size} MB",
+  "@fileSizeMb": {
+    "description": "A file size in megabytes",
+    "placeholders": {
+      "size": {
+        "type": "String",
+        "example": "1.1"
+      }
+    }
+  },
+  "backupsNotEncryptedLead": "Backups are not encrypted.",
+  "@backupsNotEncryptedLead": {
+    "description": "Bold start of the warning on the Backups screen"
+  },
+  "backupsNotEncryptedBody": "Anyone who can open the file or the cloud folder can read your financial data.",
+  "@backupsNotEncryptedBody": {
+    "description": "Rest of the warning on the Backups screen"
+  },
+  "backupsBackUpNow": "Back up now",
+  "@backupsBackUpNow": {
+    "description": "Section heading on the Backups screen"
+  },
+  "backupsSaveTo": "Save to…",
+  "@backupsSaveTo": {
+    "description": "Backups screen: opens the system save dialog"
+  },
+  "backupsSaveToHint": "Choose Google Drive, Files, Dropbox, OneDrive…",
+  "@backupsSaveToHint": {
+    "description": "Subtitle of Save to… on the Backups screen"
+  },
+  "backupsShare": "Share…",
+  "@backupsShare": {
+    "description": "Backups screen: opens the share sheet with a backup file"
+  },
+  "backupsShareHint": "Send the file to any app: email, messaging, cloud apps",
+  "@backupsShareHint": {
+    "description": "Subtitle of Share… on the Backups screen"
+  },
+  "backupsRestore": "Restore",
+  "@backupsRestore": {
+    "description": "Section heading on the Backups screen"
+  },
+  "backupsRestoreFromFile": "Restore from file…",
+  "@backupsRestoreFromFile": {
+    "description": "Backups screen: opens the system file picker to restore a backup"
+  },
+  "backupsRestoreFromFileHint": "From any folder or cloud app. Replaces all current data",
+  "@backupsRestoreFromFileHint": {
+    "description": "Subtitle of Restore from file… on the Backups screen"
+  },
+  "backupSaved": "Backup saved: {fileName}",
+  "@backupSaved": {
+    "description": "Snack bar after Save to…",
+    "placeholders": {
+      "fileName": {
+        "type": "String",
+        "example": "open-sky-finance-backup-20260917-103000.json"
+      }
+    }
+  },
+  "backupShared": "Backup shared: {fileName}",
+  "@backupShared": {
+    "description": "Snack bar after Share…",
+    "placeholders": {
+      "fileName": {
+        "type": "String",
+        "example": "open-sky-finance-backup-20260917-103000.json"
+      }
+    }
+  },
+  "backupFailed": "The backup could not be made. Try again.",
+  "@backupFailed": {
+    "description": "Snack bar when saving or sharing a backup failed"
+  },
+  "restoreReadingTitle": "Checking the backup",
+  "@restoreReadingTitle": {
+    "description": "Progress dialog title while a backup file is read"
+  },
+  "restoreReadingBody": "Every entry is checked before anything changes.",
+  "@restoreReadingBody": {
+    "description": "Progress dialog body while a backup file is read"
+  },
+  "restoreTitle": "Restore backup",
+  "@restoreTitle": {
+    "description": "Title of the restore preview screen"
+  },
+  "restoreValidBackup": "{size} · valid backup",
+  "@restoreValidBackup": {
+    "description": "Under the file name on the restore preview",
+    "placeholders": {
+      "size": {
+        "type": "String",
+        "example": "1.1 MB"
+      }
+    }
+  },
+  "restoreChangeFile": "Change",
+  "@restoreChangeFile": {
+    "description": "Restore preview: picks another file"
+  },
+  "restoreThisBackup": "This backup",
+  "@restoreThisBackup": {
+    "description": "Restore preview section heading"
+  },
+  "restoreCreated": "Created",
+  "@restoreCreated": {
+    "description": "Restore preview: when the backup was made"
+  },
+  "restoreAppVersion": "App version",
+  "@restoreAppVersion": {
+    "description": "Restore preview: the app version that made the backup"
+  },
+  "restoreRemindersBudgetsLabels": "Reminders · budgets · labels",
+  "@restoreRemindersBudgetsLabels": {
+    "description": "Restore preview row, followed by three counts"
+  },
+  "restoreCounts3": "{a} · {b} · {c}",
+  "@restoreCounts3": {
+    "description": "Three counts in a row of the restore preview",
+    "placeholders": {
+      "a": {
+        "type": "String",
+        "example": "7"
+      },
+      "b": {
+        "type": "String",
+        "example": "14"
+      },
+      "c": {
+        "type": "String",
+        "example": "7"
+      }
+    }
+  },
+  "restoreInTrash": "In the Trash",
+  "@restoreInTrash": {
+    "description": "Restore preview: transactions in the Trash"
+  },
+  "restoreCurrentData": "Current data",
+  "@restoreCurrentData": {
+    "description": "Restore preview section heading"
+  },
+  "restoreWillBeReplaced": "Will be replaced",
+  "@restoreWillBeReplaced": {
+    "description": "Caption of the current data heading on the restore preview"
+  },
+  "restoreNewestTransaction": "Newest transaction",
+  "@restoreNewestTransaction": {
+    "description": "Restore preview: date of the newest current transaction"
+  },
+  "restoreNoTransactions": "None",
+  "@restoreNoTransactions": {
+    "description": "Restore preview: there is no current transaction"
+  },
+  "restoreLostLead": "{count, plural, =1{1 transaction added after {date} will be lost.} other{{count} transactions added after {date} will be lost.}}",
+  "@restoreLostLead": {
+    "description": "Bold warning on the restore preview",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "22"
+      },
+      "date": {
+        "type": "String",
+        "example": "Sep 10"
+      }
+    }
+  },
+  "restoreReplacedLead": "Your current data will be replaced.",
+  "@restoreReplacedLead": {
+    "description": "Bold warning on the restore preview when nothing newer is lost"
+  },
+  "restoreSafetyNote": "A safety backup of your current data is saved before restoring.",
+  "@restoreSafetyNote": {
+    "description": "Rest of the warning on the restore preview"
+  },
+  "restoreAction": "Replace and restore",
+  "@restoreAction": {
+    "description": "Button that restores the backup"
+  },
+  "restoringTitle": "Restoring the backup",
+  "@restoringTitle": {
+    "description": "Progress dialog title while restoring"
+  },
+  "restoringBody": "It takes a moment. Don't close the app.",
+  "@restoringBody": {
+    "description": "Progress dialog body while restoring"
+  },
+  "restoreDone": "Backup restored",
+  "@restoreDone": {
+    "description": "Snack bar after a restore"
+  },
+  "restoreErrorTitle": "This file can't be restored",
+  "@restoreErrorTitle": {
+    "description": "Error dialog title when a backup file is rejected"
+  },
+  "restoreErrorTooLarge": "The file is larger than 200 MB, too large to be a backup. Your data was not changed. Choose another file.",
+  "@restoreErrorTooLarge": {
+    "description": "Error dialog body: file over the size limit"
+  },
+  "restoreErrorNotABackup": "This file is not an Open Sky Finance backup. Your data was not changed. Choose a file named open-sky-finance-backup-….json.",
+  "@restoreErrorNotABackup": {
+    "description": "Error dialog body: not a backup file"
+  },
+  "restoreErrorNewerTitle": "Update the app to restore this backup",
+  "@restoreErrorNewerTitle": {
+    "description": "Error dialog title: backup made by a newer app version"
+  },
+  "restoreErrorNewerBody": "It was made by a newer version of Open Sky Finance. Your data was not changed.",
+  "@restoreErrorNewerBody": {
+    "description": "Error dialog body: backup made by a newer app version"
+  },
+  "restoreErrorInvalid": "{count, plural, =1{1 problem was found in this backup.} other{{count} problems were found in this backup.}} Your data was not changed.",
+  "@restoreErrorInvalid": {
+    "description": "Error dialog body: the backup has problems, listed below",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "3"
+      }
+    }
+  },
+  "restoreErrorMore": "{count, plural, =1{and 1 more} other{and {count} more}}",
+  "@restoreErrorMore": {
+    "description": "Last line of the list of problems in a backup",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "12"
+      }
+    }
+  },
+  "restoreFailedTitle": "The backup could not be restored",
+  "@restoreFailedTitle": {
+    "description": "Error dialog title when restoring failed"
+  },
+  "restoreFailedBody": "Your data was not changed. Try again, and report a bug if it keeps happening.",
+  "@restoreFailedBody": {
+    "description": "Error dialog body when restoring failed"
+  },
+  "backupProblemMissing": "{path}: missing",
+  "@backupProblemMissing": {
+    "description": "A problem in a backup file; path names the field, e.g. data.transactions[3].amount",
+    "placeholders": {
+      "path": {
+        "type": "String",
+        "example": "data.transactions[3].amount"
+      }
+    }
+  },
+  "backupProblemWrongType": "{path}: wrong type",
+  "@backupProblemWrongType": {
+    "description": "A problem in a backup file",
+    "placeholders": {
+      "path": {
+        "type": "String",
+        "example": "data.transactions[3].amount"
+      }
+    }
+  },
+  "backupProblemInvalidValue": "{path}: invalid value",
+  "@backupProblemInvalidValue": {
+    "description": "A problem in a backup file",
+    "placeholders": {
+      "path": {
+        "type": "String",
+        "example": "data.transactions[3].amount"
+      }
+    }
+  },
+  "backupProblemDuplicateId": "{path}: repeated id",
+  "@backupProblemDuplicateId": {
+    "description": "A problem in a backup file",
+    "placeholders": {
+      "path": {
+        "type": "String",
+        "example": "data.labels[2].id"
+      }
+    }
+  },
+  "backupProblemDuplicateName": "{path}: repeated name",
+  "@backupProblemDuplicateName": {
+    "description": "A problem in a backup file",
+    "placeholders": {
+      "path": {
+        "type": "String",
+        "example": "data.labels[2].name"
+      }
+    }
+  },
+  "backupProblemUnknownReference": "{path}: points to something not in the file",
+  "@backupProblemUnknownReference": {
+    "description": "A problem in a backup file",
+    "placeholders": {
+      "path": {
+        "type": "String",
+        "example": "data.transactions[3].categoryId"
+      }
+    }
+  },
+  "backupProblemBrokenRule": "{path}: breaks a transaction rule",
+  "@backupProblemBrokenRule": {
+    "description": "A problem in a backup file",
+    "placeholders": {
+      "path": {
+        "type": "String",
+        "example": "data.transactions[3].toAmount"
+      }
+    }
   }
 }

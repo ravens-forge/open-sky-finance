@@ -20,6 +20,22 @@ abstract final class SettingKeys {
   /// UTC instant (ISO 8601) of the last backup. Device-only.
   static const lastBackupAt = 'last_backup_at';
 
+  /// Where the last backup went: `saved` or `shared`. Device-only.
+  static const lastBackupDestination = 'last_backup_destination';
+
+  /// Size in bytes of the last backup file. Device-only.
+  static const lastBackupSize = 'last_backup_size';
+
+  /// Preferences written into backup files, and replaced by a restore; the
+  /// rest belong to the device.
+  static const backedUp = [
+    mainCurrency,
+    themeMode,
+    locale,
+    firstDayOfWeek,
+    homeSections,
+  ];
+
   /// Preferences that survive "Erase all data"; every other key is removed.
   static const keptOnErase = [themeMode, locale, firstDayOfWeek];
 }
