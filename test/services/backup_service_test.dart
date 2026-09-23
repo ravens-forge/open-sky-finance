@@ -122,11 +122,9 @@ void main() {
       );
       expect(result, isA<Ok<void, RestoreError>>());
     }
-    final safety = Directory('${dir.path}/safety')
-        .listSync()
-        .map((f) => f.uri.pathSegments.last)
-        .toList()
-      ..sort();
+    final safety = Directory(
+      '${dir.path}/safety',
+    ).listSync().map((f) => f.uri.pathSegments.last).toList()..sort();
     expect(safety, [
       'open-sky-finance-backup-20260917-100200.json',
       'open-sky-finance-backup-20260917-100300.json',
@@ -196,8 +194,8 @@ void main() {
     final (db, service, _) = _setUp();
     final bank = await addAssetsAccount(db, 'Mine');
     await db.customStatement(
-      "INSERT INTO transactions (id, type, occurred_at, amount, "
-      "assets_account_id, currency, created_at, updated_at) VALUES "
+      'INSERT INTO transactions (id, type, occurred_at, amount, '
+      'assets_account_id, currency, created_at, updated_at) VALUES '
       "('t1', 'expense', '2026-09-15T10:00:00', -1000000, ?, 'EUR', "
       "'2026-09-15T10:00:00.000Z', '2026-09-15T10:00:00.000Z')",
       [bank],
@@ -205,6 +203,7 @@ void main() {
     final backup = await _loadFixture(service);
     final current = await db.backupRepository.currentData(
       backup.snapshot.exportedAt,
+      before: DateTime(2026, 9, 16),
     );
     expect(current.transactions, 1);
     expect(current.addedSince, 1);

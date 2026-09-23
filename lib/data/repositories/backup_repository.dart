@@ -124,16 +124,24 @@ class BackupRepository extends DatabaseAccessor<AppDatabase>
   });
 
   /// The transactions a restore of a backup made at [backupAt] would
-  /// replace.
-  Future<CurrentData> currentData(DateTime backupAt) async {
+  /// replace; the newest is taken before [before], so scheduled ones stay
+  /// out.
+  Future<CurrentData> currentData(
+    DateTime backupAt, {
+    required DateTime before,
+  }) async {
     final row = await customSelect(
       '''
-SELECT COUNT(*) AS n, MAX(occurred_at) AS newest,
+SELECT COUNT(*) AS n,
+  MAX(CASE WHEN occurred_at < ? THEN occurred_at END) AS newest,
   COALESCE(SUM(created_at > ?), 0) AS added
 FROM transactions
 WHERE deleted_at IS NULL AND type <> 'openingBalance'
 ''',
-      variables: [Variable(backupAt.toUtc())],
+      variables: [
+        Variable(formatWallClock(before)),
+        Variable(backupAt.toUtc()),
+      ],
       readsFrom: {attachedDatabase.transactionsTable},
     ).getSingle();
     final newest = row.read<String?>('newest');

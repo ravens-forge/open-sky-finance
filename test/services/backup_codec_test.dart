@@ -324,7 +324,10 @@ void main() {
     await db.backupRepository.replaceAll(
       _ok(BackupCodec.decode(_fixture.readAsBytesSync())),
     );
-    final names = await db.select(db.assetsAccountsTable).map((a) => a.name).get();
+    final names = await db
+        .select(db.assetsAccountsTable)
+        .map((a) => a.name)
+        .get();
     expect(names, isNot(contains('Old')));
     expect(await db.settingsRepository.get(SettingKeys.locale), isNull);
     expect(

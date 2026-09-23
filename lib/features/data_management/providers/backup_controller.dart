@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../app/now.dart';
 import '../../../core/logging.dart';
 import '../../../core/result.dart';
 import '../../../data/models/app_snapshot.dart';
@@ -89,7 +90,10 @@ class BackupController extends _$BackupController {
               backup: backup,
               current: await ref
                   .read(backupRepositoryProvider)
-                  .currentData(backup.snapshot.exportedAt),
+                  .currentData(
+                    backup.snapshot.exportedAt,
+                    before: ref.read(tomorrowProvider),
+                  ),
             ),
           );
       }
