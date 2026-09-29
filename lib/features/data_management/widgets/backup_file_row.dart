@@ -47,6 +47,9 @@ class BackupFileRow extends StatelessWidget {
           ),
           TextButton(
             onPressed: onChange,
+            style: TextButton.styleFrom(
+              foregroundColor: theme.colorScheme.primary,
+            ),
             child: Text(context.l10n.restoreChangeFile),
           ),
         ],

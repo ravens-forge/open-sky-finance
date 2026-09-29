@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,33 +22,15 @@ Future<void> restoreFromFile(BuildContext context, WidgetRef ref) async {
   final messenger = ScaffoldMessenger.of(context);
   final navigator = Navigator.of(context, rootNavigator: true);
 
-  Future<T> busy<T>(
-    String title,
-    String body,
-    Future<T> Function() task,
-  ) async {
-    unawaited(
-      showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => ProgressDialog(title: title, body: body),
-      ),
-    );
-    try {
-      return await task();
-    } finally {
-      navigator.pop();
-    }
-  }
-
   var choice = RestoreChoice.change;
   while (choice == RestoreChoice.change) {
     final file = await FilePicker.pickFile();
     if (file == null || !context.mounted) return;
-    final loaded = await busy(
-      l10n.restoreReadingTitle,
-      l10n.restoreReadingBody,
-      () => controller.load(file),
+    final loaded = await withProgressDialog(
+      context,
+      title: l10n.restoreReadingTitle,
+      body: l10n.restoreReadingBody,
+      task: () => controller.load(file),
     );
     if (!context.mounted) return;
     switch (loaded) {
@@ -66,10 +46,11 @@ Future<void> restoreFromFile(BuildContext context, WidgetRef ref) async {
         if (picked == null || !context.mounted) return;
         choice = picked;
         if (choice != RestoreChoice.restore) continue;
-        final restored = await busy(
-          l10n.restoringTitle,
-          l10n.restoringBody,
-          () => controller.restore(preview.backup.snapshot),
+        final restored = await withProgressDialog(
+          context,
+          title: l10n.restoringTitle,
+          body: l10n.restoringBody,
+          task: () => controller.restore(preview.backup.snapshot),
         );
         if (!context.mounted) return;
         if (restored case Err(:final error)) {

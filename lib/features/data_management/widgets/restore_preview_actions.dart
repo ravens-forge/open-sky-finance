@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 
 import '../../../core/l10n.dart';
 
-/// The restore preview's bottom bar: Cancel and "Replace and restore".
+/// The bottom bar of the restore and import previews: Cancel and the
+/// replacing action, [label].
 class RestorePreviewActions extends StatelessWidget {
   const RestorePreviewActions({
     super.key,
     required this.onCancel,
     required this.onRestore,
+    required this.label,
   });
 
   final VoidCallback onCancel;
   final VoidCallback onRestore;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +25,7 @@ class RestorePreviewActions extends StatelessWidget {
     const size = Size(0, 52);
     const padding = EdgeInsets.symmetric(horizontal: 16);
     // Long translations wrap rather than shrink to an unreadable size.
-    Widget label(String value) =>
+    Widget wrapped(String value) =>
         Text(value, maxLines: 2, textAlign: TextAlign.center);
 
     return DecoratedBox(
@@ -45,7 +48,7 @@ class RestorePreviewActions extends StatelessWidget {
                     padding: padding,
                     textStyle: text,
                   ),
-                  child: label(l10n.actionCancel),
+                  child: wrapped(l10n.actionCancel),
                 ),
               ),
               Expanded(
@@ -56,7 +59,7 @@ class RestorePreviewActions extends StatelessWidget {
                     padding: padding,
                     textStyle: text,
                   ),
-                  child: label(l10n.restoreAction),
+                  child: wrapped(label),
                 ),
               ),
             ],

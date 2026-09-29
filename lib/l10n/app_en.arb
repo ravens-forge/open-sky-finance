@@ -3045,5 +3045,209 @@
         "example": "data.transactions[3].toAmount"
       }
     }
+  },
+  "bluecoinsImport": "Import from Bluecoins",
+  "@bluecoinsImport": {
+    "description": "Settings row and title of the Bluecoins import preview"
+  },
+  "bluecoinsImportHint": ".fydb file",
+  "@bluecoinsImportHint": {
+    "description": "Under the Import from Bluecoins row: the file type it takes"
+  },
+  "bluecoinsReadingTitle": "Checking the Bluecoins file",
+  "@bluecoinsReadingTitle": {
+    "description": "Progress dialog title while a Bluecoins file is read"
+  },
+  "bluecoinsReadingBody": "The file is only read, never changed.",
+  "@bluecoinsReadingBody": {
+    "description": "Progress dialog body while a Bluecoins file is read"
+  },
+  "bluecoinsReady": "{size} · checked, ready to import",
+  "@bluecoinsReady": {
+    "description": "Under the file name on the Bluecoins import preview",
+    "placeholders": {
+      "size": {
+        "type": "String",
+        "example": "4.2 MB"
+      }
+    }
+  },
+  "bluecoinsReplaceLead": "This replaces all current data.",
+  "@bluecoinsReplaceLead": {
+    "description": "Bold warning on the Bluecoins import preview"
+  },
+  "bluecoinsReplaceNote": "A safety backup of what you have now is saved first. The Bluecoins file is not changed.",
+  "@bluecoinsReplaceNote": {
+    "description": "Rest of the warning on the Bluecoins import preview"
+  },
+  "bluecoinsWhatWillBeImported": "What will be imported",
+  "@bluecoinsWhatWillBeImported": {
+    "description": "Bluecoins import preview section heading"
+  },
+  "bluecoinsGroupsCategories": "Category groups · categories",
+  "@bluecoinsGroupsCategories": {
+    "description": "Bluecoins import preview row, followed by two counts"
+  },
+  "bluecoinsCounts2": "{a} · {b}",
+  "@bluecoinsCounts2": {
+    "description": "Two counts in a row of the Bluecoins import preview",
+    "placeholders": {
+      "a": {
+        "type": "String",
+        "example": "12"
+      },
+      "b": {
+        "type": "String",
+        "example": "48"
+      }
+    }
+  },
+  "bluecoinsTransfers": "Transfers",
+  "@bluecoinsTransfers": {
+    "description": "Bluecoins import preview: number of transfers"
+  },
+  "bluecoinsDates": "Dates",
+  "@bluecoinsDates": {
+    "description": "Bluecoins import preview: first and last transaction month"
+  },
+  "bluecoinsDateRange": "{from} – {to}",
+  "@bluecoinsDateRange": {
+    "description": "Range of months on the Bluecoins import preview",
+    "placeholders": {
+      "from": {
+        "type": "String",
+        "example": "Mar 2019"
+      },
+      "to": {
+        "type": "String",
+        "example": "Sep 2026"
+      }
+    }
+  },
+  "bluecoinsBalances": "Balances as of today",
+  "@bluecoinsBalances": {
+    "description": "Bluecoins import preview section heading"
+  },
+  "bluecoinsCompare": "Compare with Bluecoins",
+  "@bluecoinsCompare": {
+    "description": "Caption of the balances heading on the Bluecoins import preview"
+  },
+  "bluecoinsShowAll": "{count, plural, =1{Show 1 assets account} other{Show all {count} assets accounts}}",
+  "@bluecoinsShowAll": {
+    "description": "Button under the first balances of the Bluecoins import preview",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "31"
+      }
+    }
+  },
+  "bluecoinsSkipped": "Skipped",
+  "@bluecoinsSkipped": {
+    "description": "Bluecoins import preview section heading: what is not imported"
+  },
+  "bluecoinsItems": "{count, plural, =1{1 item} other{{count} items}}",
+  "@bluecoinsItems": {
+    "description": "Caption of the skipped heading on the Bluecoins import preview",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "31"
+      }
+    }
+  },
+  "bluecoinsSkippedDeleted": "Deleted in Bluecoins",
+  "@bluecoinsSkippedDeleted": {
+    "description": "Skipped on import: transactions deleted in Bluecoins"
+  },
+  "bluecoinsSkippedReminder": "Reminders (create them again)",
+  "@bluecoinsSkippedReminder": {
+    "description": "Skipped on import: reminders and recurring transactions"
+  },
+  "bluecoinsSkippedOrphanTransfer": "Transfers missing one side",
+  "@bluecoinsSkippedOrphanTransfer": {
+    "description": "Skipped on import: transfers without both sides"
+  },
+  "bluecoinsSkippedUnknownType": "Entries of an unknown kind",
+  "@bluecoinsSkippedUnknownType": {
+    "description": "Skipped on import: transaction types the app does not know"
+  },
+  "bluecoinsSkippedOtherCurrency": "In another currency than their assets account",
+  "@bluecoinsSkippedOtherCurrency": {
+    "description": "Skipped on import: transactions in a different currency"
+  },
+  "bluecoinsSkippedMissingAssetsAccount": "On an assets account not imported",
+  "@bluecoinsSkippedMissingAssetsAccount": {
+    "description": "Skipped on import: transactions of an assets account that was skipped"
+  },
+  "bluecoinsSkippedBudget": "Budgets (set them again)",
+  "@bluecoinsSkippedBudget": {
+    "description": "Skipped on import: budgets"
+  },
+  "bluecoinsSkippedInvalid": "Incomplete or invalid entries",
+  "@bluecoinsSkippedInvalid": {
+    "description": "Skipped on import: entries missing a name, currency, date or amount"
+  },
+  "bluecoinsChanged": "Imported with changes",
+  "@bluecoinsChanged": {
+    "description": "Bluecoins import preview section heading: what is imported differently"
+  },
+  "bluecoinsNoteUnknownAssetsAccountType": "Assets accounts of an unknown type",
+  "@bluecoinsNoteUnknownAssetsAccountType": {
+    "description": "Imported with changes: assets accounts now of type other"
+  },
+  "bluecoinsNoteUncategorized": "Without their category",
+  "@bluecoinsNoteUncategorized": {
+    "description": "Imported with changes: transactions whose category was not found"
+  },
+  "bluecoinsNoteSplitTransaction": "Parts of split transactions",
+  "@bluecoinsNoteSplitTransaction": {
+    "description": "Imported with changes: split parts, now separate transactions"
+  },
+  "bluecoinsNotAffiliated": "Open Sky Finance is not affiliated with Bluecoins. Its backup format is not documented: compare the balances above before relying on the import.",
+  "@bluecoinsNotAffiliated": {
+    "description": "Non-affiliation notice at the end of the Bluecoins import preview"
+  },
+  "bluecoinsAction": "Replace and import",
+  "@bluecoinsAction": {
+    "description": "Button that imports the Bluecoins file"
+  },
+  "bluecoinsImportingTitle": "Importing from Bluecoins",
+  "@bluecoinsImportingTitle": {
+    "description": "Progress dialog title while importing"
+  },
+  "bluecoinsDone": "Bluecoins data imported",
+  "@bluecoinsDone": {
+    "description": "Snack bar after an import"
+  },
+  "bluecoinsErrorTitle": "This file can't be imported",
+  "@bluecoinsErrorTitle": {
+    "description": "Error dialog title when a Bluecoins file is rejected"
+  },
+  "bluecoinsErrorTooLarge": "The file is larger than 200 MB, too large to be a Bluecoins backup. Your data was not changed. Choose another file.",
+  "@bluecoinsErrorTooLarge": {
+    "description": "Error dialog body: file over the size limit"
+  },
+  "bluecoinsErrorCompressed": "This file is compressed (ZIP). For now only uncompressed .fydb backups can be imported. Your data was not changed.",
+  "@bluecoinsErrorCompressed": {
+    "description": "Error dialog body: a ZIP file"
+  },
+  "bluecoinsErrorNotABackup": "This file is not a Bluecoins backup. Your data was not changed. Export a backup from Bluecoins and try again.",
+  "@bluecoinsErrorNotABackup": {
+    "description": "Error dialog body: not a Bluecoins backup"
+  },
+  "bluecoinsErrorMissingColumns": "This Bluecoins backup uses a format this version can't read. Your data was not changed. Report a bug with the missing columns below.",
+  "@bluecoinsErrorMissingColumns": {
+    "description": "Error dialog body: a Bluecoins format the app cannot read; the column names follow"
+  },
+  "bluecoinsErrorDamaged": "This file is damaged or encrypted and can't be read. Your data was not changed. Export a new backup from Bluecoins and try again.",
+  "@bluecoinsErrorDamaged": {
+    "description": "Error dialog body: a damaged file"
+  },
+  "bluecoinsFailedTitle": "The data could not be imported",
+  "@bluecoinsFailedTitle": {
+    "description": "Error dialog title when reading or writing failed"
   }
 }

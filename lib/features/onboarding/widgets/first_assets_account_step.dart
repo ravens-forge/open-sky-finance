@@ -11,6 +11,7 @@ import '../../../core/widgets/choice_sheet.dart';
 import '../../../core/widgets/currency_picker.dart';
 import '../../../core/widgets/field_error.dart';
 import '../../../core/widgets/field_row.dart';
+import '../../../core/widgets/segmented_filter.dart';
 import '../../../data/enums/assets_account_type.dart';
 import '../../../data/models/assets_account_draft.dart';
 import '../../../data/providers.dart';
@@ -163,28 +164,16 @@ class _FirstAssetsAccountStepState
         const SizedBox(height: 16),
         Text(l10n.fieldType, style: theme.textTheme.bodySmall),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final t in {..._quickTypes, _type})
-              ChoiceChip(
-                label: Text(t.label(l10n)),
-                selected: t == _type,
-                selectedColor: theme.colorScheme.onSurface,
-                labelStyle: t == _type
-                    ? TextStyle(
-                        color: theme.colorScheme.surface,
-                        fontWeight: FontWeight.w600,
-                      )
-                    : null,
-                onSelected: (_) => setState(() => _type = t),
-              ),
-            ActionChip(
-              label: Text(l10n.actionOther),
-              onPressed: _pickOtherType,
-            ),
+        SegmentedFilter<AssetsAccountType>(
+          options: [
+            for (final t in {..._quickTypes, _type}) (t, t.label(l10n)),
           ],
+          selected: _type,
+          onChanged: (t) => setState(() => _type = t),
+          trailing: ActionChip(
+            label: Text(l10n.actionOther),
+            onPressed: _pickOtherType,
+          ),
         ),
         const SizedBox(height: 16),
         FieldRow(

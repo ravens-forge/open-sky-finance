@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/l10n.dart';
 import '../../../core/labels.dart';
+import '../../../core/widgets/segmented_filter.dart';
 import '../../../data/enums/assets_account_type.dart';
 
 /// Assets / Liabilities, then a chip per type of that side.
@@ -43,24 +44,10 @@ class AssetsAccountTypeField extends StatelessWidget {
             ),
           ),
         ),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final t in types)
-              ChoiceChip(
-                label: Text(t.label(l10n)),
-                selected: t == type,
-                selectedColor: theme.colorScheme.onSurface,
-                labelStyle: t == type
-                    ? TextStyle(
-                        color: theme.colorScheme.surface,
-                        fontWeight: FontWeight.w600,
-                      )
-                    : null,
-                onSelected: (_) => onChanged(t),
-              ),
-          ],
+        SegmentedFilter<AssetsAccountType>(
+          options: [for (final t in types) (t, t.label(l10n))],
+          selected: type,
+          onChanged: onChanged,
         ),
       ],
     );

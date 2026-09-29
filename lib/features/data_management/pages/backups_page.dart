@@ -8,6 +8,7 @@ import '../../settings/widgets/settings_row.dart';
 import '../../settings/widgets/settings_section.dart';
 import '../providers/last_backup_provider.dart';
 import '../widgets/back_up_flow.dart';
+import '../widgets/bluecoins_import_flow.dart';
 import '../widgets/last_backup_header.dart';
 import '../widgets/restore_backup_flow.dart';
 
@@ -58,6 +59,12 @@ class BackupsPage extends ConsumerWidget {
                 title: l10n.backupsRestoreFromFile,
                 subtitle: l10n.backupsRestoreFromFileHint,
                 onTap: () => restoreFromFile(context, ref),
+              ),
+              SettingsRow(
+                icon: Icons.upload_outlined,
+                title: l10n.bluecoinsImport,
+                subtitle: l10n.bluecoinsImportHint,
+                onTap: () => importFromBluecoins(context, ref),
               ),
             ],
           ),
