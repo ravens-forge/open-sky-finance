@@ -3253,5 +3253,133 @@
   "bluecoinsFailedTitle": "The data could not be imported",
   "@bluecoinsFailedTitle": {
     "description": "Error dialog title when reading or writing failed"
+  },
+  "errorNoBrowser": "No browser could open the link.",
+  "@errorNoBrowser": {
+    "description": "Snackbar when no browser opens an external link"
+  },
+  "reportBugIntro": "Bugs and ideas are tracked publicly on GitHub. The button below opens a new issue form in your browser (a free GitHub account is needed).",
+  "@reportBugIntro": {
+    "description": "Intro of the Report a bug screen"
+  },
+  "reportBugType": "Type",
+  "@reportBugType": {
+    "description": "Report a bug section heading: bug report or feature idea"
+  },
+  "reportBugKindBug": "Bug report",
+  "@reportBugKindBug": {
+    "description": "Report a bug type option"
+  },
+  "reportBugKindBugHint": "Something doesn't work as expected",
+  "@reportBugKindBugHint": {
+    "description": "Subtitle of the bug report option"
+  },
+  "reportBugKindIdea": "Feature idea",
+  "@reportBugKindIdea": {
+    "description": "Report a bug type option"
+  },
+  "reportBugKindIdeaHint": "Suggest an improvement or a new feature",
+  "@reportBugKindIdeaHint": {
+    "description": "Subtitle of the feature idea option"
+  },
+  "reportBugInfoTitle": "Technical info added to the form",
+  "@reportBugInfoTitle": {
+    "description": "Report a bug section heading over the technical info rows"
+  },
+  "reportBugInfoVersion": "App version",
+  "@reportBugInfoVersion": {
+    "description": "Technical info row: app version and build"
+  },
+  "reportBugInfoPlatform": "Platform",
+  "@reportBugInfoPlatform": {
+    "description": "Technical info row: platform and OS version"
+  },
+  "reportBugInfoLanguage": "Language",
+  "@reportBugInfoLanguage": {
+    "description": "Technical info row: app language code"
+  },
+  "reportBugInfoSchema": "Database schema",
+  "@reportBugInfoSchema": {
+    "description": "Technical info row: database schema version"
+  },
+  "reportBugInclude": "Include technical info",
+  "@reportBugInclude": {
+    "description": "Switch that adds the technical info to the issue form and the copied text"
+  },
+  "reportBugNeverIncluded": "Never included: amounts, assets account or category names, notes, files or anything you typed in the app.",
+  "@reportBugNeverIncluded": {
+    "description": "Note under the technical info switch"
+  },
+  "reportBugPublicLead": "Issues are public.",
+  "@reportBugPublicLead": {
+    "description": "Bold start of the warning on the Report a bug screen"
+  },
+  "reportBugPublicText": "Never attach backups, databases or screenshots with your real data. Describe the problem with counts and steps instead.",
+  "@reportBugPublicText": {
+    "description": "Warning on the Report a bug screen, after reportBugPublicLead"
+  },
+  "reportBugCopy": "Copy info",
+  "@reportBugCopy": {
+    "description": "Button that copies the technical info to the clipboard"
+  },
+  "reportBugCopied": "Copied",
+  "@reportBugCopied": {
+    "description": "Snackbar after copying the technical info"
+  },
+  "reportBugOpen": "Open GitHub",
+  "@reportBugOpen": {
+    "description": "Button that opens the GitHub issue form in the browser"
+  },
+  "supportTitle": "Free, private and",
+  "@supportTitle": {
+    "description": "First part of the Support headline; supportTitleEmphasis follows in italics on the same line"
+  },
+  "supportTitleEmphasis": "without ads.",
+  "@supportTitleEmphasis": {
+    "description": "Italic end of the Support headline, after supportTitle"
+  },
+  "supportIntro": "Open Sky Finance has no premium tier, no ads and no tracking. Development is funded only by people who choose to donate. Every feature stays available to everyone, whether you donate or not.",
+  "@supportIntro": {
+    "description": "Explanation on the Support screen"
+  },
+  "supportDonate": "Donate",
+  "@supportDonate": {
+    "description": "Support section heading and the link to the donation page (Android only)"
+  },
+  "supportDonateHint": "GitHub Sponsors, Liberapay or Ko-fi, on the project's website",
+  "@supportDonateHint": {
+    "description": "Subtitle of the Donate link"
+  },
+  "supportOtherWays": "Other ways to help",
+  "@supportOtherWays": {
+    "description": "Support section heading over the non-monetary options"
+  },
+  "supportStar": "Star the repository",
+  "@supportStar": {
+    "description": "Support option that opens the GitHub repository"
+  },
+  "supportStarHint": "Helps other people find the app",
+  "@supportStarHint": {
+    "description": "Subtitle of the star option"
+  },
+  "supportTranslate": "Help translate",
+  "@supportTranslate": {
+    "description": "Support option that opens the translation guide"
+  },
+  "supportTranslateHint": "English, Spanish, French and more",
+  "@supportTranslateHint": {
+    "description": "Subtitle of the translate option"
+  },
+  "supportReport": "Report a bug or idea",
+  "@supportReport": {
+    "description": "Support option that opens the Report a bug screen"
+  },
+  "supportReportHint": "Never attach real financial data",
+  "@supportReportHint": {
+    "description": "Subtitle of the report option"
+  },
+  "supportLinksNote": "Links open in your browser. The app itself never connects to the internet.",
+  "@supportLinksNote": {
+    "description": "Note at the bottom of the Support screen"
   }
 }

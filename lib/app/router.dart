@@ -17,6 +17,8 @@ import '../features/categories/pages/category_editor_page.dart';
 import '../features/categories/pages/category_group_editor_page.dart';
 import '../features/data_management/pages/backups_page.dart';
 import '../features/data_management/pages/erased_page.dart';
+import '../features/feedback/pages/report_bug_page.dart';
+import '../features/feedback/pages/support_page.dart';
 import '../features/home/pages/arrange_home_page.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/labels/pages/labels_page.dart';
@@ -285,8 +287,7 @@ GoRouter router(Ref ref) {
           ),
           GoRoute(
             path: 'report-bug',
-            builder: (context, state) =>
-                StubPage(title: context.l10n.actionReportBug),
+            builder: (context, state) => const ReportBugPage(),
           ),
         ],
       ),
@@ -300,7 +301,7 @@ GoRouter router(Ref ref) {
       ),
       GoRoute(
         path: Routes.support,
-        builder: (context, state) => StubPage(title: context.l10n.pageSupport),
+        builder: (context, state) => const SupportPage(),
       ),
     ],
   );

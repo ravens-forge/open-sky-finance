@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
 import '../../../core/links.dart';
+import '../../../core/open_link.dart';
 import '../providers/settings_providers.dart';
 import 'settings_row.dart';
 import 'settings_section.dart';
@@ -62,10 +62,7 @@ class AboutSettings extends ConsumerWidget {
           title: l10n.settingsSource,
           subtitle: version == null ? null : l10n.settingsVersion(version),
           // The repository shows the license next to the code.
-          onTap: () => launchUrl(
-            Uri.parse(Links.source),
-            mode: LaunchMode.externalApplication,
-          ),
+          onTap: () => openLink(context, Uri.parse(Links.source)),
         ),
       ],
     );
