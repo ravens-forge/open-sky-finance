@@ -48,3 +48,28 @@ body:
       label: Would you like to help?
       options:
         - label: I would be willing to open a pull request for this
+
+  # Pre-filled by the app (Settings → Report a bug); same ids as the bug report form.
+  - type: input
+    id: app_version
+    attributes:
+      label: App version and build (optional)
+      placeholder: 1.0.0 (12)
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform and OS version (optional)
+      placeholder: Android 15 / iOS 18.4
+
+  - type: input
+    id: language
+    attributes:
+      label: App language (optional)
+      placeholder: en / es / fr
+
+  - type: input
+    id: schema_version
+    attributes:
+      label: Database schema version (optional)
+      placeholder: "1"

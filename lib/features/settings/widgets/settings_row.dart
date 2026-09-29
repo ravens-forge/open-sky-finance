@@ -11,6 +11,7 @@ class SettingsRow extends StatelessWidget {
     required this.onTap,
     this.subtitle,
     this.color,
+    this.trailingIcon = Icons.chevron_right,
   });
 
   final IconData icon;
@@ -18,6 +19,9 @@ class SettingsRow extends StatelessWidget {
   final String? subtitle;
   final Color? color;
   final VoidCallback onTap;
+
+  /// Chevron by default; `Icons.open_in_new` for links to the browser.
+  final IconData trailingIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +54,7 @@ class SettingsRow extends StatelessWidget {
                 ),
               ),
               Icon(
-                Icons.chevron_right,
+                trailingIcon,
                 size: 20,
                 color: FinanceColors.of(context).disabled,
               ),
