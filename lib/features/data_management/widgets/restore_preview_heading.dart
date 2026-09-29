@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/finance_colors.dart';
+
 class RestorePreviewHeading extends StatelessWidget {
-  const RestorePreviewHeading(this.title, {super.key, this.caption});
+  const RestorePreviewHeading(
+    this.title, {
+    super.key,
+    this.caption,
+    this.warning = false,
+  });
 
   final String title;
   final String? caption;
+
+  /// Draws [caption] as a warning, e.g. how many items are skipped.
+  final bool warning;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +35,17 @@ class RestorePreviewHeading extends StatelessWidget {
               child: Text(title, style: theme.textTheme.titleLarge),
             ),
           ),
-          if (caption != null) Text(caption!, style: theme.textTheme.bodySmall),
+          if (caption != null)
+            Text(
+              caption!,
+              style: warning
+                  ? theme.textTheme.bodyMedium!.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: FinanceColors.of(context).warning,
+                    )
+                  : theme.textTheme.bodySmall,
+            ),
         ],
       ),
     );

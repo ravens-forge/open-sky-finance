@@ -48,6 +48,23 @@ class AppSnapshot {
   final List<TransactionTableRow> transactions;
   final List<TransactionLabelTableRow> transactionLabels;
 
+  /// Balance of each assets account from the transactions outside the Trash
+  /// dated before [before], the way `BalancesRepository` sums the database.
+  Map<String, int> balances(DateTime before) {
+    final balances = {for (final a in assetsAccounts) a.id: 0};
+    void add(String id, int amount) => balances[id] = balances[id]! + amount;
+    for (final t in transactions) {
+      if (t.deletedAt != null || !t.occurredAt.isBefore(before)) continue;
+      if (t.type == TransactionType.transfer) {
+        add(t.assetsAccountId, -t.amount);
+        add(t.toAssetsAccountId!, t.toAmount ?? t.amount);
+      } else {
+        add(t.assetsAccountId, t.amount);
+      }
+    }
+    return balances;
+  }
+
   /// Counted the way "Erase all data" counts the database.
   DataCounts get counts => DataCounts(
     assetsAccounts: assetsAccounts.length,

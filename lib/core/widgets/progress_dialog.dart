@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -70,5 +72,28 @@ class ProgressDialog extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Runs [task] behind a [ProgressDialog] without Cancel, closed when the task
+/// ends either way.
+Future<T> withProgressDialog<T>(
+  BuildContext context, {
+  required String title,
+  required String body,
+  required Future<T> Function() task,
+}) async {
+  final navigator = Navigator.of(context, rootNavigator: true);
+  unawaited(
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => ProgressDialog(title: title, body: body),
+    ),
+  );
+  try {
+    return await task();
+  } finally {
+    navigator.pop();
   }
 }

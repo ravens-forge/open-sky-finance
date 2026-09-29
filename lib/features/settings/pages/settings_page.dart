@@ -9,6 +9,7 @@ import '../../../core/labels.dart';
 import '../../../data/models/home_section.dart';
 import '../../assets_accounts/providers/assets_accounts_providers.dart';
 import '../../data_management/providers/last_backup_provider.dart';
+import '../../data_management/widgets/bluecoins_import_flow.dart';
 import '../../data_management/widgets/erase_all_data_flow.dart';
 import '../../data_management/widgets/last_backup_label.dart';
 import '../../home/providers/home_providers.dart';
@@ -107,6 +108,12 @@ class SettingsPage extends ConsumerWidget {
                   ref.watch(lastBackupProvider).value,
                 ),
                 onTap: () => context.push(Routes.backups),
+              ),
+              SettingsRow(
+                icon: Icons.upload_outlined,
+                title: l10n.bluecoinsImport,
+                subtitle: l10n.bluecoinsImportHint,
+                onTap: () => importFromBluecoins(context, ref),
               ),
               SettingsRow(
                 icon: Icons.delete_outline,

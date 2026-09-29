@@ -85,6 +85,7 @@ class RestorePreviewPage extends StatelessWidget {
       bottomNavigationBar: RestorePreviewActions(
         onCancel: pop,
         onRestore: () => pop(RestoreChoice.restore),
+        label: l10n.restoreAction,
       ),
     );
   }
