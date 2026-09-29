@@ -26,6 +26,7 @@ class FinanceColors extends ThemeExtension<FinanceColors> {
     required this.sunken,
     required this.muted,
     required this.disabled,
+    required this.chipOutline,
     required this.chartSeries,
     required this.chartOther,
   });
@@ -54,6 +55,9 @@ class FinanceColors extends ThemeExtension<FinanceColors> {
   /// Drag handles and disabled controls (not for text).
   final Color disabled;
 
+  /// Border of unselected chips: softer than [ColorScheme.outline] (ink).
+  final Color chipOutline;
+
   /// Chart series in order; "Remaining" and "Other" use [chartOther].
   final List<Color> chartSeries;
   final Color chartOther;
@@ -78,6 +82,7 @@ class FinanceColors extends ThemeExtension<FinanceColors> {
       sunken: l(sunken, other.sunken),
       muted: l(muted, other.muted),
       disabled: l(disabled, other.disabled),
+      chipOutline: l(chipOutline, other.chipOutline),
       chartSeries: [
         for (final (i, c) in chartSeries.indexed)
           l(c, other.chartSeries[i % other.chartSeries.length]),

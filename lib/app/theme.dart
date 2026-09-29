@@ -97,6 +97,7 @@ FinanceColors _finance(
   required Color warningContainer,
   required Color muted,
   required Color disabled,
+  required Color chipOutline,
   required List<Color> extraSeries,
 }) => FinanceColors(
   income: income,
@@ -108,6 +109,7 @@ FinanceColors _finance(
   sunken: c.surfaceContainerHighest,
   muted: muted,
   disabled: disabled,
+  chipOutline: chipOutline,
   chartSeries: [c.primary, c.secondary, c.error, c.tertiary, ...extraSeries],
   chartOther: c.outlineVariant,
 );
@@ -121,6 +123,7 @@ final lightTheme = _theme(
     warningContainer: const Color(0xFFFBE7C2),
     muted: const Color(0xFF6A5F51),
     disabled: const Color(0xFF9A8F7E),
+    chipOutline: const Color(0xFFD6CBB5),
     extraSeries: const [Color(0xFF7D5BA6), Color(0xFF3F9C8C)],
   ),
 );
@@ -134,6 +137,7 @@ final darkTheme = _theme(
     warningContainer: const Color(0xFF3D2A08),
     muted: const Color(0xFFB3A896),
     disabled: const Color(0xFF7D7263),
+    chipOutline: const Color(0xFF524838),
     extraSeries: const [Color(0xFFB89AE0), Color(0xFF6FC7B8)],
   ),
 );
@@ -288,7 +292,7 @@ ThemeData _theme(ColorScheme c, FinanceColors f) {
     ),
     chipTheme: ChipThemeData(
       shape: _pill,
-      side: BorderSide(color: c.outline),
+      side: BorderSide(color: f.chipOutline),
       backgroundColor: Colors.transparent,
       labelStyle: text.bodyMedium!.copyWith(fontWeight: FontWeight.w500),
       showCheckmark: false,

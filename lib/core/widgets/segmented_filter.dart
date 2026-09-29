@@ -6,18 +6,20 @@ class SegmentedFilter<T> extends StatelessWidget {
     required this.options,
     required this.selected,
     required this.onChanged,
+    this.trailing,
   });
 
   final List<(T, String)> options;
   final T selected;
   final ValueChanged<T> onChanged;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Wrap(
       spacing: 8,
-      runSpacing: 4,
+      runSpacing: 8,
       children: [
         for (final (value, label) in options)
           ChoiceChip(
@@ -25,10 +27,14 @@ class SegmentedFilter<T> extends StatelessWidget {
             selected: value == selected,
             onSelected: (_) => onChanged(value),
             selectedColor: scheme.onSurface,
-            labelStyle: TextStyle(
-              color: value == selected ? scheme.surface : scheme.onSurface,
-            ),
+            side: value == selected
+                ? BorderSide(color: scheme.onSurface)
+                : null,
+            labelStyle: value == selected
+                ? TextStyle(color: scheme.surface, fontWeight: FontWeight.w600)
+                : TextStyle(color: scheme.onSurface),
           ),
+        ?trailing,
       ],
     );
   }
