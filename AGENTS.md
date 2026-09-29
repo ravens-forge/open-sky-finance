@@ -138,6 +138,9 @@ presentation → providers → services/repositories → Drift.
   (`@DriftAccessor`) holding its queries, writes, invariants and row ↔ domain mapping.
 - Providers that read data expose Drift `Stream`s (`@riverpod Stream<...>`) so the UI
   updates automatically after writes.
+- Pages match `AsyncValue(:final value?)`, never `AsyncData(...)`: a derived provider
+  reloads as `AsyncLoading` with its previous value, and matching `AsyncData` flashes the
+  placeholder.
 - Mutations live in `AsyncNotifier` classes or repository methods called from them.
 - Aggregations (balances, totals) are computed in SQL inside repositories, not by loading all rows
   into Dart.

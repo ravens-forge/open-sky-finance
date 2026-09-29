@@ -20,7 +20,7 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     return switch (ref.watch(homeSectionsProvider)) {
-      AsyncData(:final value) => _sections(context, ref, value),
+      AsyncValue(:final value?) => _sections(context, ref, value),
       AsyncError() => Center(child: EmptyState(title: l10n.errorLoadFailed)),
       _ => PagePlaceholder(label: l10n.pageHome),
     };

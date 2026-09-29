@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -27,14 +29,12 @@ import '../providers/transactions_controller.dart';
 import '../providers/transactions_drill_down.dart';
 import '../providers/transactions_providers.dart';
 import '../widgets/transaction_list_row.dart';
+import '../widgets/transaction_options_sheet.dart';
 import '../widgets/transactions_empty_state.dart';
 import '../widgets/transactions_filter_sheet.dart';
 import '../widgets/transactions_search_bar.dart';
 import '../widgets/transactions_summary_row.dart';
 
-/// The ledger: period selector, summary, search and filters, the scheduled
-/// rows and the month's transactions by day. Swiping a row moves it to the
-/// Trash, with an Undo snack bar.
 class TransactionsPage extends ConsumerStatefulWidget {
   const TransactionsPage({super.key});
 
@@ -47,8 +47,8 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
   var _filter = const TransactionFilter();
   final _search = TextEditingController();
 
-  /// The last month loaded, with the month and filter it was loaded for.
-  (TransactionsMonth, YearMonth, TransactionFilter)? _shown;
+  /// The last month loaded.
+  TransactionsMonth? _shown;
 
   @override
   void initState() {
@@ -110,19 +110,10 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
     final l10n = context.l10n;
     final month = ref.watch(transactionsMonthProvider(_month, _filter));
     final converter = ref.watch(currencyConverterProvider).value;
-    if (month case AsyncData(:final value)) _shown = (value, _month, _filter);
     // Each keystroke is a new filter, so a new provider that starts out
     // loading. The previous result stays meanwhile, and with it the search
-    // field inside the list, so the keyboard stays open. A reload of the same
-    // one (a swipe to the Trash) still waits, or the dismissed row would be
-    // drawn again.
-    final shown = switch ((month, _shown)) {
-      (AsyncData(:final value), _) => value,
-      (AsyncLoading(), (final value, final m, final f))
-          when (m, f) != (_month, _filter) =>
-        value,
-      _ => null,
-    };
+    // field inside the list, so the keyboard stays open.
+    final shown = _shown = month.value ?? _shown;
 
     return Column(
       children: [
@@ -178,11 +169,13 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
       color: Theme.of(context).colorScheme.outlineVariant,
     );
     // Rows of a group are ruled apart; the heading already rules the first.
-    Widget row(Transaction t, {required bool first}) => Dismissible(
+    void edit(Transaction t) => context.push(Routes.transaction(t.id));
+    Widget row(Transaction t, {required bool first}) => Semantics(
       key: ValueKey(t.id),
-      direction: DismissDirection.endToStart,
-      background: const TransactionSwipeBackground(),
-      onDismissed: (_) => _trash(t),
+      customSemanticsActions: {
+        CustomSemanticsAction(label: l10n.actionEdit): () => edit(t),
+        CustomSemanticsAction(label: l10n.actionDelete): () => _trash(t),
+      },
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: Border(top: first ? BorderSide.none : rule),
@@ -193,7 +186,16 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
           assetsAccounts: accounts,
           labels: labels[t.id] ?? const [],
           scheduled: !t.occurredAt.isBefore(tomorrow),
-          onTap: () => context.push(Routes.transaction(t.id)),
+          onTap: () => edit(t),
+          onLongPress: () {
+            HapticFeedback.mediumImpact();
+            showTransactionOptionsSheet(
+              context,
+              t,
+              onEdit: () => edit(t),
+              onDelete: () => _trash(t),
+            );
+          },
         ),
       ),
     );

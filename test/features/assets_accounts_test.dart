@@ -6,6 +6,7 @@ import 'package:open_sky_finance/app/router.dart';
 import 'package:open_sky_finance/app/routes.dart';
 import 'package:open_sky_finance/core/money/currency_converter.dart';
 import 'package:open_sky_finance/core/reorder_ids.dart';
+import 'package:open_sky_finance/core/widgets/page_placeholder.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
 import 'package:open_sky_finance/data/repositories/setting_keys.dart';
 import 'package:open_sky_finance/data/enums/assets_account_type.dart';
@@ -248,6 +249,12 @@ void main() {
       expect(find.text('Old'), findsOneWidget);
 
       await tester.tap(find.byTooltip('Favorite assets account: Checking'));
+      // The list stays up while the balances reload: no placeholder flash.
+      for (var i = 0; i < 10; i++) {
+        await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+        await tester.pump();
+        expect(find.byType(PagePlaceholder), findsNothing);
+      }
       await settle(tester);
       final saved = await tester.runAsync(
         () => db.assetsAccountsRepository.findById(checking),

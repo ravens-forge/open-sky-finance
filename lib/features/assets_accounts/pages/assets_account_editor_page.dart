@@ -15,7 +15,7 @@ class AssetsAccountEditorPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return switch (ref.watch(assetsAccountEditorDataProvider(id))) {
-      AsyncData(:final value) => AssetsAccountForm(data: value),
+      AsyncValue(:final value?) => AssetsAccountForm(data: value),
       AsyncError() => Scaffold(
         appBar: AppBar(),
         body: Center(child: EmptyState(title: context.l10n.errorLoadFailed)),

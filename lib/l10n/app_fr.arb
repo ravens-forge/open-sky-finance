@@ -328,6 +328,7 @@
   "errorAssetsAccountRequired": "Choisissez un compte",
   "errorDestinationRequired": "Choisissez un compte de destination",
   "errorDestinationSame": "Choisissez un autre compte de destination",
+  "errorTitleRequired": "Saisissez un titre",
   "errorAmountReceivedRequired": "Saisissez le montant reçu",
   "errorCategoryKindMismatch": "Cette catégorie ne correspond pas au type de la transaction.",
   "errorTransferCategory": "Les virements n'ont pas de catégorie.",

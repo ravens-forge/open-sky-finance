@@ -328,6 +328,7 @@
   "errorAssetsAccountRequired": "Elige una cuenta",
   "errorDestinationRequired": "Elige una cuenta de destino",
   "errorDestinationSame": "Elige una cuenta de destino distinta",
+  "errorTitleRequired": "Escribe un título",
   "errorAmountReceivedRequired": "Introduce el importe recibido",
   "errorCategoryKindMismatch": "Esta categoría no coincide con el tipo de la transacción.",
   "errorTransferCategory": "Las transferencias no tienen categoría.",

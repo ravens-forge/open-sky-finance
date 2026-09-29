@@ -63,7 +63,10 @@ class _CategoriesPageState extends ConsumerState<CategoriesPage> {
         ),
       ),
       body: switch ((groups, categories)) {
-        (AsyncData(value: final groups), AsyncData(value: final categories)) =>
+        (
+          AsyncValue(value: final groups?),
+          AsyncValue(value: final categories?),
+        ) =>
           CategoryKindTab(
             key: ValueKey(_kind),
             kind: _kind,

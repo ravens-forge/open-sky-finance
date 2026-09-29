@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n.dart';
 import '../../../core/widgets/editor_row.dart';
+import '../../../core/widgets/field_error.dart';
 import '../../../data/models/title_suggestion.dart';
 import '../providers/transactions_controller.dart';
 
@@ -15,6 +16,7 @@ class TransactionTitleField extends ConsumerStatefulWidget {
     required this.controller,
     required this.onSuggestion,
     this.suggested,
+    this.error,
   });
 
   final TextEditingController controller;
@@ -22,6 +24,8 @@ class TransactionTitleField extends ConsumerStatefulWidget {
 
   /// "Groceries · Wallet" once a suggestion was chosen.
   final String? suggested;
+
+  final String? error;
 
   @override
   ConsumerState<TransactionTitleField> createState() =>
@@ -88,7 +92,7 @@ class _TransactionTitleFieldState extends ConsumerState<TransactionTitleField> {
         ),
       ),
     );
-    return EditorRow(
+    final row = EditorRow(
       icon: Icons.article_outlined,
       label: l10n.fieldTitle,
       helper: widget.suggested == null
@@ -96,6 +100,17 @@ class _TransactionTitleFieldState extends ConsumerState<TransactionTitleField> {
           : l10n.transactionSuggested(widget.suggested!),
       helperColor: Theme.of(context).colorScheme.primary,
       child: autocomplete,
+    );
+    if (widget.error == null) return row;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        row,
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: FieldError(widget.error!),
+        ),
+      ],
     );
   }
 }

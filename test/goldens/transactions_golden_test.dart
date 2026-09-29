@@ -26,7 +26,11 @@ Future<void> _open(
 Future<void> Function(WidgetTester, ProviderContainer, AppLocalizations)
 _picker(String Function(AppLocalizations l10n) field) =>
     (tester, container, l10n) async {
-      await _open(tester, container, Routes.newTransaction());
+      await _open(
+        tester,
+        container,
+        Routes.newTransaction(TransactionType.expense),
+      );
       final target = find.text(field(l10n)).last;
       await tester.ensureVisible(target);
       await tester.tap(target);
@@ -40,6 +44,16 @@ void main() {
     seed: seedDemo,
     act: (tester, container, l10n) =>
         _open(tester, container, Routes.transactions),
+  );
+
+  appGolden(
+    'transaction_options_sheet',
+    seed: seedDemo,
+    act: (tester, container, l10n) async {
+      await _open(tester, container, Routes.transactions);
+      await tester.longPress(find.text('Central Market'));
+      await settle(tester);
+    },
   );
 
   appGolden(

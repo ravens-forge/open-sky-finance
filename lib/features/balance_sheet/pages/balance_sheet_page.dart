@@ -75,7 +75,7 @@ class _BalanceSheetPageState extends ConsumerState<BalanceSheetPage> {
             (AsyncError(), _) => Center(
               child: EmptyState(title: l10n.errorLoadFailed),
             ),
-            (AsyncData(value: []), _) => Center(
+            (AsyncValue(value: []), _) => Center(
               child: EmptyState(
                 title: l10n.assetsAccountsEmpty,
                 actions: [
@@ -86,7 +86,7 @@ class _BalanceSheetPageState extends ConsumerState<BalanceSheetPage> {
                 ],
               ),
             ),
-            (AsyncData(value: final sides), final String main) => _list(
+            (AsyncValue(value: final sides?), final String main) => _list(
               sides,
               main,
               hiddenCount,

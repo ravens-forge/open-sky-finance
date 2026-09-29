@@ -1688,6 +1688,10 @@
   "@errorDestinationSame": {
     "description": "Validation message of a transfer to the source assets account"
   },
+  "errorTitleRequired": "Enter a title",
+  "@errorTitleRequired": {
+    "description": "Validation message of the transaction title field"
+  },
   "errorAmountReceivedRequired": "Enter the amount received",
   "@errorAmountReceivedRequired": {
     "description": "Validation message of a cross-currency transfer"

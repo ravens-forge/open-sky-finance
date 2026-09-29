@@ -178,8 +178,8 @@ void main() {
       ))!;
     }
 
-    testWidgets('the list groups the month and swiping moves a row to the '
-        'Trash, with Undo', (tester) async {
+    testWidgets('the list groups the month and a long press offers Edit and '
+        'Delete, which moves a row to the Trash, with Undo', (tester) async {
       final wallet = await start(tester);
       await _addToday(
         tester,
@@ -195,7 +195,18 @@ void main() {
       expect(find.text('Central Market'), findsOneWidget);
       expect(find.text('Uncategorized · Wallet'), findsOneWidget);
 
+      // A swipe belongs to the tabs now.
       await tester.drag(find.text('Central Market'), const Offset(-600, 0));
+      await settle(tester);
+      await open(tester, Routes.transactions);
+      expect(find.text('Central Market'), findsOneWidget);
+
+      await tester.longPress(find.text('Central Market'));
+      await settle(tester);
+      expect(find.text('Edit'), findsOneWidget);
+      // Nothing is deleted until Delete is chosen.
+      expect(find.text('Moved to Trash'), findsNothing);
+      await tester.tap(find.text('Delete'));
       await settle(tester);
       expect(find.text('Central Market'), findsNothing);
       expect(find.text('Moved to Trash'), findsOneWidget);
@@ -245,9 +256,22 @@ void main() {
       expect(tester.testTextInput.isVisible, isFalse);
     });
 
+    testWidgets('a new transaction starts as income and needs a title', (
+      tester,
+    ) async {
+      await start(tester);
+      await open(tester, Routes.newTransaction());
+      expect(find.text('+'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField).first, '20');
+      await tester.tap(find.widgetWithText(FilledButton, 'Save'));
+      await settle(tester);
+      expect(find.text('Enter a title'), findsOneWidget);
+    });
+
     testWidgets('the editor saves an expense', (tester) async {
       final wallet = await start(tester);
-      await open(tester, Routes.newTransaction());
+      await open(tester, Routes.newTransaction(TransactionType.expense));
 
       await tester.enterText(find.byType(TextField).first, '12.50');
       await tester.enterText(find.byType(TextField).at(1), 'Bakery');
@@ -272,10 +296,8 @@ void main() {
 
     testWidgets('a transfer without destination says so', (tester) async {
       await start(tester);
-      await open(tester, Routes.newTransaction());
+      await open(tester, Routes.newTransaction(TransactionType.transfer));
 
-      await tester.tap(find.textContaining('Transfer'));
-      await settle(tester);
       await tester.enterText(find.byType(TextField).first, '20');
       await tester.tap(find.widgetWithText(FilledButton, 'Save'));
       await settle(tester);

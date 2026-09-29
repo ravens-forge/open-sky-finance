@@ -63,19 +63,3 @@ class TransactionsEmptyState extends StatelessWidget {
     );
   }
 }
-
-/// Shown behind a row being swiped to the Trash.
-class TransactionSwipeBackground extends StatelessWidget {
-  const TransactionSwipeBackground({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      alignment: AlignmentDirectional.centerEnd,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      color: scheme.errorContainer,
-      child: Icon(Icons.delete_outline, color: scheme.onErrorContainer),
-    );
-  }
-}
