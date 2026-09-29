@@ -8,7 +8,9 @@ import 'package:open_sky_finance/app/router.dart';
 import 'package:open_sky_finance/app/routes.dart';
 import 'package:open_sky_finance/core/l10n.dart';
 import 'package:open_sky_finance/data/enums/transaction_type.dart';
+import 'package:open_sky_finance/data/models/transaction_draft.dart';
 
+import '../data/test_db.dart';
 import '../pump_app.dart';
 import 'demo_data.dart';
 import 'golden.dart';
@@ -52,6 +54,33 @@ void main() {
     act: (tester, container, l10n) async {
       await _open(tester, container, Routes.transactions);
       await tester.longPress(find.text('Central Market'));
+      await settle(tester);
+    },
+  );
+
+  // The sheet's title wraps instead of overflowing.
+  const longTitle =
+      'Remboursement partiel de la réparation du lave-vaisselle chez '
+      'l’électroménager du quartier';
+  appGolden(
+    'transaction_options_sheet_long_title',
+    seed: (db) async {
+      await seedDemo(db);
+      ok(
+        await db.transactionsRepository.save(
+          TransactionDraft(
+            type: TransactionType.income,
+            occurredAt: DateTime(2026, 9, 17, 9),
+            amount: m(45),
+            assetsAccountId: demo['Wallet']!,
+            title: longTitle,
+          ),
+        ),
+      );
+    },
+    act: (tester, container, l10n) async {
+      await _open(tester, container, Routes.transactions);
+      await tester.longPress(find.text(longTitle));
       await settle(tester);
     },
   );
