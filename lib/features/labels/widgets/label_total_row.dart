@@ -8,7 +8,7 @@ import '../../../core/money/currency_converter.dart';
 import '../../../core/money/format_money.dart';
 import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/category_avatar.dart';
-import '../../../core/widgets/choice_sheet.dart';
+import '../../../core/widgets/action_sheet.dart';
 import '../../../data/models/label_total.dart';
 
 class LabelTotalRow extends StatelessWidget {
@@ -41,18 +41,18 @@ class LabelTotalRow extends StatelessWidget {
       },
       child: InkWell(
         onTap: onTap,
-        onLongPress: () async {
-          final action = await showChoiceSheet<VoidCallback?>(
-            context,
-            title: total.label.name,
-            options: [
-              (onRename, l10n.actionRename),
-              (onDelete, l10n.actionDelete),
-            ],
-            selected: null,
-          );
-          action?.call();
-        },
+        onLongPress: () => showActionSheet(
+          context,
+          title: total.label.name,
+          actions: [
+            SheetAction(
+              Icons.drive_file_rename_outline,
+              l10n.actionRename,
+              onRename,
+            ),
+            SheetAction(Icons.delete_outline, l10n.actionDelete, onDelete),
+          ],
+        ),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(

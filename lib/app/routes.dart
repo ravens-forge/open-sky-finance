@@ -26,7 +26,7 @@ abstract final class Routes {
   static const support = '/support';
 
   static String newTransaction([
-    TransactionType type = TransactionType.expense,
+    TransactionType type = TransactionType.income,
   ]) => '$transactions/new?type=${type.name}';
   static String transaction(String id) => '$transactions/$id';
 

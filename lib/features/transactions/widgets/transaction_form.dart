@@ -67,6 +67,7 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
       _transaction?.type == TransactionType.expense &&
       _transaction!.amount.micros > 0;
   String? _amountError;
+  String? _titleError;
   String? _accountError;
   String? _destinationError;
   String? _receivedError;
@@ -268,6 +269,7 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
         <= 0 => l10n.errorAmountRequired,
         _ => null,
       };
+      _titleError = _title.text.trim().isEmpty ? l10n.errorTitleRequired : null;
       _accountError = _assetsAccountId == null
           ? l10n.errorAssetsAccountRequired
           : null;
@@ -282,6 +284,7 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
           : null;
     });
     if (_amountError != null ||
+        _titleError != null ||
         _accountError != null ||
         _destinationError != null ||
         _receivedError != null) {
@@ -425,6 +428,7 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
       controller: _title,
       onSuggestion: _applySuggestion,
       suggested: suggested,
+      error: _titleError,
     );
     final t = _transaction;
     String stamp(DateTime utc) =>

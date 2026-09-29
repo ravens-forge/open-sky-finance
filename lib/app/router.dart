@@ -56,13 +56,13 @@ GoRouter router(Ref ref) {
   TransactionType typeOf(GoRouterState state) =>
       TransactionType.values.firstWhere(
         (type) => type.name == state.uri.queryParameters['type'],
-        orElse: () => TransactionType.expense,
+        orElse: () => TransactionType.income,
       );
 
   // The type a new category or group is created with.
   CategoryKind kindOf(GoRouterState state) => CategoryKind.values.firstWhere(
     (kind) => kind.name == state.uri.queryParameters['kind'],
-    orElse: () => CategoryKind.expense,
+    orElse: () => CategoryKind.income,
   );
 
   // Shows the not-found page when [find] resolves to null.

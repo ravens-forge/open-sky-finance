@@ -142,9 +142,9 @@ class _NetIncomePageState extends ConsumerState<NetIncomePage> {
               _,
             ) => Center(child: EmptyState(title: l10n.errorLoadFailed)),
             (
-              AsyncData(value: final summary),
-              AsyncData(value: final income),
-              AsyncData(value: final expenses),
+              AsyncValue(value: final summary?),
+              AsyncValue(value: final income?),
+              AsyncValue(value: final expenses?),
               final String currency,
             ) =>
               _body(summary, income, expenses, currency),

@@ -32,7 +32,7 @@ class ArrangeHomePage extends ConsumerWidget {
         ],
       ),
       body: switch (ref.watch(homeSectionsProvider)) {
-        AsyncData(:final value) => _list(context, ref, value),
+        AsyncValue(:final value?) => _list(context, ref, value),
         AsyncError() => Center(child: EmptyState(title: l10n.errorLoadFailed)),
         _ => PagePlaceholder(label: l10n.pageArrangeHome),
       },

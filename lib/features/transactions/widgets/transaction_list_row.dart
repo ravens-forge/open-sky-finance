@@ -23,6 +23,7 @@ class TransactionListRow extends StatelessWidget {
     required this.scheduled,
     this.trashed = false,
     this.onTap,
+    this.onLongPress,
   });
 
   final Transaction transaction;
@@ -32,6 +33,7 @@ class TransactionListRow extends StatelessWidget {
   final bool scheduled;
   final bool trashed;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +87,7 @@ class TransactionListRow extends StatelessWidget {
       scheduled: scheduled,
       struckThrough: trashed,
       onTap: onTap,
+      onLongPress: onLongPress,
       amount: AmountText(
         t.amount.micros,
         currency: t.amount.currency,

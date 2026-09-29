@@ -51,7 +51,7 @@ class _AssetsAccountsPageState extends ConsumerState<AssetsAccountsPage> {
         ],
       ),
       body: switch ((all, sides, main)) {
-        (AsyncData(value: []), _, _) => Center(
+        (AsyncValue(value: []), _, _) => Center(
           child: SingleChildScrollView(
             child: EmptyState(
               title: l10n.assetsAccountsEmpty,
@@ -65,8 +65,8 @@ class _AssetsAccountsPageState extends ConsumerState<AssetsAccountsPage> {
           ),
         ),
         (
-          AsyncData(value: final all),
-          AsyncData(value: final sides),
+          AsyncValue(value: final all?),
+          AsyncValue(value: final sides?),
           final String main,
         ) =>
           _list(all, sides, main),

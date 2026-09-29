@@ -53,7 +53,7 @@ class TrashPage extends ConsumerWidget {
       ),
       body: switch (trash) {
         AsyncError() => Center(child: EmptyState(title: l10n.errorLoadFailed)),
-        AsyncData(value: []) => Center(
+        AsyncValue(value: []) => Center(
           child: EmptyState(
             title: l10n.trashEmptyStateTitle,
             message: l10n.trashEmptyStateMessage,
@@ -65,7 +65,7 @@ class TrashPage extends ConsumerWidget {
             ],
           ),
         ),
-        AsyncData(:final value) => _TrashList(days: value, count: count),
+        AsyncValue(:final value?) => _TrashList(days: value, count: count),
         _ => PagePlaceholder(label: l10n.pageTrash),
       },
     );

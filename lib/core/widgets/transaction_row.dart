@@ -16,6 +16,7 @@ class TransactionRow extends StatelessWidget {
     this.scheduled = false,
     this.struckThrough = false,
     this.onTap,
+    this.onLongPress,
   });
 
   final IconData icon;
@@ -27,6 +28,7 @@ class TransactionRow extends StatelessWidget {
   final bool scheduled;
   final bool struckThrough;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class TransactionRow extends StatelessWidget {
     ];
     return InkWell(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 11),
         child: Row(

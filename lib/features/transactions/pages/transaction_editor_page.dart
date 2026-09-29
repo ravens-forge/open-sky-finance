@@ -14,7 +14,7 @@ class TransactionEditorPage extends ConsumerWidget {
   const TransactionEditorPage({
     super.key,
     this.id,
-    this.type = TransactionType.expense,
+    this.type = TransactionType.income,
   });
 
   final String? id;
@@ -26,12 +26,12 @@ class TransactionEditorPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return switch (ref.watch(transactionEditorDataProvider(id, type))) {
       // An opening balance belongs to its assets account, not to this editor.
-      AsyncData(:final value)
+      AsyncValue(:final value?)
           when value.transaction?.type == TransactionType.openingBalance =>
         _OpeningBalanceRedirect(
           assetsAccountId: value.transaction!.assetsAccountId,
         ),
-      AsyncData(:final value) => TransactionForm(data: value),
+      AsyncValue(:final value?) => TransactionForm(data: value),
       AsyncError() => Scaffold(
         appBar: AppBar(),
         body: Center(child: EmptyState(title: context.l10n.errorLoadFailed)),

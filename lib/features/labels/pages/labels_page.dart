@@ -83,14 +83,14 @@ class _LabelsPageState extends ConsumerState<LabelsPage> {
             (AsyncError(), _) => Center(
               child: EmptyState(title: l10n.errorLoadFailed),
             ),
-            (AsyncData(value: []), _) => Center(
+            (AsyncValue(value: []), _) => Center(
               child: EmptyState(
                 title: l10n.labelsEmpty,
                 message: l10n.labelsEmptyMessage,
                 actions: [_newButton()],
               ),
             ),
-            (AsyncData(:final value), final CurrencyConverter converter) =>
+            (AsyncValue(:final value?), final CurrencyConverter converter) =>
               _list(value, converter),
             _ => PagePlaceholder(label: l10n.pageLabels),
           },

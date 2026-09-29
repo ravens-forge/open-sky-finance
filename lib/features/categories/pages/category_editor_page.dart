@@ -12,7 +12,7 @@ class CategoryEditorPage extends ConsumerWidget {
   const CategoryEditorPage({
     super.key,
     this.id,
-    this.kind = CategoryKind.expense,
+    this.kind = CategoryKind.income,
     this.groupId,
   });
 
@@ -27,7 +27,7 @@ class CategoryEditorPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return switch (ref.watch(categoryEditorDataProvider(id))) {
-      AsyncData(:final value) => CategoryForm(
+      AsyncValue(:final value?) => CategoryForm(
         data: value,
         kind: kind,
         groupId: groupId,
