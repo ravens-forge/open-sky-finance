@@ -130,7 +130,9 @@ class _TransactionsFilterSheetState
               ),
               FieldRow(
                 label: l10n.fieldCategory,
-                value: nameOf(categoryOptions, _filter.categoryId),
+                value:
+                    groups[_filter.categoryGroupId] ??
+                    nameOf(categoryOptions, _filter.categoryId),
                 onTap: _filter.type == TransactionType.transfer
                     ? null
                     : () => _pick(

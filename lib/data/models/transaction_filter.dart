@@ -12,6 +12,7 @@ class TransactionFilter {
     this.type,
     this.assetsAccountId,
     this.categoryId,
+    this.categoryGroupId,
     this.labelId,
   });
 
@@ -21,22 +22,33 @@ class TransactionFilter {
   /// Either side of a transfer.
   final String? assetsAccountId;
   final String? categoryId;
+
+  /// Every category of a group, where a budget drills down to; picking one
+  /// category replaces it.
+  final String? categoryGroupId;
   final String? labelId;
 
   /// Filters other than the search, for the "Filters (2)" button.
-  int get count => [type, assetsAccountId, categoryId, labelId].nonNulls.length;
+  int get count => [
+    type,
+    assetsAccountId,
+    categoryId ?? categoryGroupId,
+    labelId,
+  ].nonNulls.length;
 
   TransactionFilter _with({
     String? query,
     TransactionType? type,
     String? assetsAccountId,
     String? categoryId,
+    String? categoryGroupId,
     String? labelId,
   }) => TransactionFilter(
     query: query ?? this.query,
     type: type,
     assetsAccountId: assetsAccountId,
     categoryId: categoryId,
+    categoryGroupId: categoryGroupId,
     labelId: labelId,
   );
 
@@ -45,6 +57,7 @@ class TransactionFilter {
     type: type,
     assetsAccountId: assetsAccountId,
     categoryId: categoryId,
+    categoryGroupId: categoryGroupId,
     labelId: labelId,
   );
 
@@ -54,6 +67,7 @@ class TransactionFilter {
     type: type,
     assetsAccountId: assetsAccountId,
     categoryId: type == TransactionType.transfer ? null : categoryId,
+    categoryGroupId: type == TransactionType.transfer ? null : categoryGroupId,
     labelId: labelId,
   );
 
@@ -61,6 +75,7 @@ class TransactionFilter {
     type: type,
     assetsAccountId: id,
     categoryId: categoryId,
+    categoryGroupId: categoryGroupId,
     labelId: labelId,
   );
 
@@ -75,6 +90,7 @@ class TransactionFilter {
     type: type,
     assetsAccountId: assetsAccountId,
     categoryId: categoryId,
+    categoryGroupId: categoryGroupId,
     labelId: id,
   );
 
@@ -88,9 +104,16 @@ class TransactionFilter {
       other.type == type &&
       other.assetsAccountId == assetsAccountId &&
       other.categoryId == categoryId &&
+      other.categoryGroupId == categoryGroupId &&
       other.labelId == labelId;
 
   @override
-  int get hashCode =>
-      Object.hash(query, type, assetsAccountId, categoryId, labelId);
+  int get hashCode => Object.hash(
+    query,
+    type,
+    assetsAccountId,
+    categoryId,
+    categoryGroupId,
+    labelId,
+  );
 }

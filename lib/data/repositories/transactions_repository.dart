@@ -58,6 +58,15 @@ class TransactionsRepository extends DatabaseAccessor<AppDatabase>
     if (filter.categoryId case final id?) {
       query.where((t) => t.categoryId.equals(id));
     }
+    if (filter.categoryGroupId case final id?) {
+      query.where(
+        (t) => t.categoryId.isInQuery(
+          selectOnly(attachedDatabase.categoriesTable)
+            ..addColumns([attachedDatabase.categoriesTable.id])
+            ..where(attachedDatabase.categoriesTable.groupId.equals(id)),
+        ),
+      );
+    }
     if (filter.labelId case final id?) {
       query.where(
         (t) => t.id.isInQuery(
