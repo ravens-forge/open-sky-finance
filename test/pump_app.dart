@@ -57,6 +57,8 @@ Future<ProviderContainer> pumpApp(
   }
   if (seed != null) await tester.runAsync(() => seed(db));
   final container = ProviderContainer(
+    // A failing provider stays failed, so no retry timer outlives the test.
+    retry: (_, _) => null,
     overrides: [
       appDatabaseProvider.overrideWithValue(db),
       // Fixed, so no clock timer outlives the test.

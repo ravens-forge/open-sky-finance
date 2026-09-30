@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../finance_colors.dart';
+import 'glyph_text.dart';
 
 /// A field of the transaction and reminder editors: an icon, a small label,
 /// the value (or an inline input) and an optional helper line, over a
@@ -54,7 +55,7 @@ class EditorRow extends StatelessWidget {
                     child: child,
                   ),
                   if (helper != null)
-                    Text(
+                    GlyphText(
                       helper!,
                       style: theme.textTheme.bodySmall!.copyWith(
                         color: helperColor ?? muted,

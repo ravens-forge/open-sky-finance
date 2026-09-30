@@ -36,6 +36,7 @@ class AssetsAccountBalanceHeader extends StatelessWidget {
                 currency: account.currency,
                 amountStyle: AmountStyle.balance,
                 style: text.hero,
+                fit: true,
               ),
             ),
             InfoTooltip(

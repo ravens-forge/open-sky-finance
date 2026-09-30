@@ -10,6 +10,7 @@ import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/category_avatar.dart';
 import '../../../core/widgets/action_sheet.dart';
 import '../../../data/models/label_total.dart';
+import '../../../core/widgets/trailing_amount.dart';
 
 class LabelTotalRow extends StatelessWidget {
   const LabelTotalRow({
@@ -70,38 +71,41 @@ class LabelTotalRow extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(total.label.name, style: theme.textTheme.rowTitle),
-                    Text(
-                      l10n.labelsCount(total.count),
-                      style: theme.textTheme.rowSubtitle.copyWith(color: muted),
-                    ),
-                    if (converted.notIncluded.isNotEmpty)
+                child: TrailingAmount(
+                  text: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(total.label.name, style: theme.textTheme.rowTitle),
                       Text(
-                        l10n.assetsAccountsNotIncluded(
-                          [
-                            for (final MapEntry(key: currency, value: micros)
-                                in converted.notIncluded.entries)
-                              formatMoney(
-                                micros,
-                                currency: currency,
-                                locale: l10n.localeName,
-                              ),
-                          ].join(', '),
+                        l10n.labelsCount(total.count),
+                        style: theme.textTheme.rowSubtitle.copyWith(
+                          color: muted,
                         ),
-                        style: theme.textTheme.rowSubtitle,
                       ),
-                  ],
+                      if (converted.notIncluded.isNotEmpty)
+                        Text(
+                          l10n.assetsAccountsNotIncluded(
+                            [
+                              for (final MapEntry(key: currency, value: micros)
+                                  in converted.notIncluded.entries)
+                                formatMoney(
+                                  micros,
+                                  currency: currency,
+                                  locale: l10n.localeName,
+                                ),
+                            ].join(', '),
+                          ),
+                          style: theme.textTheme.rowSubtitle,
+                        ),
+                    ],
+                  ),
+                  amount: AmountText(
+                    converted.amount,
+                    currency: converter.mainCurrency,
+                    approximate: converted.approximate,
+                    style: theme.textTheme.rowAmount,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              AmountText(
-                converted.amount,
-                currency: converter.mainCurrency,
-                approximate: converted.approximate,
-                style: theme.textTheme.rowAmount,
               ),
               const SizedBox(width: 4),
               Icon(Icons.chevron_right, size: 18, color: muted),

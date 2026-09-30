@@ -31,19 +31,27 @@ class NetIncomeGroupRow extends StatelessWidget {
           top: BorderSide(color: theme.colorScheme.outlineVariant),
         ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.end,
         children: [
-          Text(
-            group.name ?? l10n.categoryNone,
-            style: theme.textTheme.bodyLarge!.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Flexible(
+                child: Text(
+                  group.name ?? l10n.categoryNone,
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(percent, style: theme.textTheme.bodySmall),
+            ],
           ),
-          const SizedBox(width: 8),
-          Text(percent, style: theme.textTheme.bodySmall),
-          const Spacer(),
           AmountText(
             group.total.amount,
             currency: currency,

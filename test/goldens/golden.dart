@@ -12,21 +12,24 @@ import '../pump_app.dart';
 /// "Now" in every golden: Thursday, September 17, 2026.
 final goldenNow = DateTime(2026, 9, 17, 10, 30);
 
-/// Each golden is taken in English (light and dark), Spanish and French.
+/// Each golden is taken in English (light and dark), Spanish and French,
+/// plus French at 200 % text scale, the longest layout.
 enum GoldenVariant {
   light('en', ThemeMode.light),
   dark('en', ThemeMode.dark),
   es('es', ThemeMode.light),
-  fr('fr', ThemeMode.light);
+  fr('fr', ThemeMode.light),
+  fr200('fr', ThemeMode.light, textScale: 2);
 
-  const GoldenVariant(this.locale, this.themeMode);
+  const GoldenVariant(this.locale, this.themeMode, {this.textScale = 1});
 
   final String locale;
   final ThemeMode themeMode;
+  final double textScale;
 }
 
-/// A phone screen (390 wide) of [height], with real shadows, the clock at
-/// [goldenNow], and `images/<name>/<variant>.png` as the golden file.
+/// A phone screen (390 wide) of [height] at the variant's text scale, with
+/// real shadows, the clock at [goldenNow], and `images/<name>/<variant>.png` as the golden file.
 Future<void> _capture(
   WidgetTester tester,
   String name,
@@ -38,6 +41,8 @@ Future<void> _capture(
     ..devicePixelRatio = 1
     ..physicalSize = Size(390, height);
   addTearDown(tester.view.reset);
+  tester.platformDispatcher.textScaleFactorTestValue = variant.textScale;
+  addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
   // The test binding draws shadows as solid outlines unless told not to, and
   // checks the flag is back on before the tear-downs run.
   debugDisableShadows = false;
@@ -130,6 +135,15 @@ void widgetGolden(
   }
 }
 
-/// Scrolls the page's list until [finder], built lazily, is on screen.
-Future<void> scrollTo(WidgetTester tester, Finder finder) => tester
-    .scrollUntilVisible(finder, 200, scrollable: find.byType(Scrollable).first);
+/// Scrolls the page's list (the first vertical one, not the tab bar) until
+/// [finder], built lazily, is on screen.
+Future<void> scrollTo(WidgetTester tester, Finder finder) =>
+    tester.scrollUntilVisible(
+      finder,
+      200,
+      scrollable: find
+          .byWidgetPredicate(
+            (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+          )
+          .first,
+    );

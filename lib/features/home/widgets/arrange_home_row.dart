@@ -52,7 +52,7 @@ class ArrangeHomeRow extends StatelessWidget {
             child: SectionDragStart(
               index: index,
               child: SizedBox.square(
-                dimension: 44,
+                dimension: 48,
                 child: Icon(
                   Icons.drag_indicator,
                   size: 20,
@@ -73,7 +73,7 @@ class ArrangeHomeRow extends StatelessWidget {
                     name,
                     style: theme.textTheme.rowTitle.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: section.visible ? null : finance.disabled,
+                      color: section.visible ? null : finance.muted,
                     ),
                   ),
                   Text(

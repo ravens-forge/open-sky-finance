@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../finance_colors.dart';
 import '../l10n.dart';
 import '../money/format_money.dart';
+import 'glyph_text.dart';
 
 enum AmountStyle {
   /// Income and expenses: `+` in `income` when positive, `−` in `expense` when
@@ -39,6 +40,7 @@ class AmountText extends StatelessWidget {
     this.amountStyle = AmountStyle.signed,
     this.style,
     this.approximate = false,
+    this.fit = false,
   });
 
   final int micros;
@@ -48,6 +50,10 @@ class AmountText extends StatelessWidget {
 
   /// Converted from other currencies: shown with "≈".
   final bool approximate;
+
+  /// Shrinks to the available width instead of wrapping inside the number;
+  /// for large figures under large text.
+  final bool fit;
 
   @override
   Widget build(BuildContext context) {
@@ -81,13 +87,20 @@ class AmountText extends StatelessWidget {
       _ => (amount, null, spoken),
     };
 
-    return Text(
+    final widget = GlyphText(
       approximate ? l10n.amountApproximate(text) : text,
       semanticsLabel: approximate ? l10n.amountApproximate(label) : label,
       style: (style ?? const TextStyle()).copyWith(
         color: color,
         fontFeatures: const [FontFeature.tabularFigures()],
       ),
+    );
+    if (!fit) return widget;
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      widthFactor: 1,
+      heightFactor: 1,
+      child: FittedBox(fit: BoxFit.scaleDown, child: widget),
     );
   }
 }

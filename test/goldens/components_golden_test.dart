@@ -114,7 +114,7 @@ Widget _controls(BuildContext context) {
       ),
       Row(
         children: [
-          Text(l10n.labelsInfoEyebrow.toUpperCase()),
+          Flexible(child: Text(l10n.labelsInfoEyebrow.toUpperCase())),
           InfoTooltip(label: l10n.labelsInfoLabel, text: l10n.labelsInfo),
         ],
       ),

@@ -3,11 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/routes.dart';
-import '../../../core/l10n.dart';
-import '../../../core/widgets/empty_state.dart';
 import '../../../data/enums/transaction_type.dart';
 import '../providers/transaction_editor_provider.dart';
 import '../widgets/transaction_form.dart';
+import '../../shell/widgets/page_load_error.dart';
 
 /// Creates ([id] `null`) or edits a transaction.
 class TransactionEditorPage extends ConsumerWidget {
@@ -34,7 +33,9 @@ class TransactionEditorPage extends ConsumerWidget {
       AsyncValue(:final value?) => TransactionForm(data: value),
       AsyncError() => Scaffold(
         appBar: AppBar(),
-        body: Center(child: EmptyState(title: context.l10n.errorLoadFailed)),
+        body: PageLoadError(
+          providers: [transactionEditorDataProvider(id, type)],
+        ),
       ),
       _ => Scaffold(appBar: AppBar()),
     };

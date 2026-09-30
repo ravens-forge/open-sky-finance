@@ -33,6 +33,7 @@ _picker(String Function(AppLocalizations l10n) field) =>
         container,
         Routes.newTransaction(TransactionType.expense),
       );
+      await scrollTo(tester, find.text(field(l10n)));
       final target = find.text(field(l10n)).last;
       await tester.ensureVisible(target);
       await tester.tap(target);
@@ -53,6 +54,7 @@ void main() {
     seed: seedDemo,
     act: (tester, container, l10n) async {
       await _open(tester, container, Routes.transactions);
+      await scrollTo(tester, find.text('Central Market'));
       await tester.longPress(find.text('Central Market'));
       await settle(tester);
     },
@@ -80,6 +82,7 @@ void main() {
     },
     act: (tester, container, l10n) async {
       await _open(tester, container, Routes.transactions);
+      await scrollTo(tester, find.text(longTitle));
       await tester.longPress(find.text(longTitle));
       await settle(tester);
     },

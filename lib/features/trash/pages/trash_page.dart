@@ -20,6 +20,7 @@ import '../providers/trash_controller.dart';
 import '../providers/trash_providers.dart';
 import '../widgets/delete_permanently_dialog.dart';
 import '../widgets/trash_row.dart';
+import '../../shell/widgets/page_load_error.dart';
 
 class TrashPage extends ConsumerWidget {
   const TrashPage({super.key});
@@ -52,7 +53,7 @@ class TrashPage extends ConsumerWidget {
         ],
       ),
       body: switch (trash) {
-        AsyncError() => Center(child: EmptyState(title: l10n.errorLoadFailed)),
+        AsyncError() => PageLoadError(providers: [trashProvider]),
         AsyncValue(value: []) => Center(
           child: EmptyState(
             title: l10n.trashEmptyStateTitle,

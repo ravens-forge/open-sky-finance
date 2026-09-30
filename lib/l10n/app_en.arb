@@ -392,7 +392,21 @@
   "@themeModeDark": {
     "description": "Settings → Theme option"
   },
-  "errorLoadFailed": "This page couldn't load. Nothing was changed or deleted.",
+  "errorLoadTitle": "Couldn't load this page",
+  "@errorLoadTitle": {
+    "description": "Title of the in-page error when a page fails to load"
+  },
+  "errorLoadNote": "If it keeps happening, restore your latest backup from Backups. Error code {code} helps when reporting it.",
+  "@errorLoadNote": {
+    "description": "Next steps under the in-page load error; code is a short error code like DB-READ",
+    "placeholders": {
+      "code": {
+        "type": "String",
+        "example": "DB-READ"
+      }
+    }
+  },
+  "errorLoadFailed": "Something went wrong while reading your data on this device. Nothing was changed or deleted.",
   "@errorLoadFailed": {
     "description": "Message of the in-page error when a page fails to load"
   },

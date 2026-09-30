@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n.dart';
-import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_placeholder.dart';
 import '../../../core/widgets/reorderable_sections.dart';
 import '../../../data/models/home_section.dart';
@@ -10,6 +9,7 @@ import '../providers/home_controller.dart';
 import '../providers/home_providers.dart';
 import '../widgets/arrange_home_row.dart';
 import '../widgets/section_link.dart';
+import '../../shell/widgets/page_load_error.dart';
 
 /// Every Home section in order with its visibility; changes are saved at once.
 class ArrangeHomePage extends ConsumerWidget {
@@ -33,7 +33,7 @@ class ArrangeHomePage extends ConsumerWidget {
       ),
       body: switch (ref.watch(homeSectionsProvider)) {
         AsyncValue(:final value?) => _list(context, ref, value),
-        AsyncError() => Center(child: EmptyState(title: l10n.errorLoadFailed)),
+        AsyncError() => PageLoadError(providers: [homeSectionsProvider]),
         _ => PagePlaceholder(label: l10n.pageArrangeHome),
       },
     );

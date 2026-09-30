@@ -45,6 +45,7 @@ class SummarySection extends ConsumerWidget {
               amountStyle: style,
               approximate: total.approximate,
               style: theme.textTheme.summaryFigure,
+              fit: true,
             ),
         ],
       ),

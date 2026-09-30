@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../l10n.dart';
 import 'category_avatar.dart';
 import 'ledger_chip.dart';
+import 'trailing_amount.dart';
+import 'glyph_text.dart';
 
 class TransactionRow extends StatelessWidget {
   const TransactionRow({
@@ -51,32 +53,33 @@ class TransactionRow extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: text.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      fontStyle: scheduled ? FontStyle.italic : null,
-                      decoration: struckThrough
-                          ? TextDecoration.lineThrough
-                          : null,
+              child: TrailingAmount(
+                text: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: text.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        fontStyle: scheduled ? FontStyle.italic : null,
+                        decoration: struckThrough
+                            ? TextDecoration.lineThrough
+                            : null,
+                      ),
                     ),
-                  ),
-                  Text(subtitle, style: text.bodySmall),
-                  if (chips.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 3),
-                      child: Wrap(spacing: 4, runSpacing: 4, children: chips),
-                    ),
-                ],
+                    GlyphText(subtitle, style: text.bodySmall),
+                    if (chips.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 3),
+                        child: Wrap(spacing: 4, runSpacing: 4, children: chips),
+                      ),
+                  ],
+                ),
+                amount: DefaultTextStyle.merge(
+                  style: text.bodyLarge!.copyWith(fontWeight: FontWeight.w600),
+                  child: amount,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            DefaultTextStyle.merge(
-              style: text.bodyLarge!.copyWith(fontWeight: FontWeight.w600),
-              child: amount,
             ),
           ],
         ),

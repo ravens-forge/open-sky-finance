@@ -4,6 +4,7 @@ import '../finance_colors.dart';
 import '../l10n.dart';
 import 'category_avatar.dart';
 import 'ledger_chip.dart';
+import 'trailing_amount.dart';
 
 class ReminderRow extends StatelessWidget {
   const ReminderRow({
@@ -35,6 +36,11 @@ class ReminderRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final text = Theme.of(context).textTheme;
+    // From the theme, so the buttons keep the app's font.
+    final smallText = text.labelLarge!.copyWith(
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+    );
     final finance = FinanceColors.of(context);
     final automatic = onRecord == null && onSkip == null;
     return InkWell(
@@ -49,50 +55,53 @@ class ReminderRow extends StatelessWidget {
                 CategoryAvatar(icon: icon, color: iconColor),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 2,
-                    children: [
-                      Text(
-                        title,
-                        style: text.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w500,
+                  child: TrailingAmount(
+                    text: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 2,
+                      children: [
+                        Text(
+                          title,
+                          style: text.bodyLarge!.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.repeat, size: 14, color: finance.muted),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(schedule, style: text.bodySmall),
-                          ),
-                        ],
-                      ),
-                      Wrap(
-                        spacing: 6,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          Text(
-                            due,
-                            style: text.bodySmall!.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: overdue ? finance.warning : null,
+                        Row(
+                          children: [
+                            Icon(Icons.repeat, size: 14, color: finance.muted),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(schedule, style: text.bodySmall),
                             ),
-                          ),
-                          if (automatic)
-                            LedgerChip.outline(
-                              l10n.chipAutomatic,
-                              compact: true,
+                          ],
+                        ),
+                        Wrap(
+                          spacing: 6,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Text(
+                              due,
+                              style: text.bodySmall!.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: overdue ? finance.warning : null,
+                              ),
                             ),
-                        ],
+                            if (automatic)
+                              LedgerChip.outline(
+                                l10n.chipAutomatic,
+                                compact: true,
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    amount: DefaultTextStyle.merge(
+                      style: text.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
+                      child: amount,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                DefaultTextStyle.merge(
-                  style: text.bodyLarge!.copyWith(fontWeight: FontWeight.w600),
-                  child: amount,
                 ),
               ],
             ),
@@ -108,7 +117,7 @@ class ReminderRow extends StatelessWidget {
                       style: FilledButton.styleFrom(
                         minimumSize: _small,
                         padding: _smallPadding,
-                        textStyle: _smallText,
+                        textStyle: smallText,
                       ),
                       child: Text(l10n.reminderRecord),
                     ),
@@ -117,7 +126,7 @@ class ReminderRow extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         minimumSize: _small,
                         padding: _smallPadding,
-                        textStyle: _smallText,
+                        textStyle: smallText,
                       ),
                       child: Text(l10n.reminderSkip),
                     ),
@@ -134,4 +143,3 @@ class ReminderRow extends StatelessWidget {
 // 40 px row buttons; the padded tap target keeps them at 48 px.
 const _small = Size(0, 40);
 const _smallPadding = EdgeInsets.symmetric(horizontal: 16);
-const _smallText = TextStyle(fontSize: 13, fontWeight: FontWeight.w600);

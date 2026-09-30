@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/widgets/button_row.dart';
+
 /// A step's scrollable content above its bottom buttons.
 class OnboardingStepLayout extends StatelessWidget {
   const OnboardingStepLayout({
@@ -35,11 +37,10 @@ class OnboardingStepLayout extends StatelessWidget {
             ),
           ),
         ),
-        Row(
+        ButtonRow(
           spacing: 10,
           children: [
-            for (final action in actions)
-              Expanded(child: SizedBox(height: 52, child: action)),
+            for (final action in actions) SizedBox(height: 52, child: action),
           ],
         ),
       ],

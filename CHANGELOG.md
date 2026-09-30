@@ -37,5 +37,9 @@ Two other version numbers exist and are **not** the app version: the Drift datab
 - Import from Bluecoins, from Settings or Backups: pick a `.fydb` backup (the original file is only read, never changed) and see what will be imported, the balance of each assets account as of today to compare with Bluecoins, and what is skipped and why (deleted entries, reminders, budgets, transfers missing one side…). Importing replaces the current data in one step, after a safety backup, like a restore. Open Sky Finance is not affiliated with Bluecoins.
 - Report a bug: choose bug report or feature idea, see exactly which technical info (app version and build, platform and OS version, app language, database schema) goes into the GitHub issue form, leave it out with a switch or copy it instead. Never amounts, names, notes or files; the issue opens in your browser.
 - Support the project: why the app is free and how it is funded, a Donate link (Android only) and other ways to help: star the repository, translate, report a bug or idea. Donating unlocks nothing.
+- A page that can't be read says so, with "Try again", "Report a bug" and what to do if it keeps happening, instead of a blank screen.
+- Large text (up to 200 %) keeps every screen readable: amounts move under their row instead of squeezing names into broken words, buttons stack, and big figures shrink to fit.
+- Accessibility: every button has a spoken label (info icons included), touch targets are at least 48 px, drag handles included, and locked or hidden items keep readable contrast.
+- Transfer arrows (⇄, →) look the same on every device, and reminder Record / Skip buttons use the app's font.
 
 [Unreleased]: https://github.com/ravens-forge/open-sky-finance/commits/main

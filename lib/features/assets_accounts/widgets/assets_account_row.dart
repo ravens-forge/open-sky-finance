@@ -11,6 +11,7 @@ import '../models/assets_account_with_balance.dart';
 import '../models/credit_usage.dart';
 import 'assets_account_avatar.dart';
 import 'credit_usage_bar.dart';
+import '../../../core/widgets/trailing_amount.dart';
 
 /// Drag handle, icon, name and type, balance and favorite star; credit cards
 /// with a limit add their usage below. Must sit in a `ReorderableListView`.
@@ -88,30 +89,32 @@ class AssetsAccountRow extends StatelessWidget {
                   AssetsAccountAvatar(account.type),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(account.name, style: theme.textTheme.rowTitle),
-                        Text(
-                          [
-                            account.type.label(l10n),
-                            if (account.currency != mainCurrency)
-                              account.currency,
-                            if (account.isHidden) l10n.assetsAccountHidden,
-                            if (account.excludeFromNetWorth)
-                              l10n.assetsAccountExcluded,
-                          ].join(' · '),
-                          style: theme.textTheme.rowSubtitle,
-                        ),
-                      ],
+                    child: TrailingAmount(
+                      gap: 8,
+                      text: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(account.name, style: theme.textTheme.rowTitle),
+                          Text(
+                            [
+                              account.type.label(l10n),
+                              if (account.currency != mainCurrency)
+                                account.currency,
+                              if (account.isHidden) l10n.assetsAccountHidden,
+                              if (account.excludeFromNetWorth)
+                                l10n.assetsAccountExcluded,
+                            ].join(' · '),
+                            style: theme.textTheme.rowSubtitle,
+                          ),
+                        ],
+                      ),
+                      amount: AmountText(
+                        balance,
+                        currency: account.currency,
+                        amountStyle: AmountStyle.balance,
+                        style: theme.textTheme.rowAmount,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  AmountText(
-                    balance,
-                    currency: account.currency,
-                    amountStyle: AmountStyle.balance,
-                    style: theme.textTheme.rowAmount,
                   ),
                   IconButton(
                     isSelected: account.isFavorite,

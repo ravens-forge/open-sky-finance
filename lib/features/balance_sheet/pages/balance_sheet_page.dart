@@ -17,6 +17,7 @@ import '../widgets/balance_sheet_account_row.dart';
 import '../widgets/balance_sheet_type_header.dart';
 import '../widgets/net_worth_header.dart';
 import '../../assets_accounts/widgets/assets_accounts_side_header.dart';
+import '../../shell/widgets/page_load_error.dart';
 
 class BalanceSheetPage extends ConsumerStatefulWidget {
   const BalanceSheetPage({super.key});
@@ -50,30 +51,34 @@ class _BalanceSheetPageState extends ConsumerState<BalanceSheetPage> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l10n.balanceSheetAsOf.toUpperCase(),
-                style: Theme.of(context).textTheme.eyebrow,
-              ),
-              TextButton.icon(
-                onPressed: _pickDate,
-                iconAlignment: IconAlignment.end,
-                icon: const Icon(Icons.expand_more, size: 16),
-                label: Text(
-                  DateFormat.yMMMd(l10n.localeName).format(_asOf),
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+          child: SizedBox(
+            width: double.infinity,
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text(
+                  l10n.balanceSheetAsOf.toUpperCase(),
+                  style: Theme.of(context).textTheme.eyebrow,
                 ),
-              ),
-            ],
+                TextButton.icon(
+                  onPressed: _pickDate,
+                  iconAlignment: IconAlignment.end,
+                  icon: const Icon(Icons.expand_more, size: 16),
+                  label: Text(
+                    DateFormat.yMMMd(l10n.localeName).format(_asOf),
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         const Divider(height: 1),
         Expanded(
           child: switch ((sides, main)) {
-            (AsyncError(), _) => Center(
-              child: EmptyState(title: l10n.errorLoadFailed),
+            (AsyncError(), _) => PageLoadError(
+              providers: [balanceSheetSidesProvider(_asOf)],
             ),
             (AsyncValue(value: []), _) => Center(
               child: EmptyState(

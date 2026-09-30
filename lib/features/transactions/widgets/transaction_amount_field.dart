@@ -5,6 +5,7 @@ import '../../../core/l10n.dart';
 import '../../../core/money/format_money.dart';
 import '../../../core/widgets/currency_picker.dart';
 import '../../../core/widgets/field_error.dart';
+import '../../../core/widgets/glyph_text.dart';
 
 /// A large amount over an ink rule: the label in capitals, then the sign, the
 /// currency symbol and the number in the colour of the type. Amounts are
@@ -63,49 +64,57 @@ class TransactionAmountField extends StatelessWidget {
         spacing: 4,
         children: [
           Text(label.toUpperCase(), style: theme.textTheme.eyebrow),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            spacing: 6,
-            children: [
-              if (sign != null)
-                ExcludeSemantics(
-                  child: Text(sign!, style: serif.copyWith(fontSize: 40)),
-                ),
-              if (!symbolAfter) symbol,
-              Flexible(
-                fit: symbolAfter ? FlexFit.loose : FlexFit.tight,
-                // The capitals above label it on screen; this says it aloud.
-                child: Semantics(
-                  label: label,
-                  child: _widthOf(
-                    symbolAfter,
-                    TextField(
-                      controller: controller,
-                      onChanged: onChanged,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      style: serif.copyWith(fontSize: large ? 56 : 40),
-                      cursorColor: color,
-                      decoration: InputDecoration(
-                        hintText: '0',
-                        hintStyle: serif.copyWith(
-                          fontSize: large ? 56 : 40,
-                          color: color.withValues(alpha: 0.35),
+          // Already hero-sized: grows to 130 % at most, so an amount still
+          // fits the line with large text.
+          MediaQuery.withClampedTextScaling(
+            maxScaleFactor: 1.3,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              spacing: 6,
+              children: [
+                if (sign != null)
+                  ExcludeSemantics(
+                    child: GlyphText(
+                      sign!,
+                      style: serif.copyWith(fontSize: 40),
+                    ),
+                  ),
+                if (!symbolAfter) symbol,
+                Flexible(
+                  fit: symbolAfter ? FlexFit.loose : FlexFit.tight,
+                  // The capitals above label it on screen; this says it aloud.
+                  child: Semantics(
+                    label: label,
+                    child: _widthOf(
+                      symbolAfter,
+                      TextField(
+                        controller: controller,
+                        onChanged: onChanged,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
                         ),
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
+                        style: serif.copyWith(fontSize: large ? 56 : 40),
+                        cursorColor: color,
+                        decoration: InputDecoration(
+                          hintText: '0',
+                          hintStyle: serif.copyWith(
+                            fontSize: large ? 56 : 40,
+                            color: color.withValues(alpha: 0.35),
+                          ),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              if (symbolAfter) symbol,
-            ],
+                if (symbolAfter) symbol,
+              ],
+            ),
           ),
           if (error != null) FieldError(error!),
           ?helper,

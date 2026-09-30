@@ -54,18 +54,23 @@ class _InfoTooltipState extends State<InfoTooltip> {
         child: OverlayPortal(
           controller: _controller,
           overlayChildBuilder: _popover,
-          child: Semantics(
-            label: widget.label,
-            expanded: open,
-            child: IconButton(
-              key: _iconKey,
-              onPressed: open ? _hide : _show,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints.tightFor(width: 44, height: 44),
-              icon: Icon(
-                Icons.info_outline,
-                size: 17,
-                color: FinanceColors.of(context).muted,
+          child: MergeSemantics(
+            child: Semantics(
+              label: widget.label,
+              expanded: open,
+              child: IconButton(
+                key: _iconKey,
+                onPressed: open ? _hide : _show,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints.tightFor(
+                  width: 44,
+                  height: 44,
+                ),
+                icon: Icon(
+                  Icons.info_outline,
+                  size: 17,
+                  color: FinanceColors.of(context).muted,
+                ),
               ),
             ),
           ),

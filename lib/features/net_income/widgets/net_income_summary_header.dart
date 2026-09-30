@@ -37,31 +37,39 @@ class NetIncomeSummaryHeader extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(top: BorderSide(color: scheme.onSurface, width: 3)),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
+          child: Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Text(
-                l10n.netIncomeNet,
-                style: text.bodyLarge!.copyWith(fontWeight: FontWeight.w700),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    l10n.netIncomeNet,
+                    style: text.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  InfoTooltip(
+                    label: l10n.netIncomeInfoLabel,
+                    text: l10n.netIncomeInfo,
+                  ),
+                ],
               ),
-              InfoTooltip(
-                label: l10n.netIncomeInfoLabel,
-                text: l10n.netIncomeInfo,
-              ),
-              const Spacer(),
               AmountText(
                 summary.net.amount,
                 currency: currency,
                 amountStyle: AmountStyle.signed,
                 approximate: summary.net.approximate,
                 style: text.hero.copyWith(fontSize: 34),
+                fit: true,
               ),
             ],
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        Wrap(
+          alignment: WrapAlignment.end,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Text(
               l10n.netIncomeSavingsRateLabel(percent),
@@ -79,8 +87,8 @@ class NetIncomeSummaryHeader extends StatelessWidget {
 
   Widget _row(String label, int amount, TextStyle style) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 4),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    child: Wrap(
+      alignment: WrapAlignment.spaceBetween,
       children: [
         Text(label, style: style),
         AmountText(
