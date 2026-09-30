@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
+import '../../../core/widgets/large_text.dart';
 
 /// The editor's bottom bar: "Save and add another" and Save for a new
 /// transaction, Delete (to the Trash) and "Save changes" for an existing one.
@@ -35,6 +36,9 @@ class TransactionFormActions extends StatelessWidget {
     // Long translations wrap rather than shrink to an unreadable size.
     Widget label(String value) =>
         Text(value, maxLines: 2, textAlign: TextAlign.center);
+    // With large text the buttons stack full width.
+    final large = isLargeText(context);
+    Widget grow(Widget button) => large ? button : Expanded(child: button);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -45,7 +49,12 @@ class TransactionFormActions extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 14, 20, 12),
-          child: Row(
+          child: Flex(
+            direction: large ? Axis.vertical : Axis.horizontal,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: large
+                ? CrossAxisAlignment.stretch
+                : CrossAxisAlignment.center,
             spacing: 10,
             children: [
               if (onDelete != null)
@@ -62,8 +71,8 @@ class TransactionFormActions extends StatelessWidget {
                   ),
                 ),
               if (onSaveAndAddAnother != null)
-                Expanded(
-                  child: OutlinedButton(
+                grow(
+                  OutlinedButton(
                     onPressed: saving ? null : onSaveAndAddAnother,
                     style: OutlinedButton.styleFrom(
                       minimumSize: size,
@@ -73,8 +82,8 @@ class TransactionFormActions extends StatelessWidget {
                     child: label(l10n.actionSaveAndAddAnother),
                   ),
                 ),
-              Expanded(
-                child: FilledButton(
+              grow(
+                FilledButton(
                   onPressed: saving ? null : onSave,
                   style: FilledButton.styleFrom(
                     minimumSize: size,

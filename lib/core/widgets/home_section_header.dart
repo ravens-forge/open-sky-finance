@@ -5,6 +5,7 @@ import '../finance_colors.dart';
 import '../../app/theme.dart';
 import '../l10n.dart';
 import 'reorderable_sections.dart';
+import 'large_text.dart';
 
 /// Drag handle, title and optional caption. With [index], drag by the handle
 /// or long-press the title inside a [ReorderableSections].
@@ -39,7 +40,7 @@ class HomeSectionHeader extends StatelessWidget {
     final l10n = context.l10n;
     final text = Theme.of(context).textTheme;
     Widget handle = SizedBox.square(
-      dimension: 44,
+      dimension: 48,
       child: Icon(
         Icons.drag_indicator,
         size: 20,
@@ -60,7 +61,13 @@ class HomeSectionHeader extends StatelessWidget {
         child: titleText,
       );
     }
-    return Row(
+    final captionText = caption == null
+        ? null
+        : DefaultTextStyle.merge(style: text.bodySmall, child: caption!);
+    // With large text the caption goes under the title instead of
+    // squeezing it.
+    final large = isLargeText(context);
+    final row = Row(
       children: [
         Semantics(
           label: l10n.homeSectionMove(title),
@@ -69,13 +76,13 @@ class HomeSectionHeader extends StatelessWidget {
             CustomSemanticsAction(label: l10n.actionMoveDown): ?onMoveDown,
           },
           child: Transform.translate(
-            offset: const Offset(-12, 0),
+            offset: const Offset(-14, 0),
             child: handle,
           ),
         ),
         Expanded(
           child: Transform.translate(
-            offset: const Offset(-12, 0),
+            offset: const Offset(-16, 0),
             child: Row(
               children: [
                 Flexible(child: titleText),
@@ -84,9 +91,13 @@ class HomeSectionHeader extends StatelessWidget {
             ),
           ),
         ),
-        if (caption != null)
-          DefaultTextStyle.merge(style: text.bodySmall, child: caption!),
+        if (!large) ?captionText,
       ],
+    );
+    if (!large || captionText == null) return row;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [row, captionText],
     );
   }
 }

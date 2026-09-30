@@ -11,6 +11,7 @@ import '../../../core/widgets/picker_sheet.dart';
 import '../models/assets_account_with_balance.dart';
 import '../providers/assets_accounts_providers.dart';
 import 'assets_account_avatar.dart';
+import '../../../core/widgets/trailing_amount.dart';
 
 /// Picks an assets account: assets then liabilities, each row with its type
 /// icon, type and currency, and balance. Hidden accounts are left out, as is
@@ -90,26 +91,31 @@ class AssetsAccountPickerSheet extends ConsumerWidget {
                     children: [
                       AssetsAccountAvatar(account.type),
                       Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(account.name, style: theme.textTheme.rowTitle),
-                            Text(
-                              l10n.assetsAccountPickerSubtitle(
-                                account.type.label(l10n),
-                                account.currency,
+                        child: TrailingAmount(
+                          text: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                account.name,
+                                style: theme.textTheme.rowTitle,
                               ),
-                              style: theme.textTheme.rowSubtitle,
-                            ),
-                          ],
+                              Text(
+                                l10n.assetsAccountPickerSubtitle(
+                                  account.type.label(l10n),
+                                  account.currency,
+                                ),
+                                style: theme.textTheme.rowSubtitle,
+                              ),
+                            ],
+                          ),
+                          amount: AmountText(
+                            balance,
+                            currency: account.currency,
+                            amountStyle: AmountStyle.balance,
+                            style: theme.textTheme.rowAmount,
+                          ),
                         ),
-                      ),
-                      AmountText(
-                        balance,
-                        currency: account.currency,
-                        amountStyle: AmountStyle.balance,
-                        style: theme.textTheme.rowAmount,
                       ),
                     ],
                   ),

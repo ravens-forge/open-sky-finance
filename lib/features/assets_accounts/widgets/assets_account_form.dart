@@ -11,6 +11,7 @@ import '../../../core/result.dart';
 import '../../../core/widgets/currency_picker.dart';
 import '../../../core/widgets/field_error.dart';
 import '../../../core/widgets/field_row.dart';
+import '../../../core/widgets/button_row.dart';
 import '../../../data/enums/assets_account_type.dart';
 import '../../../data/models/assets_account_draft.dart';
 import '../../../data/repositories/repository_data_error.dart';
@@ -231,20 +232,15 @@ class _AssetsAccountFormState extends ConsumerState<AssetsAccountForm> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-          child: Row(
-            spacing: 12,
+          child: ButtonRow(
             children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => context.pop(),
-                  child: Text(l10n.actionCancel),
-                ),
+              OutlinedButton(
+                onPressed: () => context.pop(),
+                child: Text(l10n.actionCancel),
               ),
-              Expanded(
-                child: FilledButton(
-                  onPressed: _saving ? null : _save,
-                  child: Text(l10n.actionSave),
-                ),
+              FilledButton(
+                onPressed: _saving ? null : _save,
+                child: Text(l10n.actionSave),
               ),
             ],
           ),

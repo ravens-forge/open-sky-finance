@@ -203,7 +203,7 @@ presentation → providers → services/repositories → Drift.
 | Migrations    | unit          | Drift schema verifier |
 | Backup codec  | unit          | Round-trip: snapshot → JSON → snapshot is identical |
 | Bluecoins     | unit          | Synthetic `.fydb` built at test time from a committed SQL script |
-| Screens       | widget/golden | Key flows; goldens (`test/goldens/`, tag `golden`) in en light and dark, es and fr, taken and checked on Windows |
+| Screens       | widget/golden | Key flows; goldens (`test/goldens/`, tag `golden`) in en light and dark, es, fr and fr at 200 % text scale, taken and checked on Windows; every screen passes the tap target, label and contrast guidelines in both themes (`test/features/accessibility_test.dart`) |
 
 See also: [CONTRIBUTING.md](CONTRIBUTING.md) for setup and pull request rules, and
 [SECURITY.md](SECURITY.md) for the privacy guarantees the code must keep true.

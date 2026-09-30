@@ -56,9 +56,10 @@ class ErrorPage extends StatelessWidget {
             spacing: 10,
             runSpacing: 10,
             children: [
-              FilledButton(
+              FilledButton.icon(
                 onPressed: onRetry,
-                child: Text(l10n.actionTryAgain),
+                icon: const Icon(Icons.refresh, size: 18),
+                label: Text(l10n.actionTryAgain),
               ),
               OutlinedButton(
                 onPressed: onReport,

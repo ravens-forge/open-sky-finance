@@ -14,7 +14,6 @@ import '../../../core/l10n.dart';
 import '../../../core/money/currency_converter.dart';
 import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/day_header.dart';
-import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/month_switcher.dart';
 import '../../../core/widgets/page_placeholder.dart';
 import '../../../data/models/assets_account.dart';
@@ -34,6 +33,7 @@ import '../widgets/transactions_empty_state.dart';
 import '../widgets/transactions_filter_sheet.dart';
 import '../widgets/transactions_search_bar.dart';
 import '../widgets/transactions_summary_row.dart';
+import '../../shell/widgets/page_load_error.dart';
 
 class TransactionsPage extends ConsumerStatefulWidget {
   const TransactionsPage({super.key});
@@ -125,8 +125,8 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
         const Divider(),
         Expanded(
           child: switch ((month, shown, converter)) {
-            (AsyncError(), _, _) => Center(
-              child: EmptyState(title: l10n.errorLoadFailed),
+            (AsyncError(), _, _) => PageLoadError(
+              providers: [transactionsMonthProvider(_month, _filter)],
             ),
             (_, final shown?, final CurrencyConverter converter) => ListView(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 96),

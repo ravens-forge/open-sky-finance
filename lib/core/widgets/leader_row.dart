@@ -1,6 +1,9 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../finance_colors.dart';
+import 'large_text.dart';
 
 class LeaderRow extends StatelessWidget {
   const LeaderRow({
@@ -18,6 +21,29 @@ class LeaderRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final style = theme.textTheme.bodyLarge!;
+    final amountText = DefaultTextStyle.merge(
+      style: style.copyWith(fontWeight: FontWeight.w600),
+      child: amount,
+    );
+    if (isLargeText(context)) {
+      // No room for a leader: the amount goes under the name.
+      return InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(name, style: style),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: amountText,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return InkWell(
       onTap: onTap,
       child: ConstrainedBox(
@@ -33,7 +59,7 @@ class LeaderRow extends StatelessWidget {
                     text: TextSpan(text: name, style: style),
                     textDirection: Directionality.of(context),
                     textScaler: MediaQuery.textScalerOf(context),
-                  )..layout(maxWidth: constraints.maxWidth - 12);
+                  )..layout(maxWidth: math.max(0, constraints.maxWidth - 12));
                   final width = painter.width.ceilToDouble();
                   painter.dispose();
                   return Row(
@@ -59,10 +85,7 @@ class LeaderRow extends StatelessWidget {
                 },
               ),
             ),
-            DefaultTextStyle.merge(
-              style: style.copyWith(fontWeight: FontWeight.w600),
-              child: amount,
-            ),
+            amountText,
           ],
         ),
       ),

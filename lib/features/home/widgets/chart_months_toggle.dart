@@ -22,7 +22,7 @@ class ChartMonthsToggle extends ConsumerWidget {
         onTap: () =>
             ref.read(homeControllerProvider.notifier).setChartMonths(other),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 44),
+          constraints: const BoxConstraints(minHeight: 48),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

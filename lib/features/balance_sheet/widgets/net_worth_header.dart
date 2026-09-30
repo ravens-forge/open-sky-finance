@@ -48,6 +48,7 @@ class NetWorthHeader extends StatelessWidget {
                 currency: currency,
                 amountStyle: AmountStyle.balance,
                 style: text.hero,
+                fit: true,
               ),
             ),
             InfoTooltip(
@@ -60,20 +61,23 @@ class NetWorthHeader extends StatelessWidget {
         const SizedBox(height: 4),
         NetWorthProportionBar(assetsFraction: assetsFraction),
         const SizedBox(height: 6),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              l10n.balanceSheetAssetsShare(percent.format(assetsFraction)),
-              style: text.bodyMedium,
-            ),
-            Text(
-              l10n.balanceSheetLiabilitiesShare(
-                percent.format(1 - assetsFraction),
+        SizedBox(
+          width: double.infinity,
+          child: Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.balanceSheetAssetsShare(percent.format(assetsFraction)),
+                style: text.bodyMedium,
               ),
-              style: text.bodyMedium,
-            ),
-          ],
+              Text(
+                l10n.balanceSheetLiabilitiesShare(
+                  percent.format(1 - assetsFraction),
+                ),
+                style: text.bodyMedium,
+              ),
+            ],
+          ),
         ),
       ],
     );

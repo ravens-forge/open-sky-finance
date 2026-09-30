@@ -3,8 +3,12 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:open_sky_finance/app/router.dart';
+import 'package:open_sky_finance/app/routes.dart';
 import 'package:open_sky_finance/core/widgets/launch_screen.dart';
 import 'package:open_sky_finance/core/widgets/page_placeholder.dart';
+import 'package:open_sky_finance/features/transactions/models/transactions_month.dart';
+import 'package:open_sky_finance/features/transactions/providers/transactions_providers.dart';
 
 import '../pump_app.dart';
 import 'demo_data.dart';
@@ -46,5 +50,18 @@ void main() {
   widgetGolden(
     'loading_page_content',
     (context) => const PagePlaceholder(label: ''),
+  );
+
+  appGolden(
+    'error_page_load',
+    overrides: [
+      transactionsMonthProvider.overrideWith(
+        (ref, args) => Future<TransactionsMonth>.error(StateError('read')),
+      ),
+    ],
+    act: (tester, container, l10n) async {
+      container.read(routerProvider).go(Routes.transactions);
+      await settle(tester);
+    },
   );
 }

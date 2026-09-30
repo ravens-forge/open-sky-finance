@@ -16,6 +16,7 @@ import '../providers/assets_accounts_controller.dart';
 import '../providers/assets_accounts_providers.dart';
 import '../widgets/assets_account_row.dart';
 import '../widgets/assets_accounts_side_header.dart';
+import '../../shell/widgets/page_load_error.dart';
 
 /// Assets and liabilities grouped by type with subtotals; favorite star, show
 /// hidden, and reorder within a type by drag or move up/down.
@@ -70,8 +71,11 @@ class _AssetsAccountsPageState extends ConsumerState<AssetsAccountsPage> {
           final String main,
         ) =>
           _list(all, sides, main),
-        (AsyncError(), _, _) || (_, AsyncError(), _) => Center(
-          child: EmptyState(title: l10n.errorLoadFailed),
+        (AsyncError(), _, _) || (_, AsyncError(), _) => PageLoadError(
+          providers: [
+            assetsAccountsWithBalanceProvider,
+            assetsAccountsSidesProvider,
+          ],
         ),
         _ => PagePlaceholder(label: l10n.pageAssetsAccounts),
       },

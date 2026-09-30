@@ -33,17 +33,23 @@ class CreditUsageSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Text(
-              l10n.assetsAccountCreditUsed,
-              style: text.bodyMedium!.copyWith(fontWeight: FontWeight.w600),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l10n.assetsAccountCreditUsed,
+                  style: text.bodyMedium!.copyWith(fontWeight: FontWeight.w600),
+                ),
+                InfoTooltip(
+                  label: l10n.assetsAccountCreditInfoLabel,
+                  text: l10n.assetsAccountCreditInfo,
+                ),
+              ],
             ),
-            InfoTooltip(
-              label: l10n.assetsAccountCreditInfoLabel,
-              text: l10n.assetsAccountCreditInfo,
-            ),
-            const Spacer(),
             Text(
               l10n.assetsAccountCreditUsedOf(percent, money(usage.limit)),
               style: text.bodySmall,

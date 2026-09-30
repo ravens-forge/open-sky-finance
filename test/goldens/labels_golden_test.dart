@@ -26,6 +26,7 @@ Future<void> Function(WidgetTester, ProviderContainer, AppLocalizations)
 _options([String Function(AppLocalizations l10n)? option]) =>
     (tester, container, l10n) async {
       await _labels(tester, container, l10n);
+      await scrollTo(tester, find.text('vacation'));
       await tester.longPress(find.text('vacation'));
       await settle(tester);
       if (option != null) {
@@ -56,6 +57,7 @@ void main() {
     seed: seedDemo,
     act: (tester, container, l10n) async {
       await _labels(tester, container, l10n);
+      await scrollTo(tester, find.text(l10n.labelsNew));
       await tester.tap(find.text(l10n.labelsNew));
       await settle(tester);
     },

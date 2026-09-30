@@ -72,7 +72,10 @@ void main() {
           amountStyle: AmountStyle.transfer,
         ),
       );
-      expect(text.data, '⇄ €2.00');
+      // `⇄` is missing from the bundled fonts, so it is drawn as an icon.
+      expect(text.textSpan!.toPlainText(), '￼ €2.00');
+      expect(find.byIcon(Icons.sync_alt), findsOneWidget);
+      expect(text.semanticsLabel, 'transfer, 2.00 euros');
       expect(text.style!.color, _colors.transfer);
 
       text = await pump(

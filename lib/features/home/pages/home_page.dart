@@ -12,6 +12,7 @@ import '../models/home_section_place.dart';
 import '../providers/home_controller.dart';
 import '../providers/home_providers.dart';
 import '../widgets/home_section_view.dart';
+import '../../shell/widgets/page_load_error.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -21,7 +22,7 @@ class HomePage extends ConsumerWidget {
     final l10n = context.l10n;
     return switch (ref.watch(homeSectionsProvider)) {
       AsyncValue(:final value?) => _sections(context, ref, value),
-      AsyncError() => Center(child: EmptyState(title: l10n.errorLoadFailed)),
+      AsyncError() => PageLoadError(providers: [homeSectionsProvider]),
       _ => PagePlaceholder(label: l10n.pageHome),
     };
   }

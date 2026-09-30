@@ -24,6 +24,7 @@ import '../widgets/net_income_category_row.dart';
 import '../widgets/net_income_group_row.dart';
 import '../widgets/net_income_period_switcher.dart';
 import '../widgets/net_income_summary_header.dart';
+import '../../shell/widgets/page_load_error.dart';
 
 class NetIncomePage extends ConsumerStatefulWidget {
   const NetIncomePage({super.key});
@@ -135,12 +136,12 @@ class _NetIncomePageState extends ConsumerState<NetIncomePage> {
           child: switch ((summary, income, expenses, currency)) {
             (AsyncError(), _, _, _) ||
             (_, AsyncError(), _, _) ||
-            (
-              _,
-              _,
-              AsyncError(),
-              _,
-            ) => Center(child: EmptyState(title: l10n.errorLoadFailed)),
+            (_, _, AsyncError(), _) => PageLoadError(
+              providers: [
+                netIncomeSummaryProvider(_period),
+                netIncomeCategoriesProvider,
+              ],
+            ),
             (
               AsyncValue(value: final summary?),
               AsyncValue(value: final income?),
@@ -197,8 +198,9 @@ class _NetIncomePageState extends ConsumerState<NetIncomePage> {
                 bottom: BorderSide(color: theme.colorScheme.onSurface),
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Semantics(
                   header: true,

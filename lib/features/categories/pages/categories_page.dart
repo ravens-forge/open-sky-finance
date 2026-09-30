@@ -5,13 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
 import '../../../core/labels.dart';
-import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_placeholder.dart';
 import '../../../core/widgets/type_selector.dart';
 import '../../../data/enums/category_kind.dart';
 import '../../../data/models/category_group.dart';
 import '../providers/categories_providers.dart';
 import '../widgets/category_kind_tab.dart';
+import '../../shell/widgets/page_load_error.dart';
 
 /// Income and Expenses, each with its groups and the categories inside them.
 /// The + in the top bar creates a category of the chosen type.
@@ -73,8 +73,8 @@ class _CategoriesPageState extends ConsumerState<CategoriesPage> {
             groups: groups,
             categories: categories,
           ),
-        (AsyncError(), _) || (_, AsyncError()) => Center(
-          child: EmptyState(title: l10n.errorLoadFailed),
+        (AsyncError(), _) || (_, AsyncError()) => PageLoadError(
+          providers: [categoryGroupsProvider, categoriesProvider],
         ),
         _ => PagePlaceholder(label: l10n.pageCategories),
       },

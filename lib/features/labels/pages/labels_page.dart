@@ -21,6 +21,7 @@ import '../providers/labels_providers.dart';
 import '../widgets/delete_label_dialog.dart';
 import '../widgets/label_name_dialog.dart';
 import '../widgets/label_total_row.dart';
+import '../../shell/widgets/page_load_error.dart';
 
 class LabelsPage extends ConsumerStatefulWidget {
   const LabelsPage({super.key});
@@ -80,8 +81,8 @@ class _LabelsPageState extends ConsumerState<LabelsPage> {
         const Divider(),
         Expanded(
           child: switch ((totals, converter)) {
-            (AsyncError(), _) => Center(
-              child: EmptyState(title: l10n.errorLoadFailed),
+            (AsyncError(), _) => PageLoadError(
+              providers: [labelTotalsProvider(_month)],
             ),
             (AsyncValue(value: []), _) => Center(
               child: EmptyState(

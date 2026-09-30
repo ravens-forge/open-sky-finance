@@ -10,18 +10,25 @@ import 'chart_range.dart';
 /// Grid, borders and axis titles shared by the monthly charts: dashed
 /// `outline` grid lines on the round steps of [range], no border, compact
 /// values on the left and month names below, the current month in bold ink.
-/// Twelve months label every other one.
+/// Twelve months label every other one. Axis labels grow with the text
+/// scale up to 130 % only: past that they collide, and the chart's semantic
+/// summary and drill-down lists carry the same numbers.
 class MonthChartAxes {
   MonthChartAxes(BuildContext context, this.months, this.range)
     : _theme = Theme.of(context),
       _locale = context.l10n.localeName,
-      _muted = FinanceColors.of(context).muted;
+      _muted = FinanceColors.of(context).muted,
+      _scaler = MediaQuery.textScalerOf(context)
+          .clamp(maxScaleFactor: maxChartTextScale);
+
+  static const maxChartTextScale = 1.3;
 
   final List<YearMonth> months;
   final ChartRange range;
   final ThemeData _theme;
   final String _locale;
   final Color _muted;
+  final TextScaler _scaler;
 
   TextStyle get _axis =>
       _theme.textTheme.labelSmall!.copyWith(color: _muted, letterSpacing: 0);
@@ -48,13 +55,14 @@ class MonthChartAxes {
       leftTitles: AxisTitles(
         sideTitles: SideTitles(
           showTitles: true,
-          reservedSize: 44,
+          reservedSize: _scaler.scale(44),
           interval: range.step,
           getTitlesWidget: (value, meta) => SideTitleWidget(
             meta: meta,
             child: Text(
               compact.format(value).replaceFirst('-', '−'),
               style: _axis,
+              textScaler: _scaler,
             ),
           ),
         ),
@@ -62,6 +70,7 @@ class MonthChartAxes {
       bottomTitles: AxisTitles(
         sideTitles: SideTitles(
           showTitles: true,
+          reservedSize: _scaler.scale(22),
           interval: 1,
           getTitlesWidget: (value, meta) {
             final i = value.round();
@@ -79,6 +88,7 @@ class MonthChartAxes {
                         fontWeight: FontWeight.w700,
                       )
                     : _axis,
+                textScaler: _scaler,
               ),
             );
           },

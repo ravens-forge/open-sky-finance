@@ -9,6 +9,7 @@ import '../../../core/widgets/balance_chart.dart';
 import '../../../core/widgets/not_found_page.dart';
 import '../../../core/widgets/page_placeholder.dart';
 import '../../shell/widgets/add_fab.dart';
+import '../../shell/widgets/page_load_error.dart';
 import '../models/credit_usage.dart';
 import '../providers/assets_account_detail_providers.dart';
 import '../providers/assets_accounts_controller.dart';
@@ -37,7 +38,8 @@ class _AssetsAccountDetailPageState
     final l10n = context.l10n;
     final text = Theme.of(context).textTheme;
     final account = ref.watch(assetsAccountProvider(widget.id));
-    final balance = ref.watch(assetsAccountBalancesProvider).value?[widget.id];
+    final balances = ref.watch(assetsAccountBalancesProvider);
+    final balance = balances.value?[widget.id];
     final history = ref
         .watch(assetsAccountBalanceHistoryProvider(widget.id))
         .value;
@@ -46,6 +48,17 @@ class _AssetsAccountDetailPageState
     if (account is AsyncData && a == null) {
       // Deleted while open.
       return NotFoundPage(onHome: () => context.go(Routes.home));
+    }
+    if (account.hasError || balances.hasError) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: PageLoadError(
+          providers: [
+            assetsAccountProvider(widget.id),
+            assetsAccountBalancesProvider,
+          ],
+        ),
+      );
     }
     if (a == null || balance == null) {
       return Scaffold(

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/l10n.dart';
-import '../../../core/widgets/empty_state.dart';
 import '../providers/assets_account_editor_provider.dart';
 import '../widgets/assets_account_form.dart';
+import '../../shell/widgets/page_load_error.dart';
 
 /// Creates ([id] `null`) or edits an assets account.
 class AssetsAccountEditorPage extends ConsumerWidget {
@@ -18,7 +17,7 @@ class AssetsAccountEditorPage extends ConsumerWidget {
       AsyncValue(:final value?) => AssetsAccountForm(data: value),
       AsyncError() => Scaffold(
         appBar: AppBar(),
-        body: Center(child: EmptyState(title: context.l10n.errorLoadFailed)),
+        body: PageLoadError(providers: [assetsAccountEditorDataProvider(id)]),
       ),
       _ => Scaffold(appBar: AppBar()),
     };

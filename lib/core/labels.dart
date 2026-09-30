@@ -43,6 +43,12 @@ extension CategoryKindLabel on CategoryKind {
     CategoryKind.expense => l10n.categoryKindExpense,
     CategoryKind.income => l10n.categoryKindIncome,
   };
+
+  /// With its sign ("+ Income", "− Expenses"), for the type selector.
+  String signedLabel(AppLocalizations l10n) => switch (this) {
+    CategoryKind.expense => '− ${label(l10n)}',
+    CategoryKind.income => '+ ${label(l10n)}',
+  };
 }
 
 extension BudgetPeriodLabel on BudgetPeriod {

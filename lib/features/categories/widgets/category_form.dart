@@ -9,6 +9,7 @@ import '../../../core/result.dart';
 import '../../../core/widgets/field_error.dart';
 import '../../../core/widgets/field_row.dart';
 import '../../../core/widgets/type_selector.dart';
+import '../../../core/widgets/button_row.dart';
 import '../../../data/enums/category_kind.dart';
 import '../../../data/models/category_draft.dart';
 import '../../../data/models/category_group.dart';
@@ -130,7 +131,8 @@ class _CategoryFormState extends ConsumerState<CategoryForm> {
           const SizedBox(height: 20),
           TypeSelector<CategoryKind>(
             options: [
-              for (final kind in CategoryKind.values) (kind, kind.label(l10n)),
+              for (final kind in CategoryKind.values)
+                (kind, kind.signedLabel(l10n)),
             ],
             selected: _kind,
             locked: _category != null,
@@ -203,20 +205,15 @@ class _CategoryFormState extends ConsumerState<CategoryForm> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-          child: Row(
-            spacing: 12,
+          child: ButtonRow(
             children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => context.pop(),
-                  child: Text(l10n.actionCancel),
-                ),
+              OutlinedButton(
+                onPressed: () => context.pop(),
+                child: Text(l10n.actionCancel),
               ),
-              Expanded(
-                child: FilledButton(
-                  onPressed: _saving ? null : _save,
-                  child: Text(l10n.actionSave),
-                ),
+              FilledButton(
+                onPressed: _saving ? null : _save,
+                child: Text(l10n.actionSave),
               ),
             ],
           ),
