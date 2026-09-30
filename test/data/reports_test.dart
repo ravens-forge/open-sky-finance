@@ -240,6 +240,22 @@ void main() {
     expect(april.map((p) => p.spent), everyElement(isEmpty));
   });
 
+  test('spending no budget covers, by month', () async {
+    final budgets = db.budgetsRepository;
+    final march = YearMonth(2026, 3);
+    // The hidden account, the Trash and the uncategorized expense of
+    // December stay out.
+    expect(await budgets.watchUncovered(march).first, {'EUR': m(30)});
+    expect(await budgets.watchUncovered(YearMonth(2026, 12)).first, isEmpty);
+
+    await budgets.set(groceries, m(10));
+    expect(await budgets.watchUncovered(march).first, isEmpty);
+    await budgets.remove(groceries);
+    // A group's budget covers the categories inside it.
+    await budgets.set(food, m(100));
+    expect(await budgets.watchUncovered(march).first, isEmpty);
+  });
+
   test('label totals', () async {
     final march = YearMonth(2026, 3);
     final totals = await db.labelsRepository

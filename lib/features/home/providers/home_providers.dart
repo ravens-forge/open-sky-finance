@@ -6,11 +6,11 @@ import '../../../app/main_currency.dart';
 import '../../../app/now.dart';
 import '../../../core/dates/year_month.dart';
 import '../../../core/money/currency_converter.dart';
-import '../../../data/models/budget_progress.dart';
 import '../../../data/models/home_section.dart';
 import '../../../data/models/reminder.dart';
 import '../../../data/providers.dart';
 import '../../../data/repositories/setting_keys.dart';
+import '../../budgets/providers/budgets_providers.dart';
 import '../../categories/providers/categories_providers.dart';
 import '../models/budget_slice.dart';
 import '../models/budget_summary.dart';
@@ -96,15 +96,12 @@ Stream<ConvertedTotal> homeNetIncomeThisMonth(Ref ref) async* {
       .map((flow) => converter.convert(flow[now]!.net));
 }
 
-@riverpod
-Stream<List<BudgetProgress>> homeBudgetProgress(Ref ref) => ref
-    .watch(budgetsRepositoryProvider)
-    .watchProgress(ref.watch(currentMonthProvider));
-
 /// This month's spending per budget and what is left, in the main currency.
 @riverpod
 Future<BudgetSummary> homeBudgetSummary(Ref ref) async {
-  final progress = await ref.watch(homeBudgetProgressProvider.future);
+  final progress = await ref.watch(
+    budgetProgressProvider(ref.watch(currentMonthProvider)).future,
+  );
   final converter = await ref.watch(currencyConverterProvider.future);
   final names = {
     for (final g in await ref.watch(categoryGroupsProvider.future))

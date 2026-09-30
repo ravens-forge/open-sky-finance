@@ -464,6 +464,18 @@ void main() {
     );
   });
 
+  test('budgets: setAll writes every change or none', () async {
+    final budgets = db.budgetsRepository;
+    ok(await budgets.set(food, m(100)));
+    expect(
+      err(await budgets.setAll({food: null, salary: m(1)})),
+      RepositoryDataError.categoryKindMismatch,
+    );
+    expect((await budgets.watchAll().first).single.amount, m(100));
+    ok(await budgets.setAll({food: null}));
+    expect(await budgets.watchAll().first, isEmpty);
+  });
+
   group('settings', () {
     test('read, write, remove', () async {
       final settings = db.settingsRepository;

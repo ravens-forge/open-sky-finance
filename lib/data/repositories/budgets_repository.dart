@@ -101,6 +101,28 @@ ORDER BY is_group DESC, sort_order''',
     );
   });
 
+  /// Sets every budget of [amounts] (group or category id to micro-units) and
+  /// clears the ones mapped to `null`, all or nothing.
+  Future<Result<void, RepositoryDataError>> setAll(
+    Map<String, int?> amounts,
+  ) async {
+    try {
+      await transaction(() async {
+        for (final MapEntry(key: id, value: amount) in amounts.entries) {
+          if (amount == null) {
+            await remove(id);
+          } else if (await set(id, amount) case Err(:final error)) {
+            // Thrown so the transaction rolls back what it already wrote.
+            throw _Refused(error);
+          }
+        }
+      });
+      return const Ok(null);
+    } on _Refused catch (refused) {
+      return Err(refused.error);
+    }
+  }
+
   /// Every budget with what non-hidden assets accounts spent on it in
   /// [month]; a group's budget counts every category inside it. Spending is
   /// positive; refunds reduce it.
@@ -150,4 +172,41 @@ ORDER BY is_group DESC, sort_order''',
         }
         return progress.values.toList();
       });
+
+  /// What non-hidden assets accounts spent in [month] on expense categories
+  /// no budget covers: neither their own nor their group's. Positive
+  /// micro-units by currency; refunds reduce it.
+  Stream<Map<String, int>> watchUncovered(YearMonth month) =>
+      customSelect(
+        '''
+SELECT t.currency AS currency, -SUM(t.amount) AS spent
+FROM transactions t
+JOIN categories c ON c.id = t.category_id
+JOIN category_groups g ON g.id = c.group_id
+WHERE t.deleted_at IS NULL AND t.type = 'expense'
+  AND t.occurred_at >= ?1 AND t.occurred_at < ?2 AND t.$visibleAccounts
+  AND c.budget_amount IS NULL AND g.budget_amount IS NULL
+GROUP BY t.currency''',
+        variables: [
+          wallClockVariable(month.start),
+          wallClockVariable(month.end),
+        ],
+        readsFrom: {
+          assetsAccountsTable,
+          categoryGroupsTable,
+          categoriesTable,
+          transactionsTable,
+        },
+      ).watch().map(
+        (rows) => {
+          for (final r in rows)
+            r.read<String>('currency'): r.read<int>('spent'),
+        },
+      );
+}
+
+class _Refused implements Exception {
+  const _Refused(this.error);
+
+  final RepositoryDataError error;
 }

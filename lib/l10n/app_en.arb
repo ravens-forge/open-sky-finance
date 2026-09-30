@@ -3767,5 +3767,203 @@
   "reminderFinished": "Finished",
   "@reminderFinished": {
     "description": "Due text of a reminder with nothing left to come"
+  },
+  "budgetBudgeted": "Budgeted",
+  "@budgetBudgeted": {
+    "description": "Budget page total: sum of the budgets"
+  },
+  "budgetSpent": "Spent",
+  "@budgetSpent": {
+    "description": "Budget page total: spent on the budgets"
+  },
+  "budgetRemaining": "Remaining",
+  "@budgetRemaining": {
+    "description": "Budget page total: budgeted minus spent"
+  },
+  "budgetRemainingInfoLabel": "About remaining",
+  "@budgetRemainingInfoLabel": {
+    "description": "Spoken label of the info icon beside Remaining"
+  },
+  "budgetRemainingInfo": "Budgeted minus spent, counting only the groups and categories that have a budget. Spending without a budget is not part of it.",
+  "@budgetRemainingInfo": {
+    "description": "Info tooltip of Remaining on the Budget page"
+  },
+  "budgetSpentPercent": "{percent} spent",
+  "@budgetSpentPercent": {
+    "description": "Caption under the overall budget bar of a past or future month",
+    "placeholders": {
+      "percent": {
+        "type": "String",
+        "example": "90.4%"
+      }
+    }
+  },
+  "budgetSpentPercentToday": "{percent} spent · the marker shows day {day} of {days} ({elapsed} of the month)",
+  "@budgetSpentPercentToday": {
+    "description": "Caption under the overall budget bar of the current month, whose marker shows today",
+    "placeholders": {
+      "percent": {
+        "type": "String",
+        "example": "90.4%"
+      },
+      "day": {
+        "type": "int",
+        "example": "17"
+      },
+      "days": {
+        "type": "int",
+        "example": "30"
+      },
+      "elapsed": {
+        "type": "String",
+        "example": "56.7%"
+      }
+    }
+  },
+  "budgetByCategory": "By category",
+  "@budgetByCategory": {
+    "description": "Heading of the budget rows"
+  },
+  "budgetBarsInfoLabel": "About the budget bars",
+  "@budgetBarsInfoLabel": {
+    "description": "Spoken label of the info icon beside By category"
+  },
+  "budgetBarsInfoEyebrow": "Reading a bar",
+  "@budgetBarsInfoEyebrow": {
+    "description": "Small heading of the budget bars info tooltip, shown in capitals"
+  },
+  "budgetBarsInfo": "Each bar is spent against budget, with a tick at 80%. Pine under 80%, ochre from 80%, ink when used up and red past 100% — the status text on the right says the same thing.",
+  "@budgetBarsInfo": {
+    "description": "Info tooltip explaining the colours of a budget bar"
+  },
+  "budgetEdit": "Edit budgets",
+  "@budgetEdit": {
+    "description": "Link to, and title of, the Edit budgets screen"
+  },
+  "budgetLeft": "{amount} left",
+  "@budgetLeft": {
+    "description": "Status of a budget with money left",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "€12.30"
+      }
+    }
+  },
+  "budgetOver": "Over by {amount}",
+  "@budgetOver": {
+    "description": "Status of a budget spent past its amount",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "€12.30"
+      }
+    }
+  },
+  "budgetUsedUp": "Used up",
+  "@budgetUsedUp": {
+    "description": "Status of a budget spent exactly"
+  },
+  "budgetNotBudgeted": "Not budgeted: {amount}",
+  "@budgetNotBudgeted": {
+    "description": "Line under the budget rows: spending in expense categories no budget covers",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "€12.30"
+      }
+    }
+  },
+  "budgetNotBudgetedInfoLabel": "About not budgeted spending",
+  "@budgetNotBudgetedInfoLabel": {
+    "description": "Spoken label of the info icon beside Not budgeted"
+  },
+  "budgetNotBudgetedInfo": "What this month's expense categories took without a budget of their own or of their group.",
+  "@budgetNotBudgetedInfo": {
+    "description": "Info tooltip of the Not budgeted line"
+  },
+  "budgetEmptyTitle": "No budgets yet",
+  "@budgetEmptyTitle": {
+    "description": "Title of the Budget page with no budget"
+  },
+  "budgetEmptyMessage": "Set a monthly amount for the expense groups or categories you want to keep an eye on. You'll see what's left as the month goes by.",
+  "@budgetEmptyMessage": {
+    "description": "Message of the Budget page with no budget"
+  },
+  "budgetSet": "Set budgets",
+  "@budgetSet": {
+    "description": "Button of the empty Budget page, opens Edit budgets"
+  },
+  "budgetEmptyUnbudgeted": "This month you spent {amount} in expense categories without a budget.",
+  "@budgetEmptyUnbudgeted": {
+    "description": "Note of the empty Budget page",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "€1,937.40"
+      }
+    }
+  },
+  "budgetEditIntro": "Monthly amounts in {currency}, your main currency. A budget on a group covers every category inside it. Leave a field empty for no budget.",
+  "@budgetEditIntro": {
+    "description": "Note at the top of Edit budgets",
+    "placeholders": {
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      }
+    }
+  },
+  "budgetEditCaption": "Expense groups and categories",
+  "@budgetEditCaption": {
+    "description": "Caption above the rows of Edit budgets"
+  },
+  "budgetSpentInMonth": "{amount} spent in {month}",
+  "@budgetSpentInMonth": {
+    "description": "Under a group in Edit budgets: what it spent in the current month",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "€850.00"
+      },
+      "month": {
+        "type": "String",
+        "example": "September"
+      }
+    }
+  },
+  "budgetSpentAmount": "{amount} spent",
+  "@budgetSpentAmount": {
+    "description": "Under a category in Edit budgets: what it spent in the current month",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "€412.30"
+      }
+    }
+  },
+  "budgetCoveredByGroup": "Covered by the group budget",
+  "@budgetCoveredByGroup": {
+    "description": "Under a category in Edit budgets whose group has a budget"
+  },
+  "budgetNone": "No budget",
+  "@budgetNone": {
+    "description": "Placeholder of an empty amount field in Edit budgets"
+  },
+  "budgetTotalBudgeted": "Total budgeted",
+  "@budgetTotalBudgeted": {
+    "description": "Sum of the amounts typed in Edit budgets"
+  },
+  "budgetIncomeNever": "Income is never budgeted.",
+  "@budgetIncomeNever": {
+    "description": "Note under the total of Edit budgets"
+  },
+  "budgetSave": "Save budgets",
+  "@budgetSave": {
+    "description": "Button that saves Edit budgets"
+  },
+  "budgetAmountInvalid": "Enter an amount above 0, or leave it empty",
+  "@budgetAmountInvalid": {
+    "description": "Error under a row of Edit budgets whose amount cannot be read or is not above zero"
   }
 }
