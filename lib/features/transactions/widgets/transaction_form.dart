@@ -14,10 +14,13 @@ import '../../../core/widgets/editor_row.dart';
 import '../../../core/widgets/ledger_dialog.dart';
 import '../../../core/widgets/type_selector.dart';
 import '../../../data/enums/category_kind.dart';
+import '../../../data/enums/reminder_frequency.dart';
 import '../../../data/enums/transaction_type.dart';
 import '../../../data/models/assets_account.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/category_group.dart';
+import '../../../data/models/reminder_draft.dart';
+import '../../../data/models/reminder_schedule.dart';
 import '../../../data/models/title_suggestion.dart';
 import '../../../data/models/transaction_draft.dart';
 import '../../assets_accounts/models/assets_account_with_balance.dart';
@@ -25,6 +28,9 @@ import '../../assets_accounts/providers/assets_accounts_providers.dart';
 import '../../assets_accounts/widgets/assets_account_picker_sheet.dart';
 import '../../categories/providers/categories_providers.dart';
 import '../../categories/widgets/category_picker_sheet.dart';
+import '../../reminders/providers/reminders_controller.dart';
+import '../../reminders/widgets/reminder_schedule_fields.dart';
+import '../../reminders/widgets/reminder_section_header.dart';
 import '../models/transaction_editor_data.dart';
 import '../models/transaction_error.dart';
 import '../providers/transactions_controller.dart';
@@ -33,12 +39,15 @@ import 'transaction_date_time_fields.dart';
 import 'transaction_form_actions.dart';
 import 'transaction_labels_field.dart';
 import 'transaction_refund_row.dart';
+import 'transaction_repeat_field.dart';
 import 'transaction_title_field.dart';
 import 'transaction_transfer_fields.dart';
 
 /// Type, amount, title, category or transfer destination, assets account,
 /// date and time, labels and notes. Amounts are typed positive: the type and
-/// the refund toggle give them their sign.
+/// the refund toggle give them their sign. "Repeat" turns a new transaction
+/// into a reminder, and the reminder form is this one with a schedule in
+/// place of the date and time.
 class TransactionForm extends ConsumerStatefulWidget {
   const TransactionForm({super.key, required this.data});
 
@@ -50,6 +59,8 @@ class TransactionForm extends ConsumerStatefulWidget {
 
 class _TransactionFormState extends ConsumerState<TransactionForm> {
   late final _transaction = widget.data.transaction;
+  late final _reminder = widget.data.reminder;
+  late final _isReminder = widget.data.isReminder;
   late var _type = widget.data.type;
   late final _title = TextEditingController(text: _transaction?.title);
   late final _notes = TextEditingController(text: _transaction?.notes);
@@ -63,6 +74,19 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
   late var _categoryId = _transaction?.categoryId;
   late DateTime _occurredAt = _transaction?.occurredAt ?? ref.read(nowProvider);
   late var _labelIds = [...widget.data.labelIds];
+
+  /// Reminder form: a new reminder is monthly from today.
+  late var _schedule =
+      _reminder?.schedule ??
+      ReminderSchedule(
+        frequency: ReminderFrequency.monthly,
+        startDate: ref.read(todayProvider),
+        nextDueAt: ref.read(todayProvider),
+      );
+  late var _autoPost = _reminder?.autoPost ?? false;
+
+  /// "Repeat" of a new transaction; [ReminderFrequency.once] does not repeat.
+  var _repeat = ReminderFrequency.once;
   late var _refund =
       _transaction?.type == TransactionType.expense &&
       _transaction!.amount.micros > 0;
@@ -292,40 +316,55 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
     }
 
     setState(() => _saving = true);
-    final result = await ref
-        .read(transactionsControllerProvider.notifier)
-        .save(
-          TransactionDraft(
-            id: _transaction?.id,
-            type: _type,
-            // Wall clock: to the minute, no seconds and no time zone.
-            occurredAt: DateTime(
-              _occurredAt.year,
-              _occurredAt.month,
-              _occurredAt.day,
-              _occurredAt.hour,
-              _occurredAt.minute,
-            ),
-            amount: _type == TransactionType.expense && !_refund
-                ? -amount!
-                : amount!,
-            assetsAccountId: _assetsAccountId!,
-            toAssetsAccountId: _isTransfer ? _toAssetsAccountId : null,
-            toAmount: received,
-            categoryId: _isTransfer ? null : _categoryId,
-            title: _title.text.trim(),
-            notes: _notes.text.trim(),
-            labelIds: _labelIds,
-            reminderId: _transaction?.reminderId,
-          ),
-        );
+    final draft = TransactionDraft(
+      id: _transaction?.id,
+      type: _type,
+      // Wall clock: to the minute, no seconds and no time zone.
+      occurredAt: DateTime(
+        _occurredAt.year,
+        _occurredAt.month,
+        _occurredAt.day,
+        _occurredAt.hour,
+        _occurredAt.minute,
+      ),
+      amount: _type == TransactionType.expense && !_refund ? -amount! : amount!,
+      assetsAccountId: _assetsAccountId!,
+      toAssetsAccountId: _isTransfer ? _toAssetsAccountId : null,
+      toAmount: received,
+      categoryId: _isTransfer ? null : _categoryId,
+      title: _title.text.trim(),
+      notes: _notes.text.trim(),
+      labelIds: _labelIds,
+      reminderId: _transaction?.reminderId,
+    );
+    final repeats = !_isReminder && _repeat != ReminderFrequency.once;
+    final transactions = ref.read(transactionsControllerProvider.notifier);
+    final result = _isReminder
+        ? await ref
+              .read(remindersControllerProvider.notifier)
+              .save(
+                ReminderDraft(
+                  id: _reminder?.id,
+                  template: draft,
+                  schedule: _schedule,
+                  autoPost: _autoPost,
+                  isPaused: _reminder?.isPaused ?? false,
+                ),
+              )
+        : repeats
+        ? await transactions.saveRepeating(draft, _repeat)
+        : await transactions.save(draft);
     if (!mounted) return;
     setState(() => _saving = false);
+    final messenger = ScaffoldMessenger.of(context);
     switch (result) {
       case Ok() when again:
         _startAnother();
       case Ok():
         context.pop();
+        if (repeats) {
+          messenger.showSnackBar(SnackBar(content: Text(l10n.reminderCreated)));
+        }
       case Err(:final error):
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(transactionErrorMessage(error, l10n))),
@@ -436,9 +475,12 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          t == null ? l10n.editorNewTransaction : l10n.editorEditTransaction,
-        ),
+        title: Text(switch ((_isReminder, t)) {
+          (true, null) => l10n.editorNewReminder,
+          (true, _) => l10n.editorEditReminder,
+          (false, null) => l10n.editorNewTransaction,
+          _ => l10n.editorEditTransaction,
+        }),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(2),
           child: Container(height: 2, color: theme.colorScheme.outline),
@@ -516,10 +558,36 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
               padding: const EdgeInsets.only(top: 4),
               child: FieldError(_accountError!),
             ),
-          TransactionDateTimeFields(
-            dateTime: _occurredAt,
-            onChanged: (value) => setState(() => _occurredAt = value),
-          ),
+          if (_isReminder) ...[
+            ReminderScheduleFields(
+              schedule: _schedule,
+              isNew: _reminder == null,
+              today: ref.watch(todayProvider),
+              onChanged: (schedule) => setState(() => _schedule = schedule),
+            ),
+            ReminderSectionHeader(title: l10n.assetsAccountOptions),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.reminderAuto),
+              subtitle: Text(
+                _autoPost ? l10n.reminderAutoOnHint : l10n.reminderAutoOffHint,
+              ),
+              value: _autoPost,
+              onChanged: (on) => setState(() => _autoPost = on),
+            ),
+            const Divider(),
+          ] else ...[
+            TransactionDateTimeFields(
+              dateTime: _occurredAt,
+              onChanged: (value) => setState(() => _occurredAt = value),
+            ),
+            if (t == null)
+              TransactionRepeatField(
+                frequency: _repeat,
+                future: !_occurredAt.isBefore(ref.watch(tomorrowProvider)),
+                onChanged: (frequency) => setState(() => _repeat = frequency),
+              ),
+          ],
           TransactionLabelsField(
             labelIds: _labelIds,
             onChanged: (ids) => setState(() => _labelIds = ids),
@@ -541,7 +609,7 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
               ),
             ),
           ),
-          if (t != null)
+          if (t != null && !_isReminder)
             Padding(
               padding: const EdgeInsets.only(top: 14),
               child: Text(
@@ -557,8 +625,11 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
       bottomNavigationBar: TransactionFormActions(
         saving: _saving,
         onSave: () => _save(again: false),
-        onSaveAndAddAnother: t == null ? () => _save(again: true) : null,
-        onDelete: t == null ? null : _delete,
+        onSaveAndAddAnother: t == null && !_isReminder
+            ? () => _save(again: true)
+            : null,
+        // A reminder is deleted from its own page.
+        onDelete: t == null || _isReminder ? null : _delete,
       ),
     );
   }

@@ -30,4 +30,7 @@ enum RepositoryDataError {
   /// A group's kind is fixed once it has categories or transactions.
   kindLocked,
   groupHasCategories,
+
+  /// A reminder every less than 1 period, or with a negative count left.
+  invalidSchedule,
 }

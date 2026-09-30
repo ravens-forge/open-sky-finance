@@ -180,6 +180,7 @@ Widget _rows(BuildContext context) {
         title: 'Monthly savings',
         schedule: l10n.budgetPeriodMonthly,
         due: DateFormat.MMMd(l10n.localeName).format(DateTime(2026, 9, 25)),
+        automatic: true,
         amount: _amount(450, AmountStyle.transfer),
       ),
       const SizedBox(height: 12),

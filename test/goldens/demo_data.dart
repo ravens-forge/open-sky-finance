@@ -3,23 +3,28 @@ import 'package:open_sky_finance/core/finance_colors.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
 import 'package:open_sky_finance/data/enums/assets_account_type.dart';
 import 'package:open_sky_finance/data/enums/category_kind.dart';
+import 'package:open_sky_finance/data/enums/reminder_frequency.dart';
 import 'package:open_sky_finance/data/enums/transaction_type.dart';
 import 'package:open_sky_finance/data/models/assets_account_draft.dart';
 import 'package:open_sky_finance/data/models/category_draft.dart';
 import 'package:open_sky_finance/data/models/category_group_draft.dart';
+import 'package:open_sky_finance/data/models/reminder_draft.dart';
+import 'package:open_sky_finance/data/models/reminder_schedule.dart';
 import 'package:open_sky_finance/data/models/transaction_draft.dart';
 import 'package:open_sky_finance/data/repositories/setting_keys.dart';
 
 import '../data/test_db.dart';
 
 /// Ids of what [seedDemo] wrote, by name ("Visa", "Groceries", "vacation");
-/// transactions under `tx:<title>`, the latest one for a repeated title.
+/// transactions under `tx:<title>`, the latest one for a repeated title, and
+/// reminders under `reminder:<title>`.
 final demo = <String, String>{};
 
 /// Sample data in euros: six assets accounts (and a hidden one),
 /// expense and income groups with their categories, six months of salary
 /// and spending up to Thursday, September 17, 2026, two scheduled payments,
-/// labels, budgets and three items in the Trash.
+/// labels, budgets, eight reminders (one overdue, one paused, three automatic)
+/// and three items in the Trash.
 Future<void> seedDemo(AppDatabase db) async {
   demo.clear();
   await db.settingsRepository.set(SettingKeys.mainCurrency, 'EUR');
@@ -318,12 +323,118 @@ Future<void> seedDemo(AppDatabase db) async {
     ok(await db.budgetsRepository.set(demo[category]!, m(amount)));
   }
 
-  await addReminder(
-    db,
-    'phone',
-    assetsAccountId: demo['Checking']!,
-    title: 'Phone bill',
-    nextDueAt: '2026-09-20T00:00:00',
+  Future<void> reminder(
+    String title,
+    num amount,
+    DateTime start,
+    DateTime due, {
+    required String account,
+    String? category,
+    String? to,
+    ReminderFrequency frequency = ReminderFrequency.monthly,
+    bool auto = false,
+    bool paused = false,
+  }) async => demo['reminder:$title'] = ok(
+    await db.remindersRepository.save(
+      ReminderDraft(
+        template: TransactionDraft(
+          type: to != null
+              ? TransactionType.transfer
+              : amount > 0
+              ? TransactionType.income
+              : TransactionType.expense,
+          occurredAt: start,
+          amount: m(amount),
+          assetsAccountId: demo[account]!,
+          toAssetsAccountId: to == null ? null : demo[to],
+          categoryId: category == null ? null : demo[category],
+          title: title,
+        ),
+        schedule: ReminderSchedule(
+          frequency: frequency,
+          startDate: start,
+          nextDueAt: due,
+        ),
+        autoPost: auto,
+        isPaused: paused,
+      ),
+    ),
+  );
+  await reminder(
+    'Electricity bill',
+    -62.30,
+    DateTime(2026, 6, 15),
+    DateTime(2026, 9, 15),
+    account: 'Checking',
+    category: 'Electricity',
+  );
+  await reminder(
+    'Phone bill',
+    -35,
+    DateTime(2026, 1, 20),
+    DateTime(2026, 9, 20),
+    account: 'Checking',
+    category: 'Internet',
+    paused: true,
+  );
+  await reminder(
+    'Salary',
+    3200,
+    DateTime(2026, 1, 31),
+    DateTime(2026, 9, 30),
+    account: 'Checking',
+    category: 'Monthly pay',
+    auto: true,
+  );
+  await reminder(
+    'Car insurance',
+    -312.40,
+    DateTime(2025, 9, 30),
+    DateTime(2026, 9, 30),
+    account: 'Checking',
+    category: 'Car insurance',
+    frequency: ReminderFrequency.yearly,
+  );
+  await reminder(
+    'Monthly savings',
+    450,
+    DateTime(2026, 1, 1),
+    DateTime(2026, 10, 1),
+    account: 'Checking',
+    to: 'Savings',
+    auto: true,
+  );
+  await reminder(
+    'Rent',
+    -850,
+    DateTime(2026, 7, 2),
+    DateTime(2026, 10, 2),
+    account: 'Checking',
+    category: 'Rent',
+  );
+  await reminder(
+    'Music subscription',
+    -10.99,
+    DateTime(2026, 5, 3),
+    DateTime(2026, 10, 3),
+    account: 'Visa',
+    category: 'Subscriptions',
+    auto: true,
+  );
+  await reminder(
+    'Property tax',
+    -420,
+    DateTime(2025, 11, 15),
+    DateTime(2026, 11, 15),
+    account: 'Checking',
+    category: 'HOA fees',
+    frequency: ReminderFrequency.yearly,
+  );
+  // The rent of July and August was recorded from its reminder.
+  await db.customStatement(
+    "UPDATE transactions SET reminder_id = ? WHERE title = 'Rent' "
+    "AND occurred_at BETWEEN '2026-07' AND '2026-09'",
+    [demo['reminder:Rent']],
   );
 
   // The Trash: one item deleted today, two on September 12.

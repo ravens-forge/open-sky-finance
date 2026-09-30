@@ -5,8 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/core/result.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
 import 'package:open_sky_finance/data/database/tables/transactions_table.dart';
+import 'package:open_sky_finance/data/enums/reminder_frequency.dart';
 import 'package:open_sky_finance/data/enums/transaction_type.dart';
 import 'package:open_sky_finance/data/models/app_snapshot.dart';
+import 'package:open_sky_finance/data/models/reminder_draft.dart';
+import 'package:open_sky_finance/data/models/reminder_schedule.dart';
+import 'package:open_sky_finance/data/models/transaction_draft.dart';
 import 'package:open_sky_finance/data/repositories/setting_keys.dart';
 import 'package:open_sky_finance/services/backup/backup_codec.dart';
 import 'package:open_sky_finance/services/backup/backup_service.dart';
@@ -86,6 +90,73 @@ void main() {
     expect(copy.existsSync(), isFalse);
     // Nothing to delete is fine too.
     await service.deleteShareCopies();
+  });
+
+  test('restore brings back reminders and what they recorded', () async {
+    final (db, service, _) = _setUp();
+    final bank = await addAssetsAccount(db, 'Bank');
+    final label = ok(await db.labelsRepository.save(name: 'home'));
+    final reminder = ok(
+      await db.remindersRepository.save(
+        ReminderDraft(
+          template: TransactionDraft(
+            type: TransactionType.expense,
+            occurredAt: DateTime(2026, 7, 2),
+            amount: -m(850),
+            assetsAccountId: bank,
+            title: 'Rent',
+            labelIds: [label],
+          ),
+          schedule: ReminderSchedule(
+            frequency: ReminderFrequency.monthly,
+            startDate: DateTime(2026, 7, 2),
+            nextDueAt: DateTime(2026, 7, 2),
+            remainingOccurrences: 12,
+          ),
+          autoPost: true,
+        ),
+      ),
+    );
+    ok(await db.remindersRepository.record(reminder));
+    ok(await db.remindersRepository.record(reminder));
+    final file = await service.export(appVersion: '1.0.0');
+
+    final (restored, target, _) = _setUp();
+    final loaded = await target.load(
+      fileName: 'backup.json',
+      size: file.bytes.length,
+      read: () async => file.bytes,
+    );
+    expect(
+      await target.restore(
+        (loaded as Ok<LoadedBackup, RestoreError>).value.snapshot,
+        appVersion: '1.0.0',
+      ),
+      isA<Ok<void, RestoreError>>(),
+    );
+
+    final after = (await restored.remindersRepository.findById(reminder))!;
+    expect(after.title, 'Rent');
+    expect(after.autoPost, isTrue);
+    expect(after.schedule.startDate, DateTime(2026, 7, 2));
+    expect(after.schedule.nextDueAt, DateTime(2026, 9, 2));
+    expect(after.schedule.remainingOccurrences, 10);
+    expect(await restored.remindersRepository.labelIdsOf(reminder), [label]);
+    final recorded = await restored.transactionsRepository
+        .watchByReminder(reminder)
+        .first;
+    expect(recorded.map((t) => t.occurredAt), [
+      DateTime(2026, 8, 2),
+      DateTime(2026, 7, 2),
+    ]);
+    // The restored reminder goes on from where it was.
+    ok(await restored.remindersRepository.record(reminder));
+    expect(
+      (await restored.remindersRepository.findById(reminder))!
+          .schedule
+          .nextDueAt,
+      DateTime(2026, 10, 2),
+    );
   });
 
   test('files over the size limit are never read', () async {

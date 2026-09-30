@@ -54,8 +54,7 @@ Future<String> addAssetsAccount(
   ),
 );
 
-/// A minimal reminder row. The reminders repository has no writes yet, so
-/// tests that need one write it directly.
+/// A minimal reminder row with a chosen id, written directly.
 Future<void> addReminder(
   AppDatabase db,
   String id, {

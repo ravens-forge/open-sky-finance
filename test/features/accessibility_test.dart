@@ -14,6 +14,9 @@ import '../pump_app.dart';
 final _screens = <String, String Function()>{
   'home': () => Routes.home,
   'transactions': () => Routes.transactions,
+  'reminders': () => Routes.reminders,
+  'reminder': () => Routes.reminder(demo['reminder:Rent']!),
+  'new reminder': () => Routes.newReminder,
   'balance sheet': () => Routes.balanceSheet,
   'net income': () => Routes.netIncome,
   'labels': () => Routes.labels,

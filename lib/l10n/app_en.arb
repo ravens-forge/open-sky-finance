@@ -3395,5 +3395,377 @@
   "supportLinksNote": "Links open in your browser. The app itself never connects to the internet.",
   "@supportLinksNote": {
     "description": "Note at the bottom of the Support screen"
+  },
+  "remindersFilterActive": "Active",
+  "@remindersFilterActive": {
+    "description": "Reminders filter: reminders that are running"
+  },
+  "remindersFilterPaused": "Paused",
+  "@remindersFilterPaused": {
+    "description": "Reminders filter: paused reminders"
+  },
+  "remindersFilterFinished": "Finished",
+  "@remindersFilterFinished": {
+    "description": "Reminders filter: reminders with nothing left to come"
+  },
+  "reminderDetails": "{first} · {second}",
+  "@reminderDetails": {
+    "description": "Two details of a reminder joined, e.g. \"Monthly · Housing\", \"Active · 7\" or \"−€850.00 · Expense\"",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "remindersNew": "New",
+  "@remindersNew": {
+    "description": "Short button next to the Reminders filters that opens the new reminder editor"
+  },
+  "remindersOverdueLead": "{count, plural, =1{1 overdue reminder.} other{{count} overdue reminders.}}",
+  "@remindersOverdueLead": {
+    "description": "Bold start of the banner on the Reminders page",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "remindersOverdueText": "{count, plural, =1{Record or skip it.} other{Record or skip them.}}",
+  "@remindersOverdueText": {
+    "description": "Rest of the overdue banner. {count} is the number of overdue reminders",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "remindersSectionNext30": "Next 30 days",
+  "@remindersSectionNext30": {
+    "description": "Reminders section heading"
+  },
+  "remindersSectionLater": "Later",
+  "@remindersSectionLater": {
+    "description": "Reminders section heading: due in more than 30 days"
+  },
+  "remindersInfoLabel": "About scheduled and automatic reminders",
+  "@remindersInfoLabel": {
+    "description": "Spoken label of the info icon on the Reminders page"
+  },
+  "remindersInfoEyebrow": "Scheduled, not recorded",
+  "@remindersInfoEyebrow": {
+    "description": "Heading of the Reminders info tooltip"
+  },
+  "remindersInfo": "Scheduled amounts are not in your balances yet. Record one to turn it into a real transaction; a reminder marked “Automatic” records itself on the due date.",
+  "@remindersInfo": {
+    "description": "Text of the Reminders info tooltip"
+  },
+  "remindersEmpty": "No reminders yet",
+  "@remindersEmpty": {
+    "description": "Title of the empty Reminders page"
+  },
+  "remindersEmptyMessage": "Add the bills and income that repeat, like rent or salary. You'll see what's due and can record it in one tap.",
+  "@remindersEmptyMessage": {
+    "description": "Message of the empty Reminders page"
+  },
+  "remindersEmptyTip": "Tip: choosing “Repeat” in the transaction editor also creates a reminder.",
+  "@remindersEmptyTip": {
+    "description": "Note under the empty Reminders page"
+  },
+  "remindersEmptyFilter": "No reminders here.",
+  "@remindersEmptyFilter": {
+    "description": "Reminders page when the chosen filter has no reminders"
+  },
+  "reminderWasDue": "Was due {date}",
+  "@reminderWasDue": {
+    "description": "Due text of an overdue reminder. {date} is a short date, e.g. Sep 15",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderDueToday": "Due today",
+  "@reminderDueToday": {
+    "description": "Due text of a reminder due today"
+  },
+  "reminderInDays": "{days, plural, =1{in 1 day} other{in {days} days}}",
+  "@reminderInDays": {
+    "description": "How far away a reminder is due, after its date: \"Sep 25 · in 8 days\"",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderNextDue": "Next due {due}",
+  "@reminderNextDue": {
+    "description": "Under the title of a reminder. {due} is its date and distance, e.g. \"Sep 25 · in 8 days\"",
+    "placeholders": {
+      "due": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderFrequencyOnce": "Once",
+  "@reminderFrequencyOnce": {
+    "description": "Reminder frequency: a single occurrence"
+  },
+  "reminderEveryDays": "{count, plural, =1{Daily} other{Every {count} days}}",
+  "@reminderEveryDays": {
+    "description": "Reminder frequency in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderEveryWeeks": "{count, plural, =1{Weekly} other{Every {count} weeks}}",
+  "@reminderEveryWeeks": {
+    "description": "Reminder frequency in weeks",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderEveryMonths": "{count, plural, =1{Monthly} other{Every {count} months}}",
+  "@reminderEveryMonths": {
+    "description": "Reminder frequency in months",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderEveryYears": "{count, plural, =1{Yearly} other{Every {count} years}}",
+  "@reminderEveryYears": {
+    "description": "Reminder frequency in years",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderIntervalDays": "{count, plural, =1{1 day} other{{count} days}}",
+  "@reminderIntervalDays": {
+    "description": "Value of the \"Every\" stepper of a daily reminder",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderIntervalWeeks": "{count, plural, =1{1 week} other{{count} weeks}}",
+  "@reminderIntervalWeeks": {
+    "description": "Value of the \"Every\" stepper of a weekly reminder",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderIntervalMonths": "{count, plural, =1{1 month} other{{count} months}}",
+  "@reminderIntervalMonths": {
+    "description": "Value of the \"Every\" stepper of a monthly reminder",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderIntervalYears": "{count, plural, =1{1 year} other{{count} years}}",
+  "@reminderIntervalYears": {
+    "description": "Value of the \"Every\" stepper of a yearly reminder",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderStepperFewer": "Fewer",
+  "@reminderStepperFewer": {
+    "description": "Spoken label of the minus button of a stepper"
+  },
+  "reminderStepperMore": "More",
+  "@reminderStepperMore": {
+    "description": "Spoken label of the plus button of a stepper"
+  },
+  "reminderSchedule": "Schedule",
+  "@reminderSchedule": {
+    "description": "Heading of the schedule fields of a reminder, and label of its schedule summary"
+  },
+  "fieldFrequency": "Frequency",
+  "@fieldFrequency": {
+    "description": "Label of the frequency choice of a reminder"
+  },
+  "reminderEvery": "Every",
+  "@reminderEvery": {
+    "description": "Label above the interval stepper, whose value reads \"2 months\""
+  },
+  "fieldFirstDue": "First due",
+  "@fieldFirstDue": {
+    "description": "Date field of a new reminder"
+  },
+  "fieldNextDue": "Next due",
+  "@fieldNextDue": {
+    "description": "Date field of an existing reminder"
+  },
+  "reminderEnds": "Ends",
+  "@reminderEnds": {
+    "description": "Label of the end condition of a reminder"
+  },
+  "reminderEndsNever": "Never",
+  "@reminderEndsNever": {
+    "description": "End condition: the reminder repeats forever"
+  },
+  "reminderEndsOnDate": "On a date",
+  "@reminderEndsOnDate": {
+    "description": "End condition: the last day a reminder can be due"
+  },
+  "reminderEndsAfter": "After a number of times",
+  "@reminderEndsAfter": {
+    "description": "End condition: a number of occurrences"
+  },
+  "reminderPickDate": "Pick a date",
+  "@reminderPickDate": {
+    "description": "Placeholder of the end date before one is chosen"
+  },
+  "reminderTimes": "{count, plural, =1{1 time} other{{count} times}}",
+  "@reminderTimes": {
+    "description": "How many occurrences a reminder has left",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderNextDates": "Next dates: {dates}",
+  "@reminderNextDates": {
+    "description": "Preview of the next occurrences. {dates} is a list of dates joined with \" · \"",
+    "placeholders": {
+      "dates": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderAuto": "Record automatically",
+  "@reminderAuto": {
+    "description": "Switch of a reminder that records itself"
+  },
+  "reminderAutoOnHint": "Added when the app opens on or after the due date",
+  "@reminderAutoOnHint": {
+    "description": "Subtitle of the automatic switch when on"
+  },
+  "reminderAutoOffHint": "Off: you choose Record or Skip each time",
+  "@reminderAutoOffHint": {
+    "description": "Subtitle of the automatic switch when off"
+  },
+  "reminderPause": "Pause reminder",
+  "@reminderPause": {
+    "description": "Switch that pauses a reminder"
+  },
+  "reminderPauseHint": "Nothing is recorded or shown as due while paused",
+  "@reminderPauseHint": {
+    "description": "Subtitle of the pause switch"
+  },
+  "reminderNeverEnds": "never ends",
+  "@reminderNeverEnds": {
+    "description": "Schedule summary after the frequency: \"Monthly · never ends\""
+  },
+  "reminderEndsOn": "until {date}",
+  "@reminderEndsOn": {
+    "description": "Schedule summary after the frequency: \"Monthly · until Dec 25, 2026\"",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderTimesLeft": "{count, plural, =1{1 more time} other{{count} more times}}",
+  "@reminderTimesLeft": {
+    "description": "Schedule summary after the frequency: \"Monthly · 3 more times\"",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderUpcoming": "Upcoming",
+  "@reminderUpcoming": {
+    "description": "Heading of the next occurrences of a reminder"
+  },
+  "reminderUpcomingNext": "Next {count}",
+  "@reminderUpcomingNext": {
+    "description": "How many upcoming occurrences are listed",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderHistory": "History",
+  "@reminderHistory": {
+    "description": "Heading of the recorded occurrences of a reminder"
+  },
+  "reminderHistoryCount": "{count, plural, =1{1 recorded} other{{count} recorded}}",
+  "@reminderHistoryCount": {
+    "description": "How many occurrences of a reminder were recorded",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderHistoryEmpty": "Nothing recorded yet.",
+  "@reminderHistoryEmpty": {
+    "description": "History of a reminder without recorded occurrences"
+  },
+  "reminderRecorded": "Recorded",
+  "@reminderRecorded": {
+    "description": "A recorded occurrence in the history, and the message after recording one"
+  },
+  "remindersAutoRecorded": "{count, plural, =1{1 reminder recorded} other{{count} reminders recorded}}",
+  "@remindersAutoRecorded": {
+    "description": "Message after automatic reminders were recorded when the app opened",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderDeleteTitle": "Delete this reminder?",
+  "@reminderDeleteTitle": {
+    "description": "Title of the delete confirmation of a reminder"
+  },
+  "reminderDeleteBody": "The transactions it already recorded are kept.",
+  "@reminderDeleteBody": {
+    "description": "Body of the delete confirmation of a reminder"
+  },
+  "fieldRepeat": "Repeat",
+  "@fieldRepeat": {
+    "description": "Field of the transaction editor that creates a reminder"
+  },
+  "repeatNone": "Does not repeat",
+  "@repeatNone": {
+    "description": "Value of Repeat when no frequency is chosen"
+  },
+  "repeatHint": "Repeating creates a reminder",
+  "@repeatHint": {
+    "description": "Helper under the Repeat field"
+  },
+  "repeatFutureHint": "Date is in the future: only the reminder is created",
+  "@repeatFutureHint": {
+    "description": "Helper under the Repeat field when a frequency is chosen and the date is after today"
+  },
+  "reminderCreated": "Reminder created",
+  "@reminderCreated": {
+    "description": "Message after saving a repeating transaction"
+  },
+  "reminderFinished": "Finished",
+  "@reminderFinished": {
+    "description": "Due text of a reminder with nothing left to come"
   }
 }
