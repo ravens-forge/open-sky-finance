@@ -87,6 +87,17 @@ class TransactionsRepository extends DatabaseAccessor<AppDatabase>
           .map((r) => r.toDomain())
           .watch();
 
+  /// The occurrences recorded from a reminder, newest first.
+  Stream<List<Transaction>> watchByReminder(String reminderId) =>
+      (live()
+            ..where((t) => t.reminderId.equals(reminderId))
+            ..orderBy([
+              (t) => OrderingTerm.desc(t.occurredAt),
+              (t) => OrderingTerm.desc(t.createdAt),
+            ]))
+          .map((r) => r.toDomain())
+          .watch();
+
   Future<List<String>> labelIdsOf(String transactionId) =>
       (select(transactionLabelsTable)
             ..where((l) => l.transactionId.equals(transactionId)))
@@ -97,7 +108,7 @@ class TransactionsRepository extends DatabaseAccessor<AppDatabase>
   /// its labels in one database transaction. Returns the id.
   Future<Result<String, RepositoryDataError>> save(TransactionDraft draft) =>
       transaction(() async {
-        final (row, error) = await _validate(draft);
+        final (row, error) = await validate(draft);
         if (error != null) return Err(error);
 
         final now = DateTime.now().toUtc();
@@ -132,7 +143,10 @@ class TransactionsRepository extends DatabaseAccessor<AppDatabase>
         return Ok(id);
       });
 
-  Future<(TransactionsTableCompanion?, RepositoryDataError?)> _validate(
+  /// Checks the transfer, currency and category invariants of [d] and gives
+  /// the columns to write. Reminders share them: a reminder is a transaction
+  /// template.
+  Future<(TransactionsTableCompanion?, RepositoryDataError?)> validate(
     TransactionDraft d,
   ) async {
     if (d.type == TransactionType.openingBalance) {

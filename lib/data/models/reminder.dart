@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../enums/reminder_status.dart';
 import '../enums/transaction_type.dart';
 import 'money.dart';
 import 'reminder_schedule.dart';
@@ -45,4 +46,10 @@ class Reminder {
   final bool isPaused;
   final int sortOrder;
   final Timestamps timestamps;
+
+  ReminderStatus get status => schedule.nextDueAt == null
+      ? ReminderStatus.finished
+      : isPaused
+      ? ReminderStatus.paused
+      : ReminderStatus.active;
 }

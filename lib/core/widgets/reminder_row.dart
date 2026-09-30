@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../finance_colors.dart';
 import '../l10n.dart';
 import 'category_avatar.dart';
+import 'glyph_text.dart';
 import 'ledger_chip.dart';
+import 'record_skip_buttons.dart';
 import 'trailing_amount.dart';
 
 class ReminderRow extends StatelessWidget {
@@ -16,6 +18,7 @@ class ReminderRow extends StatelessWidget {
     required this.due,
     required this.amount,
     this.overdue = false,
+    this.automatic = false,
     this.onRecord,
     this.onSkip,
     this.onTap,
@@ -28,6 +31,11 @@ class ReminderRow extends StatelessWidget {
   final String due;
   final Widget amount;
   final bool overdue;
+
+  /// Records itself on the due date: shows the "Automatic" chip.
+  final bool automatic;
+
+  /// Without both, the row has no buttons (automatic, paused or finished).
   final VoidCallback? onRecord;
   final VoidCallback? onSkip;
   final VoidCallback? onTap;
@@ -36,13 +44,7 @@ class ReminderRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final text = Theme.of(context).textTheme;
-    // From the theme, so the buttons keep the app's font.
-    final smallText = text.labelLarge!.copyWith(
-      fontSize: 13,
-      fontWeight: FontWeight.w600,
-    );
     final finance = FinanceColors.of(context);
-    final automatic = onRecord == null && onSkip == null;
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -71,7 +73,7 @@ class ReminderRow extends StatelessWidget {
                             Icon(Icons.repeat, size: 14, color: finance.muted),
                             const SizedBox(width: 4),
                             Flexible(
-                              child: Text(schedule, style: text.bodySmall),
+                              child: GlyphText(schedule, style: text.bodySmall),
                             ),
                           ],
                         ),
@@ -87,7 +89,7 @@ class ReminderRow extends StatelessWidget {
                               ),
                             ),
                             if (automatic)
-                              LedgerChip.outline(
+                              LedgerChip.label(
                                 l10n.chipAutomatic,
                                 compact: true,
                               ),
@@ -105,33 +107,10 @@ class ReminderRow extends StatelessWidget {
                 ),
               ],
             ),
-            if (!automatic)
+            if (onRecord != null || onSkip != null)
               Padding(
                 padding: const EdgeInsetsDirectional.only(start: 52, top: 10),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    FilledButton(
-                      onPressed: onRecord,
-                      style: FilledButton.styleFrom(
-                        minimumSize: _small,
-                        padding: _smallPadding,
-                        textStyle: smallText,
-                      ),
-                      child: Text(l10n.reminderRecord),
-                    ),
-                    OutlinedButton(
-                      onPressed: onSkip,
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: _small,
-                        padding: _smallPadding,
-                        textStyle: smallText,
-                      ),
-                      child: Text(l10n.reminderSkip),
-                    ),
-                  ],
-                ),
+                child: RecordSkipButtons(onRecord: onRecord, onSkip: onSkip),
               ),
           ],
         ),
@@ -139,7 +118,3 @@ class ReminderRow extends StatelessWidget {
     );
   }
 }
-
-// 40 px row buttons; the padded tap target keeps them at 48 px.
-const _small = Size(0, 40);
-const _smallPadding = EdgeInsets.symmetric(horizontal: 16);

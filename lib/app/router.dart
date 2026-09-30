@@ -25,6 +25,10 @@ import '../features/labels/pages/labels_page.dart';
 import '../features/net_income/pages/net_income_page.dart';
 import '../features/onboarding/pages/onboarding_page.dart';
 import '../features/onboarding/providers/onboarding_provider.dart';
+import '../features/reminders/pages/reminder_form_page.dart';
+import '../features/reminders/pages/reminder_page.dart';
+import '../features/reminders/pages/reminders_page.dart';
+import '../features/reminders/widgets/reminder_auto_post.dart';
 import '../features/settings/pages/settings_page.dart';
 import '../features/shell/models/main_page.dart';
 import '../features/transactions/pages/transaction_editor_page.dart';
@@ -100,7 +104,9 @@ GoRouter router(Ref ref) {
       StatefulShellRoute(
         builder: (context, state, shell) => shell,
         navigatorContainerBuilder: (context, shell, children) =>
-            MainShell(navigationShell: shell, children: children),
+            ReminderAutoPost(
+              child: MainShell(navigationShell: shell, children: children),
+            ),
         branches: [
           for (final page in MainPage.values)
             StatefulShellBranch(
@@ -112,6 +118,7 @@ GoRouter router(Ref ref) {
                   builder: (context, state) => switch (page) {
                     MainPage.home => const HomePage(),
                     MainPage.transactions => const TransactionsPage(),
+                    MainPage.reminders => const RemindersPage(),
                     MainPage.balanceSheet => const BalanceSheetPage(),
                     MainPage.netIncome => const NetIncomePage(),
                     MainPage.labels => const LabelsPage(),
@@ -150,18 +157,46 @@ GoRouter router(Ref ref) {
                       GoRoute(
                         path: 'new',
                         parentNavigatorKey: rootKey,
-                        pageBuilder: (context, state) => editor(
-                          state,
-                          StubPage(title: context.l10n.editorNewReminder),
-                        ),
+                        pageBuilder: (context, state) =>
+                            editor(state, const ReminderFormPage()),
                       ),
                       GoRoute(
                         path: ':reminderId',
                         parentNavigatorKey: rootKey,
-                        pageBuilder: (context, state) => editor(
-                          state,
-                          StubPage(title: context.l10n.editorEditReminder),
-                        ),
+                        pageBuilder: (context, state) {
+                          final id = state.pathParameters['reminderId']!;
+                          return editor(
+                            state,
+                            gate(
+                              context,
+                              id,
+                              () => ref
+                                  .read(remindersRepositoryProvider)
+                                  .findById(id),
+                              ReminderPage(id: id),
+                            ),
+                          );
+                        },
+                        routes: [
+                          GoRoute(
+                            path: 'edit',
+                            parentNavigatorKey: rootKey,
+                            pageBuilder: (context, state) {
+                              final id = state.pathParameters['reminderId']!;
+                              return editor(
+                                state,
+                                gate(
+                                  context,
+                                  id,
+                                  () => ref
+                                      .read(remindersRepositoryProvider)
+                                      .findById(id),
+                                  ReminderFormPage(id: id),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ],
                     _ => const [],

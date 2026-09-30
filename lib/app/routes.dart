@@ -32,6 +32,7 @@ abstract final class Routes {
 
   static const newReminder = '$reminders/new';
   static String reminder(String id) => '$reminders/$id';
+  static String editReminder(String id) => '$reminders/$id/edit';
 
   static const newAssetsAccount = '$assetsAccounts/new';
   static String assetsAccount(String id) => '$assetsAccounts/$id';

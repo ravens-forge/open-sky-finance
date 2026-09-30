@@ -166,6 +166,7 @@ void main() {
                 title: 'Salaire',
                 schedule: 'Mensuel',
                 due: 'Dans 8 jours',
+                automatic: true,
                 amount: Text('+3 200,00 €'),
               ),
               const WarningBanner(

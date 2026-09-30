@@ -7,8 +7,8 @@ import '../finance_colors.dart';
 enum _ChipKind { filled, outline, dashed, add, overdue }
 
 class LedgerChip extends StatelessWidget {
-  /// Label or favorite chip on `primaryContainer`. [trailingIcon] follows the
-  /// text, e.g. the ✕ of a removable label.
+  /// Label, favorite or "Automatic" chip on `primaryContainer`.
+  /// [trailingIcon] follows the text, e.g. the ✕ of a removable label.
   const LedgerChip.label(
     this.text, {
     super.key,
@@ -18,7 +18,7 @@ class LedgerChip extends StatelessWidget {
     this.onPressed,
   }) : _kind = _ChipKind.filled;
 
-  /// Outline chip, e.g. "+ Add" or "Automatic".
+  /// Outline chip, e.g. "+ Add".
   const LedgerChip.outline(
     this.text, {
     super.key,

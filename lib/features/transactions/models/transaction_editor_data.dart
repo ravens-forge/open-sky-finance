@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../data/enums/transaction_type.dart';
 import '../../../data/models/assets_account.dart';
+import '../../../data/models/reminder.dart';
 import '../../../data/models/transaction.dart';
 
 @immutable
@@ -11,8 +12,12 @@ class TransactionEditorData {
     required this.labelIds,
     required this.assetsAccounts,
     required this.type,
+    this.reminder,
+    this.isReminder = false,
   });
 
+  /// The edited transaction; in the reminder form, the template of the
+  /// edited reminder as a transaction.
   final Transaction? transaction;
   final List<String> labelIds;
 
@@ -22,4 +27,10 @@ class TransactionEditorData {
 
   /// The type the editor opens with.
   final TransactionType type;
+
+  /// The edited reminder, with its schedule.
+  final Reminder? reminder;
+
+  /// The form edits a reminder: a schedule instead of a date and time.
+  final bool isReminder;
 }

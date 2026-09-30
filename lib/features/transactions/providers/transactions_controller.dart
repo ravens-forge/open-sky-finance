@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../app/now.dart';
 import '../../../core/result.dart';
+import '../../../data/enums/reminder_frequency.dart';
 import '../../../data/models/title_suggestion.dart';
 import '../../../data/models/transaction_draft.dart';
 import '../../../data/providers.dart';
@@ -23,6 +25,16 @@ class TransactionsController extends _$TransactionsController {
 
   Future<Result<String, RepositoryDataError>> save(TransactionDraft draft) =>
       _repository.save(draft);
+
+  /// "Repeat": creates a reminder of [draft] every [frequency]. Dated today
+  /// or earlier, the transaction is saved too and the reminder starts at the
+  /// next occurrence.
+  Future<Result<String, RepositoryDataError>> saveRepeating(
+    TransactionDraft draft,
+    ReminderFrequency frequency,
+  ) => ref
+      .read(remindersRepositoryProvider)
+      .saveRepeating(draft, frequency, tomorrow: ref.read(tomorrowProvider));
 
   /// Moves it to the Trash; [restore] is the Undo of the snack bar.
   Future<void> trash(String id) => _repository.trash(id);

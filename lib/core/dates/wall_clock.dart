@@ -13,6 +13,14 @@ DateTime startOfNextDay(DateTime date) =>
 DateTime endOfDay(DateTime date) =>
     DateTime(date.year, date.month, date.day, 23, 59, 59, 999, 999);
 
+/// Calendar days from the day of [from] to the day of [to], whatever the clock
+/// changes in between; negative when [to] is earlier.
+int daysBetween(DateTime from, DateTime to) => DateTime.utc(
+  to.year,
+  to.month,
+  to.day,
+).difference(DateTime.utc(from.year, from.month, from.day)).inDays;
+
 /// Formats [date] as ISO-8601 without offset, to the second: `2026-03-14T18:30:00`.
 String formatWallClock(DateTime date) =>
     date.toIso8601String().substring(0, 19);
