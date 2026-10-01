@@ -19,7 +19,7 @@ dependencies:
   # State and navigation
   flutter_riverpod: ^3.4.3
   riverpod_annotation: ^4.0.7
-  go_router: ^18.0.1
+  go_router: ^18.0.2
 
   # Local database (SQLite)
   drift: ^2.35.0
