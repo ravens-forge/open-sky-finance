@@ -4041,5 +4041,465 @@
         "example": "Sep 15, 2026"
       }
     }
+  },
+  "actionChange": "Change",
+  "@actionChange": {
+    "description": "Pine link at the end of a settings row that changes its value"
+  },
+  "actionLater": "Later",
+  "@actionLater": {
+    "description": "Dialog button that puts something off"
+  },
+  "passwordShow": "Show password",
+  "@passwordShow": {
+    "description": "Tooltip of the eye button that shows a password"
+  },
+  "passwordHide": "Hide password",
+  "@passwordHide": {
+    "description": "Tooltip of the eye button that hides a password"
+  },
+  "backupDestinationAutomatic": "Automatic",
+  "@backupDestinationAutomatic": {
+    "description": "Where the last backup went: the automatic backups folder (name unknown)"
+  },
+  "backupDestinationAutomaticTo": "Automatic · {folder}",
+  "@backupDestinationAutomaticTo": {
+    "description": "Where the last backup went: the automatic backups folder",
+    "placeholders": {
+      "folder": {
+        "type": "String",
+        "example": "Drive › Open Sky Finance"
+      }
+    }
+  },
+  "autoBackupTitle": "Automatic backups",
+  "@autoBackupTitle": {
+    "description": "Heading of the automatic backups section and its switch"
+  },
+  "autoBackupInfoLabel": "About automatic backups",
+  "@autoBackupInfoLabel": {
+    "description": "Screen reader label of the info button next to Automatic backups"
+  },
+  "autoBackupInfo": "A backup file is written when you open or leave the app. The most recent files are kept in the folder below and older ones are removed for you. Some cloud apps don't allow folder access: use Save to… with them.",
+  "@autoBackupInfo": {
+    "description": "Info tooltip of the automatic backups section"
+  },
+  "autoBackupHint": "Runs when you open or leave the app",
+  "@autoBackupHint": {
+    "description": "Subtitle of the automatic backups switch"
+  },
+  "autoBackupFolder": "Folder",
+  "@autoBackupFolder": {
+    "description": "Row with the folder automatic backups go to"
+  },
+  "autoBackupFrequency": "Frequency",
+  "@autoBackupFrequency": {
+    "description": "Row and sheet title: how often automatic backups run"
+  },
+  "autoBackupDaily": "Daily",
+  "@autoBackupDaily": {
+    "description": "Automatic backup frequency"
+  },
+  "autoBackupWeekly": "Weekly",
+  "@autoBackupWeekly": {
+    "description": "Automatic backup frequency"
+  },
+  "autoBackupMonthly": "Monthly",
+  "@autoBackupMonthly": {
+    "description": "Automatic backup frequency"
+  },
+  "autoBackupKeep": "Keep",
+  "@autoBackupKeep": {
+    "description": "Row and sheet title: how many automatic backups the folder keeps"
+  },
+  "autoBackupKeepHint": "{count, plural, =1{Last backup, older ones are deleted} other{Last {count} backups, older ones are deleted}}",
+  "@autoBackupKeepHint": {
+    "description": "Subtitle of the Keep row",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "autoBackupKeepOption": "{count, plural, =1{Last backup} other{Last {count} backups}}",
+  "@autoBackupKeepOption": {
+    "description": "Choice in the Keep sheet",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "autoBackupNote": "Open Sky Finance only writes the file into the folder you chose. Your cloud app uploads it; this app never connects to the internet.",
+  "@autoBackupNote": {
+    "description": "Note under the automatic backups section"
+  },
+  "autoBackupChooseFolder": "Choose folder",
+  "@autoBackupChooseFolder": {
+    "description": "Button that opens the system folder picker for automatic backups"
+  },
+  "autoBackupDone": "Backup saved to the folder",
+  "@autoBackupDone": {
+    "description": "Snack bar after automatic backups were turned on or got a new folder and the first backup was saved"
+  },
+  "autoBackupFolderUnusable": "This folder can't be used. Choose another one, or use Save to….",
+  "@autoBackupFolderUnusable": {
+    "description": "Snack bar when the chosen folder can't be written to"
+  },
+  "autoBackupPausedTitle": "Automatic backups are paused",
+  "@autoBackupPausedTitle": {
+    "description": "Title of the dialog shown when the automatic backups folder can't be reached"
+  },
+  "autoBackupPausedLead": "Automatic backups are paused.",
+  "@autoBackupPausedLead": {
+    "description": "Bold start of the Backups screen banner when automatic backups are paused"
+  },
+  "autoBackupPausedBody": "The folder {folder} can't be reached. Its permission may have been removed or the cloud app uninstalled. Choose the folder again to resume them.",
+  "@autoBackupPausedBody": {
+    "description": "Why automatic backups are paused and what to do",
+    "placeholders": {
+      "folder": {
+        "type": "String",
+        "example": "Drive › Open Sky Finance"
+      }
+    }
+  },
+  "settingsAutoBackupPaused": "Automatic backups paused: choose the folder again",
+  "@settingsAutoBackupPaused": {
+    "description": "Subtitle of Backups in Settings while automatic backups are paused"
+  },
+  "backupsEncryptedNote": "Backups are encrypted with your password. Without it, they can't be restored.",
+  "@backupsEncryptedNote": {
+    "description": "Note on the Backups screen when backups are encrypted"
+  },
+  "backupEncryption": "Encryption",
+  "@backupEncryption": {
+    "description": "Heading of the encryption section on the Backups screen"
+  },
+  "backupEncrypt": "Encrypt backups",
+  "@backupEncrypt": {
+    "description": "Switch that encrypts backups with a password"
+  },
+  "backupEncryptHint": "Saved, shared and automatic files need a password to restore",
+  "@backupEncryptHint": {
+    "description": "Subtitle of the Encrypt backups switch"
+  },
+  "backupPasswordChange": "Change password",
+  "@backupPasswordChange": {
+    "description": "Row that changes the backup password"
+  },
+  "backupPasswordChangeHint": "For the next backups; older files keep their password",
+  "@backupPasswordChangeHint": {
+    "description": "Subtitle of Change password"
+  },
+  "backupPasswordTitle": "Backup password",
+  "@backupPasswordTitle": {
+    "description": "Title of the dialog that sets the backup password"
+  },
+  "backupPasswordBody": "It is not stored anywhere: if you forget it, backups made with it can't be restored.",
+  "@backupPasswordBody": {
+    "description": "Explanation in the backup password dialog"
+  },
+  "backupPassword": "Password",
+  "@backupPassword": {
+    "description": "Password field label"
+  },
+  "backupPasswordRepeat": "Repeat password",
+  "@backupPasswordRepeat": {
+    "description": "Field that repeats the new password"
+  },
+  "backupPasswordRule": "At least {count} characters",
+  "@backupPasswordRule": {
+    "description": "Helper under the new password field",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "backupPasswordTooShort": "Use at least {count} characters",
+  "@backupPasswordTooShort": {
+    "description": "Error when the new password is too short",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "backupPasswordMismatch": "The passwords don't match",
+  "@backupPasswordMismatch": {
+    "description": "Error when the repeated password differs"
+  },
+  "backupPasswordSave": "Encrypt",
+  "@backupPasswordSave": {
+    "description": "Button that sets the backup password"
+  },
+  "backupPasswordSaving": "Preparing encryption",
+  "@backupPasswordSaving": {
+    "description": "Progress dialog title while the key is derived from the password"
+  },
+  "backupPasswordSavingBody": "This takes a moment, on purpose: it makes the password hard to guess.",
+  "@backupPasswordSavingBody": {
+    "description": "Progress dialog body while the key is derived"
+  },
+  "backupPasswordSet": "Next backups will be encrypted",
+  "@backupPasswordSet": {
+    "description": "Snack bar once backups will be encrypted"
+  },
+  "backupPasswordFailed": "The password could not be set. Try again.",
+  "@backupPasswordFailed": {
+    "description": "Snack bar when the password could not be set"
+  },
+  "backupUnlockTitle": "This backup is encrypted",
+  "@backupUnlockTitle": {
+    "description": "Title of the dialog asking the password of an encrypted backup"
+  },
+  "backupUnlockBody": "Enter the password it was made with.",
+  "@backupUnlockBody": {
+    "description": "Body of the unlock dialog"
+  },
+  "backupUnlockWrong": "Wrong password. Try again.",
+  "@backupUnlockWrong": {
+    "description": "Error under the password field when it does not open the backup"
+  },
+  "backupUnlockOpen": "Open",
+  "@backupUnlockOpen": {
+    "description": "Button that opens an encrypted backup"
+  },
+  "reminderNotify": "Notify me",
+  "@reminderNotify": {
+    "description": "Switch on a reminder: a local notification on each due date"
+  },
+  "reminderNotifyHint": "A notification on the due date, at its time",
+  "@reminderNotifyHint": {
+    "description": "Subtitle of the Notify me switch"
+  },
+  "reminderNoticeBody": "Due now. Tap to record or skip it.",
+  "@reminderNoticeBody": {
+    "description": "Body of the notification of a due reminder (the title is the reminder's); no amounts"
+  },
+  "notificationsDenied": "Notifications are off for Open Sky Finance. Turn them on in the system settings.",
+  "@notificationsDenied": {
+    "description": "Snack bar when the system refused notifications"
+  },
+  "settingsNotifications": "Notifications",
+  "@settingsNotifications": {
+    "description": "Heading of the notifications section in Settings"
+  },
+  "settingsBudgetAlerts": "Budget alerts",
+  "@settingsBudgetAlerts": {
+    "description": "Switch: notify when a budget is used up"
+  },
+  "settingsBudgetAlertsHint": "When this month's spending reaches a budget",
+  "@settingsBudgetAlertsHint": {
+    "description": "Subtitle of the Budget alerts switch"
+  },
+  "budgetAlertTitle": "Budget used up: {name}",
+  "@budgetAlertTitle": {
+    "description": "Title of the notification when a budget is used up",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Groceries"
+      }
+    }
+  },
+  "budgetAlertBody": "This month's spending has reached the budget.",
+  "@budgetAlertBody": {
+    "description": "Body of the budget alert notification; no amounts"
+  },
+  "budgetAlertsChannel": "Budget alerts",
+  "@budgetAlertsChannel": {
+    "description": "Name of the Android notification channel of budget alerts, shown in system settings"
+  },
+  "importTransactions": "Import CSV or QIF",
+  "@importTransactions": {
+    "description": "Settings row and page title: import transactions from a CSV or QIF file"
+  },
+  "importTransactionsHint": "Adds transactions from a spreadsheet or another app",
+  "@importTransactionsHint": {
+    "description": "Subtitle of Import CSV or QIF"
+  },
+  "exportCsv": "Export to CSV",
+  "@exportCsv": {
+    "description": "Settings row and sheet title: export the transactions as a CSV file"
+  },
+  "exportCsvHint": "Every transaction, for a spreadsheet. Not a backup",
+  "@exportCsvHint": {
+    "description": "Subtitle of Export to CSV"
+  },
+  "exportCsvDone": "Exported: {fileName}",
+  "@exportCsvDone": {
+    "description": "Snack bar after the CSV export was saved or shared",
+    "placeholders": {
+      "fileName": {
+        "type": "String",
+        "example": "open-sky-finance-transactions-20260917-103000.csv"
+      }
+    }
+  },
+  "exportCsvFailed": "The file could not be made. Try again.",
+  "@exportCsvFailed": {
+    "description": "Snack bar when the CSV export failed"
+  },
+  "importFileReady": "{format} file · {size}",
+  "@importFileReady": {
+    "description": "Subtitle of the file on the import preview",
+    "placeholders": {
+      "format": {
+        "type": "String",
+        "example": "QIF"
+      },
+      "size": {
+        "type": "String",
+        "example": "48 KB"
+      }
+    }
+  },
+  "importWhatWillBeAdded": "What will be added",
+  "@importWhatWillBeAdded": {
+    "description": "Heading on the import preview"
+  },
+  "importNewAssetsAccounts": "New assets accounts",
+  "@importNewAssetsAccounts": {
+    "description": "Import preview row: assets accounts the file names that don't exist yet"
+  },
+  "importUnreadable": "Lines left out (no date or amount)",
+  "@importUnreadable": {
+    "description": "Import preview row: lines left out because their date or amount can't be read"
+  },
+  "importIntoAssetsAccount": "Into assets account",
+  "@importIntoAssetsAccount": {
+    "description": "Heading on the import preview when some rows name no assets account"
+  },
+  "importIntoAssetsAccountHint": "For the lines that name none",
+  "@importIntoAssetsAccountHint": {
+    "description": "Caption of the Into assets account heading"
+  },
+  "importChooseAssetsAccount": "Choose an assets account",
+  "@importChooseAssetsAccount": {
+    "description": "Row title before an assets account is picked for the import"
+  },
+  "importNote": "Nothing is replaced: transactions are added, and those already in the app are skipped. Assets accounts, categories and labels the file names are created when missing. A safety copy of your data is saved first.",
+  "@importNote": {
+    "description": "Note at the end of the import preview"
+  },
+  "importAction": "Import",
+  "@importAction": {
+    "description": "Button that runs the import on the preview"
+  },
+  "importReadingTitle": "Reading the file",
+  "@importReadingTitle": {
+    "description": "Progress dialog title while a CSV or QIF file is read"
+  },
+  "importReadingBody": "Nothing is changed yet.",
+  "@importReadingBody": {
+    "description": "Progress dialog body while a CSV or QIF file is read"
+  },
+  "importingTitle": "Importing transactions",
+  "@importingTitle": {
+    "description": "Progress dialog title while transactions are imported"
+  },
+  "importingBody": "Your data stays as it was if anything fails.",
+  "@importingBody": {
+    "description": "Progress dialog body while transactions are imported"
+  },
+  "importCategoryGroup": "Imported",
+  "@importCategoryGroup": {
+    "description": "Name of the category group created for imported categories that name no group"
+  },
+  "importDoneTitle": "{count, plural, =0{No transactions added} =1{1 transaction added} other{{count} transactions added}}",
+  "@importDoneTitle": {
+    "description": "Title of the dialog after an import",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "120"
+      }
+    }
+  },
+  "importDoneCreated": "Created: {accounts, plural, =1{1 assets account} other{{accounts} assets accounts}}, {categories, plural, =1{1 category} other{{categories} categories}}, {labels, plural, =1{1 label} other{{labels} labels}}.",
+  "@importDoneCreated": {
+    "description": "Line of the import result: what was created",
+    "placeholders": {
+      "accounts": {
+        "type": "int",
+        "example": "1"
+      },
+      "categories": {
+        "type": "int",
+        "example": "4"
+      },
+      "labels": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
+  "importDoneDuplicates": "{count, plural, =1{1 was already in the app and was skipped.} other{{count} were already in the app and were skipped.}}",
+  "@importDoneDuplicates": {
+    "description": "Line of the import result: rows already in the app",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "importDoneInvalid": "{count, plural, =1{1 could not be added (for example a transfer into its own assets account).} other{{count} could not be added (for example a transfer into its own assets account).}}",
+  "@importDoneInvalid": {
+    "description": "Line of the import result: rows that broke a rule",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "importDoneSafety": "A safety copy of the data before the import was saved.",
+  "@importDoneSafety": {
+    "description": "Last line of the import result"
+  },
+  "importErrorTitle": "This file can't be imported",
+  "@importErrorTitle": {
+    "description": "Title of the error dialog when a file can't be imported"
+  },
+  "importErrorTooLarge": "The file is larger than 50 MB. Your data was not changed. Choose a smaller file.",
+  "@importErrorTooLarge": {
+    "description": "Import error: the file is too large"
+  },
+  "importErrorNotReadable": "This is not a CSV or QIF file. Your data was not changed. Export your transactions as CSV or QIF and try again.",
+  "@importErrorNotReadable": {
+    "description": "Import error: not a CSV or QIF file"
+  },
+  "importErrorMissingColumns": "The first line of the file needs a date column and an amount column (like the CSV export of this app). Your data was not changed.",
+  "@importErrorMissingColumns": {
+    "description": "Import error: a CSV file without date or amount columns"
+  },
+  "importErrorEmpty": "No transactions were found in this file. Your data was not changed.",
+  "@importErrorEmpty": {
+    "description": "Import error: no transactions in the file"
+  },
+  "importFailedTitle": "The import failed",
+  "@importFailedTitle": {
+    "description": "Title of the error dialog when importing failed"
+  },
+  "importFailedBody": "Nothing was added and your data was not changed. Try again.",
+  "@importFailedBody": {
+    "description": "Body of the error dialog when importing failed"
+  },
+  "settingsRemindersNotifying": "{count, plural, =1{Notifications on for 1 reminder} other{Notifications on for {count} reminders}}",
+  "@settingsRemindersNotifying": {
+    "description": "Subtitle of Reminders in Settings: how many active reminders have Notify me on",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
   }
 }

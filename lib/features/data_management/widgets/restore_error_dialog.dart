@@ -51,6 +51,9 @@ Future<void> showRestoreErrorDialog(BuildContext context, RestoreError error) {
       l10n.restoreErrorInvalid(total),
     ),
     RestoreFailed() => (l10n.restoreFailedTitle, l10n.restoreFailedBody),
+    // Answered by the password dialog before getting here.
+    RestoreNeedsPassword() ||
+    RestoreWrongPassword() => (l10n.restoreErrorTitle, l10n.backupUnlockWrong),
   };
   final lines = switch (error) {
     RestoreInvalid(:final problems, :final total) => [

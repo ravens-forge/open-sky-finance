@@ -12,6 +12,7 @@ import '../../../core/labels.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_placeholder.dart';
 import '../models/balance_sheet_side.dart';
+import '../providers/balance_sheet_drill_down.dart';
 import '../providers/balance_sheet_providers.dart';
 import '../widgets/balance_sheet_account_row.dart';
 import '../widgets/balance_sheet_type_header.dart';
@@ -29,12 +30,24 @@ class BalanceSheetPage extends ConsumerStatefulWidget {
 class _BalanceSheetPageState extends ConsumerState<BalanceSheetPage> {
   late var _asOf = ref.read(todayProvider);
 
+  @override
+  void initState() {
+    super.initState();
+    // Shows what another page drilled down to, then clears it.
+    ref.listenManual(balanceSheetDrillDownProvider, (_, next) {
+      if (next == null) return;
+      setState(() => _asOf = next);
+      Future.microtask(ref.read(balanceSheetDrillDownProvider.notifier).clear);
+    }, fireImmediately: true);
+  }
+
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
       initialDate: _asOf,
       firstDate: DateTime(1900),
-      lastDate: ref.read(todayProvider),
+      // A future date adds the scheduled transactions up to that day.
+      lastDate: DateTime(2100),
       helpText: context.l10n.balanceSheetAsOf,
     );
     if (picked != null) setState(() => _asOf = picked);

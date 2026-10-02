@@ -17,6 +17,12 @@ import 'package:open_sky_finance/features/data_management/models/restore_preview
 import 'package:open_sky_finance/features/data_management/pages/restore_preview_page.dart';
 import 'package:open_sky_finance/features/data_management/widgets/restore_error_dialog.dart';
 import 'package:open_sky_finance/services/backup/backup_codec.dart';
+import 'package:open_sky_finance/features/data_management/widgets/auto_backup_flow.dart';
+import 'package:open_sky_finance/features/data_management/widgets/backup_password_dialog.dart';
+import 'package:open_sky_finance/features/data_management/widgets/backup_unlock_dialog.dart';
+import 'package:open_sky_finance/core/l10n.dart';
+import 'package:open_sky_finance/services/backup/models/backup_kdf.dart';
+import 'package:open_sky_finance/services/backup/models/backup_key.dart';
 import 'package:open_sky_finance/services/backup/models/backup_problem.dart';
 import 'package:open_sky_finance/services/backup/models/backup_problem_code.dart';
 import 'package:open_sky_finance/services/backup/models/loaded_backup.dart';
@@ -37,15 +43,96 @@ Future<void> _seed(AppDatabase db) async {
   await db.settingsRepository.set(SettingKeys.lastBackupSize, '219136');
 }
 
+/// Weekly automatic backups into a Drive folder, the last one this morning.
+Future<void> _seedAutomatic(AppDatabase db, {bool paused = false}) async {
+  await _seed(db);
+  for (final (key, value) in [
+    (SettingKeys.lastBackupDestination, 'automatic'),
+    (SettingKeys.autoBackupEnabled, 'true'),
+    (SettingKeys.autoBackupFolder, 'content://tree/drive'),
+    (SettingKeys.autoBackupFolderName, 'Google Drive › Open Sky Finance'),
+    if (paused) (SettingKeys.autoBackupPaused, 'true'),
+    if (paused)
+      (
+        SettingKeys.lastBackupAt,
+        DateTime(2026, 9, 3, 9, 12).toUtc().toIso8601String(),
+      ),
+  ]) {
+    await db.settingsRepository.set(key, value);
+  }
+}
+
+/// A key stored as if a password had been set (the costs are not used).
+Future<void> _seedEncrypted(AppDatabase db) async {
+  await _seedAutomatic(db);
+  await db.settingsRepository.set(
+    SettingKeys.backupKey,
+    const BackupKey(salt: [1], bytes: [2], kdf: BackupKdf()).toJson(),
+  );
+}
+
+Future<void> _openBackups(
+  WidgetTester tester,
+  ProviderContainer container,
+  AppLocalizations l10n,
+) async {
+  unawaited(container.read(routerProvider).push(Routes.backups));
+  await settle(tester);
+}
+
 NavigatorState _navigator(ProviderContainer container) =>
     container.read(routerProvider).routerDelegate.navigatorKey.currentState!;
 
 void main() {
+  appGolden('backups', height: 1240, seed: _seedAutomatic, act: _openBackups);
+
   appGolden(
-    'backups',
-    seed: _seed,
+    'backups_encrypted',
+    height: 1300,
+    seed: _seedEncrypted,
+    act: _openBackups,
+  );
+
+  appGolden(
+    'backups_paused',
+    height: 1340,
+    seed: (db) => _seedAutomatic(db, paused: true),
+    act: _openBackups,
+  );
+
+  appGolden(
+    'backups_auto_paused_dialog',
+    seed: (db) => _seedAutomatic(db, paused: true),
     act: (tester, container, l10n) async {
-      unawaited(container.read(routerProvider).push(Routes.backups));
+      await _openBackups(tester, container, l10n);
+      unawaited(
+        showAutoBackupPausedDialog(
+          _navigator(container).context,
+          'Google Drive › Open Sky Finance',
+        ),
+      );
+      await settle(tester);
+    },
+  );
+
+  appGolden(
+    'backup_password',
+    seed: _seedAutomatic,
+    act: (tester, container, l10n) async {
+      await _openBackups(tester, container, l10n);
+      unawaited(showBackupPasswordDialog(_navigator(container).context));
+      await settle(tester);
+    },
+  );
+
+  appGolden(
+    'restore_backup_password',
+    seed: _seedAutomatic,
+    act: (tester, container, l10n) async {
+      await _openBackups(tester, container, l10n);
+      unawaited(
+        showBackupUnlockDialog(_navigator(container).context, wrong: true),
+      );
       await settle(tester);
     },
   );

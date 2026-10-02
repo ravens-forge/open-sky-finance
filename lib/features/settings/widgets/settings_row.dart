@@ -12,6 +12,7 @@ class SettingsRow extends StatelessWidget {
     this.subtitle,
     this.color,
     this.trailingIcon = Icons.chevron_right,
+    this.action,
   });
 
   final IconData icon;
@@ -22,6 +23,9 @@ class SettingsRow extends StatelessWidget {
 
   /// Chevron by default; `Icons.open_in_new` for links to the browser.
   final IconData trailingIcon;
+
+  /// A verb in pine instead of [trailingIcon], e.g. "Change".
+  final String? action;
 
   @override
   Widget build(BuildContext context) {
@@ -53,11 +57,20 @@ class SettingsRow extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                trailingIcon,
-                size: 20,
-                color: FinanceColors.of(context).disabled,
-              ),
+              if (action != null)
+                Text(
+                  action!,
+                  style: theme.textTheme.labelLarge!.copyWith(
+                    fontSize: 14,
+                    color: theme.colorScheme.primary,
+                  ),
+                )
+              else
+                Icon(
+                  trailingIcon,
+                  size: 20,
+                  color: FinanceColors.of(context).disabled,
+                ),
             ],
           ),
         ),

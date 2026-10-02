@@ -6,6 +6,8 @@ import '../../../core/l10n.dart';
 import '../../../core/logging.dart';
 import '../../../data/models/data_counts.dart';
 import '../../../data/providers.dart';
+import '../../../data/repositories/setting_keys.dart';
+import '../../../services/backup/backup_folder_access.dart';
 import '../../../services/backup/backup_folders.dart';
 
 part 'erase_controller.g.dart';
@@ -21,6 +23,10 @@ class EraseController extends _$EraseController {
   /// `false` when it failed and nothing was deleted.
   Future<bool> eraseAll(AppLocalizations l10n) async {
     final repository = ref.read(eraseRepositoryProvider);
+    // Erasing turns automatic backups off; their folder is given back after.
+    final folder = await ref
+        .read(settingsRepositoryProvider)
+        .get(SettingKeys.autoBackupFolder);
     try {
       final counts = await repository.counts();
       await repository.eraseAll(
@@ -38,6 +44,9 @@ class EraseController extends _$EraseController {
         if (await folder.exists()) await folder.delete(recursive: true);
       }
       await repository.vacuum();
+      if (folder != null) {
+        await ref.read(backupFolderAccessProvider).release(folder);
+      }
     } catch (error, stackTrace) {
       Log.error(error, stackTrace);
     }

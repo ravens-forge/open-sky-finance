@@ -30,6 +30,7 @@ import '../../categories/providers/categories_providers.dart';
 import '../../categories/widgets/category_picker_sheet.dart';
 import '../../reminders/providers/reminders_controller.dart';
 import '../../reminders/widgets/reminder_schedule_fields.dart';
+import '../../reminders/widgets/reminder_notify_switch.dart';
 import '../../reminders/widgets/reminder_section_header.dart';
 import '../models/transaction_editor_data.dart';
 import '../models/transaction_error.dart';
@@ -89,6 +90,7 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
         nextDueAt: ref.read(todayProvider),
       );
   late var _autoPost = _reminder?.autoPost ?? false;
+  late var _notify = _reminder?.notify ?? false;
 
   /// "Repeat" of a new transaction; [ReminderFrequency.once] does not repeat.
   var _repeat = ReminderFrequency.once;
@@ -365,6 +367,7 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
                   template: draft,
                   schedule: _schedule,
                   autoPost: _autoPost,
+                  notify: _notify,
                   isPaused: _reminder?.isPaused ?? false,
                 ),
               )
@@ -591,6 +594,10 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
               ),
               value: _autoPost,
               onChanged: (on) => setState(() => _autoPost = on),
+            ),
+            ReminderNotifySwitch(
+              value: _notify,
+              onChanged: (on) => setState(() => _notify = on),
             ),
             const Divider(),
           ] else ...[

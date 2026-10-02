@@ -69,6 +69,18 @@ void main() {
           seed: (db) async {
             await seedDemo(db);
             await db.settingsRepository.set(SettingKeys.themeMode, theme.name);
+            // Backups shows its automatic backup rows; none is due.
+            for (final (key, value) in [
+              (SettingKeys.autoBackupEnabled, 'true'),
+              (SettingKeys.autoBackupFolder, 'content://tree/drive'),
+              (SettingKeys.autoBackupFolderName, 'Drive › Backups'),
+              (
+                SettingKeys.lastBackupAt,
+                DateTime.now().toUtc().toIso8601String(),
+              ),
+            ]) {
+              await db.settingsRepository.set(key, value);
+            }
           },
         );
         container.read(routerProvider).go(route());

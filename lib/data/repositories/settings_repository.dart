@@ -19,6 +19,12 @@ class SettingsRepository extends DatabaseAccessor<AppDatabase>
   Stream<String?> watch(String key) =>
       _byKey(key).map((s) => s.value).watchSingleOrNull();
 
+  /// The values of [keys] that are set, as one map.
+  Stream<Map<String, String>> watchAll(List<String> keys) =>
+      (select(settingsTable)..where((s) => s.key.isIn(keys))).watch().map(
+        (rows) => {for (final r in rows) r.key: r.value},
+      );
+
   Future<String?> get(String key) =>
       _byKey(key).map((s) => s.value).getSingleOrNull();
 

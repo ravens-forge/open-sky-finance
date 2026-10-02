@@ -94,4 +94,38 @@ void main() {
     await settle(tester);
     expect(find.text('Old savings'), findsOneWidget);
   });
+
+  testWidgets('a future "as of" date counts the scheduled transactions', (
+    tester,
+  ) async {
+    container = await pumpApp(tester, now: DateTime(2026, 9, 17, 10));
+    db = container.read(appDatabaseProvider);
+    await tester.runAsync(() async {
+      final checking = await addAssetsAccount(
+        db,
+        'Checking',
+        currency: 'USD',
+        openingBalance: m(1000),
+      );
+      await db.transactionsRepository.save(
+        TransactionDraft(
+          type: TransactionType.expense,
+          occurredAt: DateTime(2026, 9, 20, 9),
+          amount: -m(50),
+          assetsAccountId: checking,
+        ),
+      );
+    });
+    await open(tester, Routes.balanceSheet);
+    expect(find.text('\$1,000.00'), findsWidgets);
+
+    await tester.tap(find.text('Sep 17, 2026'));
+    await settle(tester);
+    await tester.tap(find.text('20'));
+    await tester.tap(find.text('OK'));
+    await settle(tester);
+
+    expect(find.text('Sep 20, 2026'), findsOneWidget);
+    expect(find.text('\$950.00'), findsWidgets);
+  });
 }

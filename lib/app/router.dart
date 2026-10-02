@@ -19,12 +19,14 @@ import '../features/categories/pages/category_editor_page.dart';
 import '../features/categories/pages/category_group_editor_page.dart';
 import '../features/data_management/pages/backups_page.dart';
 import '../features/data_management/pages/erased_page.dart';
+import '../features/data_management/widgets/auto_backup_runner.dart';
 import '../features/feedback/pages/report_bug_page.dart';
 import '../features/feedback/pages/support_page.dart';
 import '../features/home/pages/arrange_home_page.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/labels/pages/labels_page.dart';
 import '../features/net_income/pages/net_income_page.dart';
+import '../features/notifications/widgets/notifications_runner.dart';
 import '../features/onboarding/pages/onboarding_page.dart';
 import '../features/onboarding/providers/onboarding_provider.dart';
 import '../features/reminders/pages/reminder_form_page.dart';
@@ -106,7 +108,11 @@ GoRouter router(Ref ref) {
         builder: (context, state, shell) => shell,
         navigatorContainerBuilder: (context, shell, children) =>
             ReminderAutoPost(
-              child: MainShell(navigationShell: shell, children: children),
+              child: AutoBackupRunner(
+                child: NotificationsRunner(
+                  child: MainShell(navigationShell: shell, children: children),
+                ),
+              ),
             ),
         branches: [
           for (final page in MainPage.values)

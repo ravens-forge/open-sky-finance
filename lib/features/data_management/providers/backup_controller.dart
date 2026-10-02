@@ -11,6 +11,8 @@ import '../../../data/models/app_snapshot.dart';
 import '../../../data/providers.dart';
 import '../../../services/backup/backup_service.dart';
 import '../../../services/backup/models/backup_destination.dart';
+import '../../../services/backup/models/encrypted_backup.dart';
+import '../../../services/backup/models/loaded_backup.dart';
 import '../../../services/backup/models/restore_error.dart';
 import '../../onboarding/providers/onboarding_provider.dart';
 import '../../settings/providers/settings_providers.dart';
@@ -73,30 +75,29 @@ class BackupController extends _$BackupController {
     }
   }
 
-  /// Reads and checks [file], then compares it with the current data.
+  /// Encrypts the next backups with [password]; `null` stops encrypting
+  /// them.
+  Future<Result<void, AppError>> setPassword(String? password) async {
+    try {
+      await (await _service).setPassword(password);
+      return const Ok(null);
+    } catch (error, stackTrace) {
+      Log.error(error, stackTrace);
+      return const Err(AppError.saveFailed);
+    }
+  }
+
+  /// Reads and checks [file], then compares it with the current data. An
+  /// encrypted file ends in [RestoreNeedsPassword]: [unlock] it.
   Future<Result<RestorePreview, RestoreError>> load(PlatformFile file) async {
     try {
-      final loaded = await (await _service).load(
-        fileName: file.name,
-        size: file.lengthSync() ?? await file.length(),
-        read: file.readAsBytes,
+      return await _preview(
+        await (await _service).load(
+          fileName: file.name,
+          size: file.lengthSync() ?? await file.length(),
+          read: file.readAsBytes,
+        ),
       );
-      switch (loaded) {
-        case Err(:final error):
-          return Err(error);
-        case Ok(value: final backup):
-          return Ok(
-            RestorePreview(
-              backup: backup,
-              current: await ref
-                  .read(backupRepositoryProvider)
-                  .currentData(
-                    backup.snapshot.exportedAt,
-                    before: ref.read(tomorrowProvider),
-                  ),
-            ),
-          );
-      }
     } catch (error, stackTrace) {
       Log.error(error, stackTrace);
       return const Err(RestoreFailed());
@@ -109,6 +110,44 @@ class BackupController extends _$BackupController {
       }
     }
   }
+
+  /// Opens an encrypted file with [password], like [load] does a plain one.
+  Future<Result<RestorePreview, RestoreError>> unlock(
+    PlatformFile file,
+    EncryptedBackup encrypted,
+    String password,
+  ) async {
+    try {
+      return await _preview(
+        await (await _service).unlock(
+          fileName: file.name,
+          size: file.lengthSync() ?? await file.length() ?? 0,
+          file: encrypted,
+          password: password,
+        ),
+      );
+    } catch (error, stackTrace) {
+      Log.error(error, stackTrace);
+      return const Err(RestoreFailed());
+    }
+  }
+
+  Future<Result<RestorePreview, RestoreError>> _preview(
+    Result<LoadedBackup, RestoreError> loaded,
+  ) async => switch (loaded) {
+    Err(:final error) => Err(error),
+    Ok(value: final backup) => Ok(
+      RestorePreview(
+        backup: backup,
+        current: await ref
+            .read(backupRepositoryProvider)
+            .currentData(
+              backup.snapshot.exportedAt,
+              before: ref.read(tomorrowProvider),
+            ),
+      ),
+    ),
+  };
 
   /// Replaces every row with [snapshot] after a safety backup. A restore
   /// started from the onboarding ends it.

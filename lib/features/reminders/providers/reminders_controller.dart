@@ -30,6 +30,7 @@ class RemindersController extends _$RemindersController {
     Reminder reminder, {
     required bool isPaused,
     required bool autoPost,
+    required bool notify,
     required String assetsAccountId,
     required String? categoryId,
   }) async => _repository.save(
@@ -49,6 +50,7 @@ class RemindersController extends _$RemindersController {
       ),
       schedule: reminder.schedule,
       autoPost: autoPost,
+      notify: notify,
       isPaused: isPaused,
     ),
   );

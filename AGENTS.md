@@ -112,8 +112,10 @@ lib/
     models/                 # domain objects, value objects, drafts, query results
     repositories/           # one Drift accessor per file: queries, rules, mapping
   services/
-    backup/                 # JSON export / restore
+    backup/                 # JSON export / restore, encryption, automatic backups
     bluecoins/              # .fydb reader and mapper
+    notifications/          # local notifications (flutter_local_notifications)
+    transactions_import/    # CSV export, CSV / QIF readers
   features/                 # one folder per feature, split into:
     <feature>/pages/        # route screens
     <feature>/widgets/      # widgets of this feature

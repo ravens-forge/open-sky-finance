@@ -17,6 +17,7 @@ import '../repositories/income_expense_repository.dart';
 import '../repositories/labels_repository.dart';
 import '../repositories/reminders_repository.dart';
 import '../repositories/settings_repository.dart';
+import '../repositories/transactions_import_repository.dart';
 import '../repositories/transactions_repository.dart';
 import 'tables/assets_accounts_table.dart';
 import 'tables/categories_table.dart';
@@ -55,6 +56,7 @@ part 'app_database.g.dart';
     LabelsRepository,
     RemindersRepository,
     SettingsRepository,
+    TransactionsImportRepository,
     TransactionsRepository,
   ],
 )

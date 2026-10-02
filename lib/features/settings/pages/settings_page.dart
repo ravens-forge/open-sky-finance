@@ -6,14 +6,20 @@ import '../../../app/routes.dart';
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
 import '../../../core/labels.dart';
+import '../../../data/enums/reminder_status.dart';
 import '../../../data/models/home_section.dart';
 import '../../assets_accounts/providers/assets_accounts_providers.dart';
+import '../../data_management/providers/auto_backup_controller.dart';
 import '../../data_management/providers/last_backup_provider.dart';
 import '../../data_management/widgets/bluecoins_import_flow.dart';
 import '../../data_management/widgets/erase_all_data_flow.dart';
 import '../../data_management/widgets/last_backup_label.dart';
+import '../../data_management/widgets/transactions_export_flow.dart';
+import '../../data_management/widgets/transactions_import_flow.dart';
 import '../../home/providers/home_providers.dart';
 import '../../home/widgets/favorite_accounts_sheet.dart';
+import '../../notifications/widgets/notifications_settings.dart';
+import '../../reminders/providers/reminders_providers.dart';
 import '../../trash/providers/trash_providers.dart';
 import '../widgets/about_settings.dart';
 import '../widgets/general_settings.dart';
@@ -40,6 +46,15 @@ class SettingsPage extends ConsumerWidget {
             .value
             ?.fold(0, (sum, d) => sum + d.transactions.length) ??
         0;
+    final notifying =
+        ref
+            .watch(remindersProvider)
+            .value
+            ?.where((r) => r.notify && r.status == ReminderStatus.active)
+            .length ??
+        0;
+    final auto = ref.watch(autoBackupControllerProvider).value;
+    final autoBackupPaused = auto != null && auto.enabled && auto.paused;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.pageSettings)),
       body: ListView(
@@ -87,6 +102,9 @@ class SettingsPage extends ConsumerWidget {
               SettingsRow(
                 icon: Icons.notifications_none,
                 title: l10n.pageReminders,
+                subtitle: notifying == 0
+                    ? null
+                    : l10n.settingsRemindersNotifying(notifying),
                 onTap: () => context.go(Routes.reminders),
               ),
               SettingsRow(
@@ -97,16 +115,19 @@ class SettingsPage extends ConsumerWidget {
               ),
             ],
           ),
+          const NotificationsSettings(),
           SettingsSection(
             title: l10n.settingsData,
             children: [
               SettingsRow(
                 icon: Icons.cloud_outlined,
                 title: l10n.pageBackups,
-                subtitle: lastBackupLabel(
-                  l10n,
-                  ref.watch(lastBackupProvider).value,
-                ),
+                subtitle: autoBackupPaused
+                    ? l10n.settingsAutoBackupPaused
+                    : lastBackupLabel(
+                        l10n,
+                        ref.watch(lastBackupProvider).value,
+                      ),
                 onTap: () => context.push(Routes.backups),
               ),
               SettingsRow(
@@ -114,6 +135,20 @@ class SettingsPage extends ConsumerWidget {
                 title: l10n.bluecoinsImport,
                 subtitle: l10n.bluecoinsImportHint,
                 onTap: () => importFromBluecoins(context, ref),
+              ),
+              SettingsRow(
+                icon: Icons.upload_file_outlined,
+                title: l10n.importTransactions,
+                subtitle: l10n.importTransactionsHint,
+                onTap: () => importTransactionsFile(context, ref),
+              ),
+              Builder(
+                builder: (row) => SettingsRow(
+                  icon: Icons.table_view_outlined,
+                  title: l10n.exportCsv,
+                  subtitle: l10n.exportCsvHint,
+                  onTap: () => exportTransactionsCsv(row, ref),
+                ),
               ),
               SettingsRow(
                 icon: Icons.delete_outline,

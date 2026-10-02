@@ -8,11 +8,19 @@ import 'backup_date_label.dart';
 import 'file_size_label.dart';
 
 class LastBackupHeader extends StatelessWidget {
-  const LastBackupHeader({super.key, required this.last, required this.now});
+  const LastBackupHeader({
+    super.key,
+    required this.last,
+    required this.now,
+    this.folder,
+  });
 
   /// `null` when there is none.
   final LastBackup? last;
   final DateTime now;
+
+  /// The automatic backups folder, named after an automatic backup.
+  final String? folder;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +33,10 @@ class LastBackupHeader extends StatelessWidget {
         switch (destination) {
           BackupDestination.saved => l10n.backupDestinationSaved,
           BackupDestination.shared => l10n.backupDestinationShared,
+          BackupDestination.automatic =>
+            folder == null || folder!.isEmpty
+                ? l10n.backupDestinationAutomatic
+                : l10n.backupDestinationAutomaticTo(folder!),
         },
       if (last?.size case final size?) fileSizeLabel(l10n, size),
     ];

@@ -12,9 +12,13 @@ import '../../data/repositories/backup_repository.dart';
 import '../../data/repositories/setting_keys.dart';
 import '../../data/repositories/settings_repository.dart';
 import 'backup_codec.dart';
+import 'backup_encryption.dart';
 import 'backup_folders.dart';
 import 'models/backup_destination.dart';
 import 'models/backup_file.dart';
+import 'models/backup_kdf.dart';
+import 'models/backup_key.dart';
+import 'models/encrypted_backup.dart';
 import 'models/loaded_backup.dart';
 import 'models/restore_error.dart';
 
@@ -53,15 +57,40 @@ class BackupService {
         '-${two(l.hour)}${two(l.minute)}${two(l.second)}.json';
   }
 
-  /// Every row, read in one transaction and encoded in the background.
-  Future<BackupFile> export({required String appVersion, DateTime? now}) async {
+  /// Every row, read in one transaction and encoded in the background;
+  /// encrypted when a password is set, unless [encrypt] is `false`.
+  Future<BackupFile> export({
+    required String appVersion,
+    DateTime? now,
+    bool encrypt = true,
+  }) async {
     final at = now ?? DateTime.now();
     final snapshot = await backups.snapshot(
       appVersion: appVersion,
       exportedAt: at,
     );
-    final bytes = await Isolate.run(() => BackupCodec.encode(snapshot));
+    final key = encrypt
+        ? BackupKey.tryParse(await settings.get(SettingKeys.backupKey))
+        : null;
+    final bytes = await Isolate.run(() async {
+      final plain = BackupCodec.encode(snapshot);
+      return key == null ? plain : await BackupEncryption.encrypt(plain, key);
+    });
     return BackupFile(name: fileName(at), bytes: bytes);
+  }
+
+  /// Encrypts the next backups with [password], or stops encrypting them
+  /// when `null`. Only the derived key is kept.
+  Future<void> setPassword(
+    String? password, {
+    BackupKdf kdf = const BackupKdf(),
+  }) async {
+    final key = password == null
+        ? null
+        : await Isolate.run(
+            () => BackupEncryption.deriveKey(password, kdf: kdf),
+          );
+    await settings.set(SettingKeys.backupKey, key?.toJson());
   }
 
   /// Remembers when, where and how big the last backup was.
@@ -120,6 +149,30 @@ class BackupService {
     };
   }
 
+  /// Opens an encrypted [file] with [password] and checks it, in the
+  /// background.
+  Future<Result<LoadedBackup, RestoreError>> unlock({
+    required String fileName,
+    required int size,
+    required EncryptedBackup file,
+    required String password,
+  }) async {
+    final decoded = await Isolate.run(() async {
+      final plain = await BackupEncryption.decrypt(file, password);
+      return plain == null
+          ? const Err<AppSnapshot, RestoreError>(RestoreWrongPassword())
+          : BackupCodec.decode(plain);
+    });
+    return switch (decoded) {
+      Ok(value: final snapshot) => Ok(
+        LoadedBackup(fileName: fileName, size: size, snapshot: snapshot),
+      ),
+      // A file encrypted twice is not one of ours.
+      Err(error: RestoreNeedsPassword()) => const Err(RestoreNotABackup()),
+      Err(:final error) => Err(error),
+    };
+  }
+
   /// Saves a safety backup of the current data, then replaces it with
   /// [snapshot] in one transaction. On any failure the data is untouched.
   Future<Result<void, RestoreError>> restore(
@@ -128,7 +181,7 @@ class BackupService {
     DateTime? now,
   }) async {
     try {
-      await _writeSafetyBackup(await export(appVersion: appVersion, now: now));
+      await saveSafetyCopy(appVersion: appVersion, now: now);
       await backups.replaceAll(snapshot);
       return const Ok(null);
     } catch (error, stackTrace) {
@@ -136,6 +189,16 @@ class BackupService {
       return const Err(RestoreFailed());
     }
   }
+
+  /// A copy of the current data in the private folder, never encrypted,
+  /// made before anything replaces or adds data; the newest
+  /// [keptSafetyBackups] stay.
+  Future<void> saveSafetyCopy({
+    required String appVersion,
+    DateTime? now,
+  }) async => _writeSafetyBackup(
+    await export(appVersion: appVersion, now: now, encrypt: false),
+  );
 
   Future<void> _writeSafetyBackup(BackupFile file) async {
     await safetyFolder.create(recursive: true);

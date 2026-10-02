@@ -1,13 +1,19 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/now.dart';
 import '../../../core/l10n.dart';
+import '../../../core/widgets/info_note.dart';
 import '../../../core/widgets/warning_banner.dart';
 import '../../settings/widgets/settings_row.dart';
 import '../../settings/widgets/settings_section.dart';
+import '../providers/auto_backup_controller.dart';
+import '../providers/backup_encrypted_provider.dart';
 import '../providers/last_backup_provider.dart';
+import '../widgets/auto_backup_section.dart';
 import '../widgets/back_up_flow.dart';
+import '../widgets/backup_encryption_section.dart';
 import '../widgets/bluecoins_import_flow.dart';
 import '../widgets/last_backup_header.dart';
 import '../widgets/restore_backup_flow.dart';
@@ -15,9 +21,17 @@ import '../widgets/restore_backup_flow.dart';
 class BackupsPage extends ConsumerWidget {
   const BackupsPage({super.key});
 
+  /// Folder access exists on the phones only.
+  static bool get _hasFolders =>
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final auto = ref.watch(autoBackupControllerProvider).value;
+    final encrypted = ref.watch(backupEncryptedProvider).value ?? false;
+    final paused = auto != null && auto.enabled && auto.paused;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.pageBackups)),
       body: ListView(
@@ -26,12 +40,23 @@ class BackupsPage extends ConsumerWidget {
           LastBackupHeader(
             last: ref.watch(lastBackupDetailsProvider).value,
             now: ref.watch(nowProvider),
+            folder: auto?.folder?.name,
           ),
           const SizedBox(height: 16),
-          WarningBanner(
-            lead: l10n.backupsNotEncryptedLead,
-            text: l10n.backupsNotEncryptedBody,
-          ),
+          if (paused) ...[
+            WarningBanner(
+              lead: l10n.autoBackupPausedLead,
+              text: l10n.autoBackupPausedBody(auto.folder?.name ?? ''),
+            ),
+            const SizedBox(height: 8),
+          ],
+          if (encrypted)
+            InfoNote(l10n.backupsEncryptedNote, icon: Icons.lock_outline)
+          else
+            WarningBanner(
+              lead: l10n.backupsNotEncryptedLead,
+              text: l10n.backupsNotEncryptedBody,
+            ),
           SettingsSection(
             title: l10n.backupsBackUpNow,
             children: [
@@ -51,6 +76,8 @@ class BackupsPage extends ConsumerWidget {
               ),
             ],
           ),
+          if (_hasFolders && auto != null) AutoBackupSection(settings: auto),
+          BackupEncryptionSection(encrypted: encrypted),
           SettingsSection(
             title: l10n.backupsRestore,
             children: [
