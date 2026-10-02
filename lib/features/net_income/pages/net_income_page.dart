@@ -19,6 +19,7 @@ import '../../transactions/providers/transactions_drill_down.dart';
 import '../models/net_income_category_group.dart';
 import '../models/net_income_period.dart';
 import '../models/net_income_summary.dart';
+import '../providers/net_income_drill_down.dart';
 import '../providers/net_income_providers.dart';
 import '../widgets/net_income_category_row.dart';
 import '../widgets/net_income_group_row.dart';
@@ -35,6 +36,17 @@ class NetIncomePage extends ConsumerStatefulWidget {
 
 class _NetIncomePageState extends ConsumerState<NetIncomePage> {
   late var _period = NetIncomePeriod.month(ref.read(currentMonthProvider));
+
+  @override
+  void initState() {
+    super.initState();
+    // Shows what another page drilled down to, then clears it.
+    ref.listenManual(netIncomeDrillDownProvider, (_, next) {
+      if (next == null) return;
+      setState(() => _period = next);
+      Future.microtask(ref.read(netIncomeDrillDownProvider.notifier).clear);
+    }, fireImmediately: true);
+  }
 
   void _switchKind(NetIncomePeriodKind kind) {
     final anchor = _period.start;

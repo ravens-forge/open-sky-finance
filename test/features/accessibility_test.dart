@@ -22,6 +22,7 @@ final _screens = <String, String Function()>{
   'edit budgets': () => Routes.editBudgets,
   'net income': () => Routes.netIncome,
   'labels': () => Routes.labels,
+  'calendar': () => Routes.calendar,
   'assets accounts': () => Routes.assetsAccounts,
   'assets account': () => Routes.assetsAccount(demo['Visa']!),
   'assets account editor': () => Routes.editAssetsAccount(demo['Visa']!),

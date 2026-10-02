@@ -720,5 +720,20 @@
   "budgetTotalBudgeted": "Total presupuestado",
   "budgetIncomeNever": "Los ingresos nunca se presupuestan.",
   "budgetSave": "Guardar presupuestos",
-  "budgetAmountInvalid": "Introduce un importe mayor que 0 o deja el campo vacío"
+  "budgetAmountInvalid": "Introduce un importe mayor que 0 o deja el campo vacío",
+  "calendarToday": "Hoy",
+  "calendarModeDay": "Día",
+  "calendarModeWeek": "Semana",
+  "calendarModeMonth": "Mes",
+  "calendarModeRange": "Rango",
+  "calendarLegendReminder": "Recordatorio",
+  "calendarReminderDue": "recordatorio pendiente",
+  "calendarPeriodRange": "{start} – {end}",
+  "calendarNoTransactions": "No hay transacciones en este periodo",
+  "calendarNoReminders": "No vence ningún recordatorio en este periodo",
+  "calendarRemindersNote": "Los recordatorios registrados también aparecen en Transacciones.",
+  "calendarNoIncomeExpenses": "No hay ingresos ni gastos en este periodo",
+  "calendarOpenNetIncome": "Abrir Resultado neto",
+  "calendarOpenBalanceSheet": "Abrir Balance",
+  "calendarBalanceAsOf": "Al cierre del {date}"
 }

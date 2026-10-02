@@ -49,9 +49,13 @@ import 'transaction_transfer_fields.dart';
 /// into a reminder, and the reminder form is this one with a schedule in
 /// place of the date and time.
 class TransactionForm extends ConsumerStatefulWidget {
-  const TransactionForm({super.key, required this.data});
+  const TransactionForm({super.key, required this.data, this.date});
 
   final TransactionEditorData data;
+
+  /// The day a new transaction starts on, at the current time; today when
+  /// `null`.
+  final DateTime? date;
 
   @override
   ConsumerState<TransactionForm> createState() => _TransactionFormState();
@@ -72,7 +76,8 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
       widget.data.assetsAccounts.where((a) => !a.isHidden).firstOrNull?.id;
   late var _toAssetsAccountId = _transaction?.transfer?.assetsAccountId;
   late var _categoryId = _transaction?.categoryId;
-  late DateTime _occurredAt = _transaction?.occurredAt ?? ref.read(nowProvider);
+  late DateTime _occurredAt =
+      _transaction?.occurredAt ?? _onDate(ref.read(nowProvider));
   late var _labelIds = [...widget.data.labelIds];
 
   /// Reminder form: a new reminder is monthly from today.
@@ -103,6 +108,18 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
   /// Assets accounts with their balances as they change: one created from the
   /// picker shows up at once.
   var _live = <String, AssetsAccountWithBalance>{};
+
+  /// [now] moved to [TransactionForm.date], keeping the time.
+  DateTime _onDate(DateTime now) => switch (widget.date) {
+    final date? => DateTime(
+      date.year,
+      date.month,
+      date.day,
+      now.hour,
+      now.minute,
+    ),
+    null => now,
+  };
 
   @override
   void didChangeDependencies() {

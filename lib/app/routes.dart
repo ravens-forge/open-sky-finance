@@ -1,7 +1,8 @@
 import '../data/enums/category_kind.dart';
 import '../data/enums/transaction_type.dart';
 
-/// Every route path of the app. Parameters carry only IDs and enum values.
+/// Every route path of the app. Parameters carry only IDs, enum values and
+/// dates.
 abstract final class Routes {
   // Main pages (shell branches, in tab order).
   static const home = '/home';
@@ -25,9 +26,17 @@ abstract final class Routes {
   static const erased = '/erased';
   static const support = '/support';
 
+  /// [date] is the day it starts on, today when `null`.
   static String newTransaction([
     TransactionType type = TransactionType.income,
-  ]) => '$transactions/new?type=${type.name}';
+    DateTime? date,
+  ]) => Uri(
+    path: '$transactions/new',
+    queryParameters: {
+      'type': type.name,
+      'date': ?date?.toIso8601String().substring(0, 10),
+    },
+  ).toString();
   static String transaction(String id) => '$transactions/$id';
 
   static const newReminder = '$reminders/new';

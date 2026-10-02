@@ -14,12 +14,16 @@ class TransactionEditorPage extends ConsumerWidget {
     super.key,
     this.id,
     this.type = TransactionType.income,
+    this.date,
   });
 
   final String? id;
 
   /// The type a new transaction starts with.
   final TransactionType type;
+
+  /// The day a new transaction starts on, today when `null`.
+  final DateTime? date;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +34,7 @@ class TransactionEditorPage extends ConsumerWidget {
         _OpeningBalanceRedirect(
           assetsAccountId: value.transaction!.assetsAccountId,
         ),
-      AsyncValue(:final value?) => TransactionForm(data: value),
+      AsyncValue(:final value?) => TransactionForm(data: value, date: date),
       AsyncError() => Scaffold(
         appBar: AppBar(),
         body: PageLoadError(

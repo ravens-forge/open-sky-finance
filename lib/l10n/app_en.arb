@@ -3965,5 +3965,81 @@
   "budgetAmountInvalid": "Enter an amount above 0, or leave it empty",
   "@budgetAmountInvalid": {
     "description": "Error under a row of Edit budgets whose amount cannot be read or is not above zero"
+  },
+  "calendarToday": "Today",
+  "@calendarToday": {
+    "description": "Top bar button on the Calendar that selects today and shows its month"
+  },
+  "calendarModeDay": "Day",
+  "@calendarModeDay": {
+    "description": "Calendar mode: a tap selects one day"
+  },
+  "calendarModeWeek": "Week",
+  "@calendarModeWeek": {
+    "description": "Calendar mode: a tap selects the week of the day"
+  },
+  "calendarModeMonth": "Month",
+  "@calendarModeMonth": {
+    "description": "Calendar mode: the whole month shown is selected"
+  },
+  "calendarModeRange": "Range",
+  "@calendarModeRange": {
+    "description": "Calendar mode: two taps select the first and the last day"
+  },
+  "calendarLegendReminder": "Reminder",
+  "@calendarLegendReminder": {
+    "description": "Calendar legend: the ring under a day when a reminder is due"
+  },
+  "calendarReminderDue": "reminder due",
+  "@calendarReminderDue": {
+    "description": "Read aloud after a calendar day that has a reminder due, as in 'September 15, Income, reminder due'"
+  },
+  "calendarPeriodRange": "{start} – {end}",
+  "@calendarPeriodRange": {
+    "description": "Heading of a calendar week or range: its first and last day",
+    "placeholders": {
+      "start": {
+        "type": "String",
+        "example": "Sep 14"
+      },
+      "end": {
+        "type": "String",
+        "example": "Sep 20, 2026"
+      }
+    }
+  },
+  "calendarNoTransactions": "No transactions in this period",
+  "@calendarNoTransactions": {
+    "description": "Transactions tab of the Calendar when the selected day, week, month or range has none"
+  },
+  "calendarNoReminders": "No reminders due in this period",
+  "@calendarNoReminders": {
+    "description": "Reminders tab of the Calendar when nothing is due in the selected period"
+  },
+  "calendarRemindersNote": "Recorded reminders also appear under Transactions.",
+  "@calendarRemindersNote": {
+    "description": "Note under the Reminders tab of the Calendar"
+  },
+  "calendarNoIncomeExpenses": "No income or expenses in this period",
+  "@calendarNoIncomeExpenses": {
+    "description": "Net income tab of the Calendar when the selected period has neither"
+  },
+  "calendarOpenNetIncome": "Open Net income",
+  "@calendarOpenNetIncome": {
+    "description": "Link at the end of the Calendar's Net income tab to the Net income page for the same period"
+  },
+  "calendarOpenBalanceSheet": "Open Balance sheet",
+  "@calendarOpenBalanceSheet": {
+    "description": "Link at the end of the Calendar's Balance sheet tab to the Balance sheet at the same date"
+  },
+  "calendarBalanceAsOf": "As of the end of {date}",
+  "@calendarBalanceAsOf": {
+    "description": "Date of the balances in the Calendar's Balance sheet tab: the last day of the period, or today when it ends later",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Sep 15, 2026"
+      }
+    }
   }
 }
