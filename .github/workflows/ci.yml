@@ -101,8 +101,10 @@ jobs:
             exit 1
           fi
           # Allowlist: any other permission (INTERNET, storage, location, contacts, SMS,
-          # phone…) fails. Add POST_NOTIFICATIONS here only when local reminders ship.
-          allowed='\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$'
+          # phone…) fails. Local notifications (reminders, budget alerts) need
+          # POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED (reschedule after a restart) and
+          # VIBRATE (added by flutter_local_notifications).
+          allowed='\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$|^android\.permission\.(POST_NOTIFICATIONS|RECEIVE_BOOT_COMPLETED|VIBRATE)$'
           unexpected=$(grep -o 'uses-permission[^>]*android:name="[^"]*"' "$manifest" \
             | sed 's/.*android:name="\([^"]*\)"/\1/' | grep -Ev "$allowed" || true)
           if [ -n "$unexpected" ]; then
