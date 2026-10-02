@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
+import 'app/theme_mode.dart';
 import 'core/logging.dart';
 import 'services/backup/backup_service.dart';
 
@@ -18,6 +19,13 @@ void main() {
     }
   });
   final container = ProviderContainer();
+  // The system splash stays up until the saved theme is known, so the first
+  // frame is never drawn in the device's theme instead of the user's.
+  final binding = WidgetsFlutterBinding.ensureInitialized()..deferFirstFrame();
+  container
+      .read(appThemeModeProvider.future)
+      .then((_) {}, onError: Log.error)
+      .whenComplete(binding.allowFirstFrame);
   runApp(UncontrolledProviderScope(container: container, child: const App()));
   // A file left for the share sheet when the app was killed while sharing.
   unawaited(

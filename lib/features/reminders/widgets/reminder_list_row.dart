@@ -23,6 +23,8 @@ class ReminderListRow extends StatelessWidget {
     required this.onRecord,
     required this.onSkip,
     required this.onTap,
+    this.occurrence,
+    this.recorded = false,
   });
 
   final Reminder reminder;
@@ -31,9 +33,17 @@ class ReminderListRow extends StatelessWidget {
 
   /// Midnight today.
   final DateTime today;
-  final VoidCallback onRecord;
-  final VoidCallback onSkip;
+
+  /// `null` hides Record and Skip.
+  final VoidCallback? onRecord;
+  final VoidCallback? onSkip;
   final VoidCallback onTap;
+
+  /// One occurrence of the reminder instead of the next one: shows its date.
+  final DateTime? occurrence;
+
+  /// [occurrence] was recorded: says so under the amount.
+  final bool recorded;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +55,14 @@ class ReminderListRow extends StatelessWidget {
     final transfer = r.type == TransactionType.transfer;
     final active = r.status == ReminderStatus.active;
     final manual = active && !r.autoPost;
+    final next =
+        !recorded &&
+        (occurrence ?? r.schedule.nextDueAt) == r.schedule.nextDueAt;
+    final amount = AmountText(
+      r.amount.micros,
+      currency: r.amount.currency,
+      amountStyle: transfer ? AmountStyle.transfer : AmountStyle.signed,
+    );
 
     return ReminderRow(
       icon: transfer
@@ -68,14 +86,26 @@ class ReminderListRow extends StatelessWidget {
                 account,
               ),
       ),
-      due: reminderDueText(r, today, l10n),
-      overdue: reminderIsDue(r, today),
+      due: next
+          ? reminderDueText(r, today, l10n)
+          : reminderDate(occurrence!, today, l10n),
+      overdue: next && reminderIsDue(r, today),
       automatic: active && r.autoPost,
-      amount: AmountText(
-        r.amount.micros,
-        currency: r.amount.currency,
-        amountStyle: transfer ? AmountStyle.transfer : AmountStyle.signed,
-      ),
+      amount: recorded
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                amount,
+                Text(
+                  l10n.reminderRecorded,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    color: finance.income,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            )
+          : amount,
       onRecord: manual ? onRecord : null,
       onSkip: manual ? onSkip : null,
       onTap: onTap,

@@ -1,0 +1,1 @@
+enum ImportFormat { csv, qif }

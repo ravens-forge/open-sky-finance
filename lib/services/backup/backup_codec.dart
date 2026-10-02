@@ -6,6 +6,7 @@ import '../../core/result.dart';
 import '../../data/models/app_snapshot.dart';
 import '../../data/models/home_section.dart';
 import '../../data/repositories/setting_keys.dart';
+import 'backup_encryption.dart';
 import 'backup_reader.dart';
 import 'json_fields.dart';
 import 'migrations/backup_upgraders.dart';
@@ -23,7 +24,7 @@ abstract final class BackupCodec {
   );
 
   /// Parses, upgrades and checks a whole file, collecting every problem
-  /// before failing.
+  /// before failing. An encrypted file needs its password first.
   static Result<AppSnapshot, RestoreError> decode(List<int> bytes) {
     final Object? json;
     try {
@@ -32,6 +33,18 @@ abstract final class BackupCodec {
       json = jsonDecode(text.startsWith('\uFEFF') ? text.substring(1) : text);
     } on FormatException {
       return const Err(RestoreNotABackup());
+    }
+    if (json is Map<String, Object?> &&
+        json['format'] == BackupEncryption.format) {
+      if (json['schemaVersion'] case final int v when v > 1) {
+        return const Err(RestoreNewerVersion());
+      }
+      final encrypted = BackupEncryption.read(json);
+      return Err(
+        encrypted == null
+            ? const RestoreNotABackup()
+            : RestoreNeedsPassword(encrypted),
+      );
     }
     if (json is! Map<String, Object?> || json['format'] != format) {
       return const Err(RestoreNotABackup());

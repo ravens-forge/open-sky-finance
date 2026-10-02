@@ -5,6 +5,7 @@ import '../data/enums/budget_period.dart';
 import '../data/enums/category_kind.dart';
 import '../data/enums/home_section_id.dart';
 import '../data/enums/transaction_type.dart';
+import '../services/backup/models/auto_backup_frequency.dart';
 import 'l10n.dart';
 import 'result.dart';
 
@@ -77,6 +78,14 @@ extension HomeSectionIdLabel on HomeSectionId {
     HomeSectionId.netIncome => l10n.homeSectionNetIncomeHint,
     HomeSectionId.netWorth => l10n.homeSectionNetWorthHint,
     HomeSectionId.upcomingReminders => l10n.homeSectionUpcomingRemindersHint,
+  };
+}
+
+extension AutoBackupFrequencyLabel on AutoBackupFrequency {
+  String label(AppLocalizations l10n) => switch (this) {
+    AutoBackupFrequency.daily => l10n.autoBackupDaily,
+    AutoBackupFrequency.weekly => l10n.autoBackupWeekly,
+    AutoBackupFrequency.monthly => l10n.autoBackupMonthly,
   };
 }
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../core/l10n.dart';
 import '../core/widgets/not_found_gate.dart';
 import '../core/widgets/not_found_page.dart';
 import '../data/enums/category_kind.dart';
@@ -14,17 +13,20 @@ import '../features/assets_accounts/pages/assets_accounts_page.dart';
 import '../features/balance_sheet/pages/balance_sheet_page.dart';
 import '../features/budgets/pages/budgets_page.dart';
 import '../features/budgets/pages/edit_budgets_page.dart';
+import '../features/calendar/pages/calendar_page.dart';
 import '../features/categories/pages/categories_page.dart';
 import '../features/categories/pages/category_editor_page.dart';
 import '../features/categories/pages/category_group_editor_page.dart';
 import '../features/data_management/pages/backups_page.dart';
 import '../features/data_management/pages/erased_page.dart';
+import '../features/data_management/widgets/auto_backup_runner.dart';
 import '../features/feedback/pages/report_bug_page.dart';
 import '../features/feedback/pages/support_page.dart';
 import '../features/home/pages/arrange_home_page.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/labels/pages/labels_page.dart';
 import '../features/net_income/pages/net_income_page.dart';
+import '../features/notifications/widgets/notifications_runner.dart';
 import '../features/onboarding/pages/onboarding_page.dart';
 import '../features/onboarding/providers/onboarding_provider.dart';
 import '../features/reminders/pages/reminder_form_page.dart';
@@ -37,7 +39,6 @@ import '../features/transactions/pages/transaction_editor_page.dart';
 import '../features/transactions/pages/transactions_page.dart';
 import '../features/trash/pages/trash_page.dart';
 import '../features/shell/pages/main_shell.dart';
-import '../features/shell/pages/stub_page.dart';
 import 'routes.dart';
 
 part 'router.g.dart';
@@ -107,7 +108,11 @@ GoRouter router(Ref ref) {
         builder: (context, state, shell) => shell,
         navigatorContainerBuilder: (context, shell, children) =>
             ReminderAutoPost(
-              child: MainShell(navigationShell: shell, children: children),
+              child: AutoBackupRunner(
+                child: NotificationsRunner(
+                  child: MainShell(navigationShell: shell, children: children),
+                ),
+              ),
             ),
         branches: [
           for (final page in MainPage.values)
@@ -133,7 +138,12 @@ GoRouter router(Ref ref) {
                         parentNavigatorKey: rootKey,
                         pageBuilder: (context, state) => editor(
                           state,
-                          TransactionEditorPage(type: typeOf(state)),
+                          TransactionEditorPage(
+                            type: typeOf(state),
+                            date: DateTime.tryParse(
+                              state.uri.queryParameters['date'] ?? '',
+                            ),
+                          ),
                         ),
                       ),
                       GoRoute(
@@ -218,7 +228,7 @@ GoRouter router(Ref ref) {
       ),
       GoRoute(
         path: Routes.calendar,
-        builder: (context, state) => StubPage(title: context.l10n.pageCalendar),
+        builder: (context, state) => const CalendarPage(),
       ),
       GoRoute(
         path: Routes.assetsAccounts,

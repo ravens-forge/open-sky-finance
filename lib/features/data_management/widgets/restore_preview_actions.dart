@@ -13,7 +13,9 @@ class RestorePreviewActions extends StatelessWidget {
   });
 
   final VoidCallback onCancel;
-  final VoidCallback onRestore;
+
+  /// `null` disables it, e.g. until a choice is made.
+  final VoidCallback? onRestore;
   final String label;
 
   @override

@@ -11,6 +11,7 @@ class ReminderDraft {
     required this.template,
     required this.schedule,
     this.autoPost = false,
+    this.notify = false,
     this.isPaused = false,
   });
 
@@ -21,5 +22,8 @@ class ReminderDraft {
   final TransactionDraft template;
   final ReminderSchedule schedule;
   final bool autoPost;
+
+  /// A local notification on each due date.
+  final bool notify;
   final bool isPaused;
 }

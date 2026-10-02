@@ -17,10 +17,38 @@ abstract final class SettingKeys {
   /// `true` while automatic backups run. Device-only.
   static const autoBackupEnabled = 'auto_backup_enabled';
 
+  /// The granted folder: an Android tree URI or an iOS bookmark. Device-only.
+  static const autoBackupFolder = 'auto_backup_folder';
+
+  /// The folder's name as the system shows it. Device-only.
+  static const autoBackupFolderName = 'auto_backup_folder_name';
+
+  /// `daily`, `weekly` (default) or `monthly`. Device-only.
+  static const autoBackupFrequency = 'auto_backup_frequency';
+
+  /// How many automatic backups the folder keeps (default 10). Device-only.
+  static const autoBackupKeep = 'auto_backup_keep';
+
+  /// `true` once the folder could not be reached: automatic backups wait
+  /// until a folder is picked again. Device-only.
+  static const autoBackupPaused = 'auto_backup_paused';
+
+  /// The key backups are encrypted with (JSON: salt, key and Argon2id
+  /// costs), missing when they are not. Device-only.
+  static const backupKey = 'backup_key';
+
+  /// `true` when a notification says a budget is used up. Device-only.
+  static const budgetAlerts = 'budget_alerts';
+
+  /// JSON map of budget owner id → the month (`2026-09`) it was last alerted
+  /// for. Device-only.
+  static const budgetAlertsSent = 'budget_alerts_sent';
+
   /// UTC instant (ISO 8601) of the last backup. Device-only.
   static const lastBackupAt = 'last_backup_at';
 
-  /// Where the last backup went: `saved` or `shared`. Device-only.
+  /// Where the last backup went: `saved`, `shared` or `automatic`.
+  /// Device-only.
   static const lastBackupDestination = 'last_backup_destination';
 
   /// Size in bytes of the last backup file. Device-only.

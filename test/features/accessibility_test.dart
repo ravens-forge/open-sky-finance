@@ -22,6 +22,7 @@ final _screens = <String, String Function()>{
   'edit budgets': () => Routes.editBudgets,
   'net income': () => Routes.netIncome,
   'labels': () => Routes.labels,
+  'calendar': () => Routes.calendar,
   'assets accounts': () => Routes.assetsAccounts,
   'assets account': () => Routes.assetsAccount(demo['Visa']!),
   'assets account editor': () => Routes.editAssetsAccount(demo['Visa']!),
@@ -68,6 +69,18 @@ void main() {
           seed: (db) async {
             await seedDemo(db);
             await db.settingsRepository.set(SettingKeys.themeMode, theme.name);
+            // Backups shows its automatic backup rows; none is due.
+            for (final (key, value) in [
+              (SettingKeys.autoBackupEnabled, 'true'),
+              (SettingKeys.autoBackupFolder, 'content://tree/drive'),
+              (SettingKeys.autoBackupFolderName, 'Drive › Backups'),
+              (
+                SettingKeys.lastBackupAt,
+                DateTime.now().toUtc().toIso8601String(),
+              ),
+            ]) {
+              await db.settingsRepository.set(key, value);
+            }
           },
         );
         container.read(routerProvider).go(route());

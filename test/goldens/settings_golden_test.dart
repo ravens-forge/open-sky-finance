@@ -43,9 +43,11 @@ _erase({bool stepTwo = false}) => (tester, container, l10n) async {
   }
 };
 
-/// Demo data backed up on Thursday, September 10, 2026.
+/// Demo data backed up on Thursday, September 10, 2026, with notifications
+/// on for every reminder.
 Future<void> _seed(AppDatabase db) async {
   await seedDemo(db);
+  await db.customStatement('UPDATE reminders SET notify = 1');
   await db.settingsRepository.set(
     SettingKeys.lastBackupAt,
     DateTime(2026, 9, 10, 8).toUtc().toIso8601String(),
@@ -65,7 +67,7 @@ void main() {
 
   appGolden(
     'settings',
-    height: 1390,
+    height: 1700,
     showHome: true,
     seed: _seed,
     act: _settings,

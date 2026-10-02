@@ -29,6 +29,7 @@ import 'delete_reminder_dialog.dart';
 import 'record_reminder.dart';
 import 'reminder_header.dart';
 import 'reminder_history_section.dart';
+import 'reminder_notify_switch.dart';
 import 'reminder_upcoming_section.dart';
 
 class ReminderDetail extends ConsumerStatefulWidget {
@@ -44,6 +45,7 @@ class _ReminderDetailState extends ConsumerState<ReminderDetail> {
   // Changed here and not saved yet; `null` shows the reminder as stored.
   bool? _paused;
   bool? _autoPost;
+  bool? _notify;
   String? _categoryId;
   String? _assetsAccountId;
   var _saving = false;
@@ -81,6 +83,7 @@ class _ReminderDetailState extends ConsumerState<ReminderDetail> {
       _reminder,
       isPaused: _paused ?? _reminder.isPaused,
       autoPost: _autoPost ?? _reminder.autoPost,
+      notify: _notify ?? _reminder.notify,
       assetsAccountId: _assetsAccountId ?? _reminder.assetsAccountId,
       categoryId: _categoryId ?? _reminder.categoryId,
     );
@@ -209,6 +212,10 @@ class _ReminderDetailState extends ConsumerState<ReminderDetail> {
             ),
             value: autoPost,
             onChanged: (on) => setState(() => _autoPost = on),
+          ),
+          ReminderNotifySwitch(
+            value: _notify ?? r.notify,
+            onChanged: (on) => setState(() => _notify = on),
           ),
           ReminderUpcomingSection(
             reminder: r,

@@ -112,8 +112,10 @@ lib/
     models/                 # domain objects, value objects, drafts, query results
     repositories/           # one Drift accessor per file: queries, rules, mapping
   services/
-    backup/                 # JSON export / restore
+    backup/                 # JSON export / restore, encryption, automatic backups
     bluecoins/              # .fydb reader and mapper
+    notifications/          # local notifications (flutter_local_notifications)
+    transactions_import/    # CSV export, CSV / QIF readers
   features/                 # one folder per feature, split into:
     <feature>/pages/        # route screens
     <feature>/widgets/      # widgets of this feature
@@ -157,7 +159,7 @@ presentation → providers → services/repositories → Drift.
   widgets or providers: watch `todayProvider`, `tomorrowProvider` or `currentMonthProvider`
   so screens follow midnight, and tests fix it (`pumpApp(now: …)`). Repositories may stamp
   writes with `DateTime.now()`.
-- Route parameters carry only IDs and enum values — never names, amounts or notes.
+- Route parameters carry only IDs, enum values and dates — never names, amounts or notes.
 - No `autofocus` on pages, sheets or dialogs: the keyboard opens only when the user taps a
   field.
 - Colours, income/expense/transfer semantics and chart series come from the theme

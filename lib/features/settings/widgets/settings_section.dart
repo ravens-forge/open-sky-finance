@@ -8,10 +8,14 @@ class SettingsSection extends StatelessWidget {
     super.key,
     required this.title,
     required this.children,
+    this.info,
   });
 
   final String title;
   final List<Widget> children;
+
+  /// An [InfoTooltip] after the title.
+  final Widget? info;
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +30,25 @@ class SettingsSection extends StatelessWidget {
               bottom: BorderSide(color: theme.colorScheme.outline),
             ),
           ),
-          child: Semantics(
-            header: true,
-            child: Text(title.toUpperCase(), style: theme.textTheme.eyebrow),
+          child: Row(
+            children: [
+              Flexible(
+                child: Semantics(
+                  header: true,
+                  child: Text(
+                    title.toUpperCase(),
+                    style: theme.textTheme.eyebrow,
+                  ),
+                ),
+              ),
+              // Its 48 px target overflows the heading instead of growing it.
+              if (info != null)
+                SizedBox(
+                  width: 36,
+                  height: 18,
+                  child: OverflowBox(maxWidth: 48, maxHeight: 48, child: info),
+                ),
+            ],
           ),
         ),
         for (final (i, child) in children.indexed) ...[

@@ -104,6 +104,7 @@ class RemindersRepository extends DatabaseAccessor<AppDatabase>
       endDate: Value(schedule.endDate),
       remainingOccurrences: Value(schedule.remainingOccurrences),
       autoPost: Value(draft.autoPost),
+      notify: Value(draft.notify),
       isPaused: Value(draft.isPaused),
       updatedAt: Value(now),
     );

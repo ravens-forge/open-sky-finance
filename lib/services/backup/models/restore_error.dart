@@ -1,4 +1,5 @@
 import 'backup_problem.dart';
+import 'encrypted_backup.dart';
 
 /// Why a file cannot be restored. Codes only: the UI words them.
 sealed class RestoreError {
@@ -18,6 +19,18 @@ final class RestoreNotABackup extends RestoreError {
 /// Made by a newer version of the app, with a format this one cannot read.
 final class RestoreNewerVersion extends RestoreError {
   const RestoreNewerVersion();
+}
+
+/// Encrypted: the password opens it.
+final class RestoreNeedsPassword extends RestoreError {
+  const RestoreNeedsPassword(this.file);
+
+  final EncryptedBackup file;
+}
+
+/// The password does not open the file.
+final class RestoreWrongPassword extends RestoreError {
+  const RestoreWrongPassword();
 }
 
 /// A backup, but with problems: every one found, up to a limit.

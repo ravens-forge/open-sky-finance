@@ -11,16 +11,22 @@ class LeaderRow extends StatelessWidget {
     required this.name,
     required this.amount,
     this.onTap,
+    this.bold = false,
   });
 
   final String name;
   final Widget amount;
   final VoidCallback? onTap;
 
+  /// A heading line: the name in bold.
+  final bool bold;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final style = theme.textTheme.bodyLarge!;
+    final style = theme.textTheme.bodyLarge!.copyWith(
+      fontWeight: bold ? FontWeight.w700 : null,
+    );
     final amountText = DefaultTextStyle.merge(
       style: style.copyWith(fontWeight: FontWeight.w600),
       child: amount,

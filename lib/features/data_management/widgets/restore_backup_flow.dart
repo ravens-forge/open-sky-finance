@@ -7,9 +7,11 @@ import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
 import '../../../core/result.dart';
 import '../../../core/widgets/progress_dialog.dart';
+import '../../../services/backup/models/restore_error.dart';
 import '../models/restore_choice.dart';
 import '../pages/restore_preview_page.dart';
 import '../providers/backup_controller.dart';
+import 'backup_unlock_dialog.dart';
 import 'restore_error_dialog.dart';
 
 /// Restore from file…: the system open dialog, a check of the whole file,
@@ -26,12 +28,34 @@ Future<void> restoreFromFile(BuildContext context, WidgetRef ref) async {
   while (choice == RestoreChoice.change) {
     final file = await FilePicker.pickFile();
     if (file == null || !context.mounted) return;
-    final loaded = await withProgressDialog(
+    var loaded = await withProgressDialog(
       context,
       title: l10n.restoreReadingTitle,
       body: l10n.restoreReadingBody,
       task: () => controller.load(file),
     );
+    // Encrypted: ask for the password until it opens or is cancelled.
+    var wrong = false;
+    while (true) {
+      final locked = switch (loaded) {
+        Err(error: RestoreNeedsPassword(:final file)) => file,
+        _ => null,
+      };
+      if (locked == null || !context.mounted) break;
+      final password = await showBackupUnlockDialog(context, wrong: wrong);
+      if (password == null || !context.mounted) return;
+      final opened = await withProgressDialog(
+        context,
+        title: l10n.restoreReadingTitle,
+        body: l10n.restoreReadingBody,
+        task: () => controller.unlock(file, locked, password),
+      );
+      wrong = switch (opened) {
+        Err(error: RestoreWrongPassword()) => true,
+        _ => false,
+      };
+      if (!wrong) loaded = opened;
+    }
     if (!context.mounted) return;
     switch (loaded) {
       case Err(:final error):
