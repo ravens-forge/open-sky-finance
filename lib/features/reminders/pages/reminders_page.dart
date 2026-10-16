@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/now.dart';
@@ -27,30 +28,31 @@ import '../widgets/reminders_empty_state.dart';
 
 /// Active · Paused · Finished; the active ones as Overdue, Next 30 days and
 /// Later, with Record and Skip on each row.
-class RemindersPage extends ConsumerStatefulWidget {
+class RemindersPage extends ConsumerWidget {
   const RemindersPage({super.key});
 
   @override
-  ConsumerState<RemindersPage> createState() => _RemindersPageState();
-}
-
-class _RemindersPageState extends ConsumerState<RemindersPage> {
-  var _status = ReminderStatus.active;
-
-  void _new() => context.push(Routes.newReminder);
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    void add() => context.push(Routes.newReminder);
     return switch (ref.watch(remindersProvider)) {
       AsyncError() => PageLoadError(providers: [remindersProvider]),
-      AsyncValue(value: []) => RemindersEmptyState(onNew: _new),
-      AsyncValue(:final value?) => _list(value),
+      AsyncValue(value: []) => RemindersEmptyState(onNew: add),
+      AsyncValue(:final value?) => _ReminderList(value, onNew: add),
       _ => PagePlaceholder(label: context.l10n.pageReminders),
     };
   }
+}
 
-  Widget _list(List<Reminder> reminders) {
+class _ReminderList extends HookConsumerWidget {
+  const _ReminderList(this.reminders, {required this.onNew});
+
+  final List<Reminder> reminders;
+  final VoidCallback onNew;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final status = useState(ReminderStatus.active);
     final theme = Theme.of(context);
     final today = ref.watch(todayProvider);
     final categories = {
@@ -64,10 +66,10 @@ class _RemindersPageState extends ConsumerState<RemindersPage> {
     };
     final shown = [
       for (final r in reminders)
-        if (r.status == _status) r,
+        if (r.status == status.value) r,
     ];
-    String filter(ReminderStatus status, String label) {
-      final count = reminders.where((r) => r.status == status).length;
+    String filter(ReminderStatus of, String label) {
+      final count = reminders.where((r) => r.status == of).length;
       return count == 0 ? label : l10n.reminderDetails(label, '$count');
     }
 
@@ -107,8 +109,8 @@ class _RemindersPageState extends ConsumerState<RemindersPage> {
                     ),
                   ),
                 ],
-                selected: _status,
-                onChanged: (status) => setState(() => _status = status),
+                selected: status.value,
+                onChanged: (value) => status.value = value,
               ),
             ),
             Semantics(
@@ -116,7 +118,7 @@ class _RemindersPageState extends ConsumerState<RemindersPage> {
               button: true,
               excludeSemantics: true,
               child: TextButton.icon(
-                onPressed: _new,
+                onPressed: onNew,
                 icon: const Icon(Icons.add, size: 18),
                 label: Text(l10n.remindersNew),
                 // Narrow, so the three filters fit on its line.
@@ -139,8 +141,8 @@ class _RemindersPageState extends ConsumerState<RemindersPage> {
               ),
             ),
           )
-        else if (_status == ReminderStatus.active)
-          ..._sections(ReminderSections.of(shown, today), row)
+        else if (status.value == ReminderStatus.active)
+          ..._sections(context, ReminderSections.of(shown, today), row)
         else
           for (final (i, reminder) in shown.indexed) ...[
             if (i > 0) const Divider(),
@@ -151,6 +153,7 @@ class _RemindersPageState extends ConsumerState<RemindersPage> {
   }
 
   List<Widget> _sections(
+    BuildContext context,
     ReminderSections sections,
     Widget Function(Reminder) row,
   ) {

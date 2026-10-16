@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -14,102 +15,94 @@ import '../models/budget_editor_data.dart';
 import '../providers/budgets_controller.dart';
 import 'edit_budget_row.dart';
 
-class EditBudgetsForm extends ConsumerStatefulWidget {
+class EditBudgetsForm extends HookConsumerWidget {
   const EditBudgetsForm({super.key, required this.data});
 
   final BudgetEditorData data;
 
   @override
-  ConsumerState<EditBudgetsForm> createState() => _EditBudgetsFormState();
-}
-
-class _EditBudgetsFormState extends ConsumerState<EditBudgetsForm> {
-  /// By group or category id. Filled on the first build, which knows the
-  /// locale the amounts are written in.
-  final _fields = <String, TextEditingController>{};
-  var _invalid = <String>{};
-  var _saving = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_fields.isNotEmpty) return;
-    final data = widget.data;
-    for (final node in data.groups) {
-      for (final id in [node.group.id, for (final c in node.categories) c.id]) {
-        final budget = data.budgets[id];
-        _fields[id] = TextEditingController(
-          text: budget == null
-              ? ''
-              : formatMoney(
-                  budget,
-                  currency: data.currency,
-                  locale: context.l10n.localeName,
-                  symbol: false,
-                ),
-        );
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    for (final field in _fields.values) {
-      field.dispose();
-    }
-    super.dispose();
-  }
-
-  /// The amount typed for [id]: `null` when empty or not a positive amount.
-  int? _amount(String id) {
-    final amount = parseMoney(
-      _fields[id]!.text,
-      locale: context.l10n.localeName,
-    );
-    return amount != null && amount > 0 ? amount : null;
-  }
-
-  Future<void> _save() async {
-    final l10n = context.l10n;
-    final changes = <String, int?>{};
-    final invalid = <String>{};
-    for (final MapEntry(key: id, value: field) in _fields.entries) {
-      final amount = _amount(id);
-      if (amount == null && field.text.trim().isNotEmpty) {
-        invalid.add(id);
-      } else if (amount != widget.data.budgets[id]) {
-        changes[id] = amount;
-      }
-    }
-    setState(() => _invalid = invalid);
-    if (invalid.isNotEmpty) return;
-
-    setState(() => _saving = true);
-    final result = await ref
-        .read(budgetsControllerProvider.notifier)
-        .save(changes);
-    if (!mounted) return;
-    setState(() => _saving = false);
-    switch (result) {
-      case Ok():
-        context.pop();
-      case Err():
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.errorSaveFailed)));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final data = widget.data;
     final locale = l10n.localeName;
+    // By group or category id, written in the locale of the first build.
+    final fields = useMemoized(
+      () => {
+        for (final node in data.groups)
+          for (final id in [
+            node.group.id,
+            for (final c in node.categories) c.id,
+          ])
+            id: TextEditingController(
+              text: switch (data.budgets[id]) {
+                null => '',
+                final budget => formatMoney(
+                  budget,
+                  currency: data.currency,
+                  locale: locale,
+                  symbol: false,
+                ),
+              },
+            ),
+      },
+    );
+    useEffect(
+      () => () {
+        for (final field in fields.values) {
+          field.dispose();
+        }
+      },
+      const [],
+    );
+    // The total and the "covered by group" notes follow what is typed.
+    useListenable(useMemoized(() => Listenable.merge(fields.values)));
+    final invalid = useState(const <String>{});
+    final saving = useState(false);
+
+    // The amount typed for [id]: `null` when empty or not a positive amount.
+    int? amountOf(String id) {
+      final amount = parseMoney(fields[id]!.text, locale: locale);
+      return amount != null && amount > 0 ? amount : null;
+    }
+
+    Future<void> save() async {
+      final changes = <String, int?>{};
+      final wrong = <String>{};
+      for (final MapEntry(key: id, value: field) in fields.entries) {
+        final amount = amountOf(id);
+        if (amount == null && field.text.trim().isNotEmpty) {
+          wrong.add(id);
+        } else if (amount != data.budgets[id]) {
+          changes[id] = amount;
+        }
+      }
+      invalid.value = wrong;
+      if (wrong.isNotEmpty) return;
+
+      saving.value = true;
+      final result = await ref
+          .read(budgetsControllerProvider.notifier)
+          .save(changes);
+      if (!context.mounted) return;
+      saving.value = false;
+      switch (result) {
+        case Ok():
+          context.pop();
+        case Err():
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(l10n.errorSaveFailed)));
+      }
+    }
+
     String money(int micros) =>
         formatMoney(micros, currency: data.currency, locale: locale);
     final month = DateFormat.MMMM(locale).format(data.month.start);
-    void changed(String id) => setState(() => _invalid.remove(id));
+    void changed(String id) {
+      if (invalid.value.contains(id)) {
+        invalid.value = {...invalid.value}..remove(id);
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.budgetEdit)),
@@ -137,23 +130,23 @@ class _EditBudgetsFormState extends ConsumerState<EditBudgetsForm> {
                 month,
               ),
               isGroup: true,
-              controller: _fields[node.group.id]!,
+              controller: fields[node.group.id]!,
               currency: data.currency,
-              invalid: _invalid.contains(node.group.id),
+              invalid: invalid.value.contains(node.group.id),
               onChanged: (_) => changed(node.group.id),
             ),
             for (final category in node.categories)
               EditBudgetRow(
                 name: category.name,
-                note: _amount(node.group.id) != null
+                note: amountOf(node.group.id) != null
                     ? l10n.budgetCoveredByGroup
                     : l10n.budgetSpentAmount(
                         money(data.spent[category.id] ?? 0),
                       ),
                 isGroup: false,
-                controller: _fields[category.id]!,
+                controller: fields[category.id]!,
                 currency: data.currency,
-                invalid: _invalid.contains(category.id),
+                invalid: invalid.value.contains(category.id),
                 onChanged: (_) => changed(category.id),
               ),
           ],
@@ -177,7 +170,7 @@ class _EditBudgetsFormState extends ConsumerState<EditBudgetsForm> {
                 ),
                 Text(
                   money(
-                    _fields.keys.fold(0, (sum, id) => sum + (_amount(id) ?? 0)),
+                    fields.keys.fold(0, (sum, id) => sum + (amountOf(id) ?? 0)),
                   ),
                   style: theme.textTheme.sectionTitle.copyWith(fontSize: 26),
                 ),
@@ -211,7 +204,7 @@ class _EditBudgetsFormState extends ConsumerState<EditBudgetsForm> {
                   child: Text(l10n.actionCancel),
                 ),
                 FilledButton(
-                  onPressed: _saving ? null : _save,
+                  onPressed: saving.value ? null : save,
                   style: FilledButton.styleFrom(minimumSize: const Size(0, 52)),
                   child: Text(l10n.budgetSave, textAlign: TextAlign.center),
                 ),

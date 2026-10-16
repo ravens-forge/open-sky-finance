@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -20,43 +21,45 @@ import '../widgets/net_worth_header.dart';
 import '../../assets_accounts/widgets/assets_accounts_side_header.dart';
 import '../../shell/widgets/page_load_error.dart';
 
-class BalanceSheetPage extends ConsumerStatefulWidget {
+class BalanceSheetPage extends HookConsumerWidget {
   const BalanceSheetPage({super.key});
 
   @override
-  ConsumerState<BalanceSheetPage> createState() => _BalanceSheetPageState();
-}
-
-class _BalanceSheetPageState extends ConsumerState<BalanceSheetPage> {
-  late var _asOf = ref.read(todayProvider);
-
-  @override
-  void initState() {
-    super.initState();
-    // Shows what another page drilled down to, then clears it.
-    ref.listenManual(balanceSheetDrillDownProvider, (_, next) {
-      if (next == null) return;
-      setState(() => _asOf = next);
-      Future.microtask(ref.read(balanceSheetDrillDownProvider.notifier).clear);
-    }, fireImmediately: true);
-  }
-
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _asOf,
-      firstDate: DateTime(1900),
-      // A future date adds the scheduled transactions up to that day.
-      lastDate: DateTime(2100),
-      helpText: context.l10n.balanceSheetAsOf,
-    );
-    if (picked != null) setState(() => _asOf = picked);
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final sides = ref.watch(balanceSheetSidesProvider(_asOf));
+    // Shows what another page drilled down to, then clears it.
+    final asOf = useState(
+      useMemoized<DateTime>(
+        () =>
+            ref.read(balanceSheetDrillDownProvider) ?? ref.read(todayProvider),
+      ),
+    );
+    void clearDrillDown() => Future.microtask(
+      ref.read(balanceSheetDrillDownProvider.notifier).clear,
+    );
+    useEffect(() {
+      if (ref.read(balanceSheetDrillDownProvider) != null) clearDrillDown();
+      return null;
+    }, const []);
+    ref.listen(balanceSheetDrillDownProvider, (_, next) {
+      if (next == null) return;
+      asOf.value = next;
+      clearDrillDown();
+    });
+
+    Future<void> pickDate() async {
+      final picked = await showDatePicker(
+        context: context,
+        initialDate: asOf.value,
+        firstDate: DateTime(1900),
+        // A future date adds the scheduled transactions up to that day.
+        lastDate: DateTime(2100),
+        helpText: l10n.balanceSheetAsOf,
+      );
+      if (picked != null) asOf.value = picked;
+    }
+
+    final sides = ref.watch(balanceSheetSidesProvider(asOf.value));
     final main = ref.watch(mainCurrencyProvider).value;
     final hiddenCount = ref.watch(balanceSheetHiddenCountProvider).value ?? 0;
 
@@ -75,11 +78,11 @@ class _BalanceSheetPageState extends ConsumerState<BalanceSheetPage> {
                   style: Theme.of(context).textTheme.eyebrow,
                 ),
                 TextButton.icon(
-                  onPressed: _pickDate,
+                  onPressed: pickDate,
                   iconAlignment: IconAlignment.end,
                   icon: const Icon(Icons.expand_more, size: 16),
                   label: Text(
-                    DateFormat.yMMMd(l10n.localeName).format(_asOf),
+                    DateFormat.yMMMd(l10n.localeName).format(asOf.value),
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -91,7 +94,7 @@ class _BalanceSheetPageState extends ConsumerState<BalanceSheetPage> {
         Expanded(
           child: switch ((sides, main)) {
             (AsyncError(), _) => PageLoadError(
-              providers: [balanceSheetSidesProvider(_asOf)],
+              providers: [balanceSheetSidesProvider(asOf.value)],
             ),
             (AsyncValue(value: []), _) => Center(
               child: EmptyState(
@@ -104,19 +107,33 @@ class _BalanceSheetPageState extends ConsumerState<BalanceSheetPage> {
                 ],
               ),
             ),
-            (AsyncValue(value: final sides?), final String main) => _list(
-              sides,
-              main,
-              hiddenCount,
-            ),
+            (AsyncValue(value: final sides?), final String main) =>
+              _BalanceSheetList(
+                sides: sides,
+                main: main,
+                hiddenCount: hiddenCount,
+              ),
             _ => PagePlaceholder(label: l10n.pageBalanceSheet),
           },
         ),
       ],
     );
   }
+}
 
-  Widget _list(List<BalanceSheetSide> sides, String main, int hiddenCount) {
+class _BalanceSheetList extends StatelessWidget {
+  const _BalanceSheetList({
+    required this.sides,
+    required this.main,
+    required this.hiddenCount,
+  });
+
+  final List<BalanceSheetSide> sides;
+  final String main;
+  final int hiddenCount;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;

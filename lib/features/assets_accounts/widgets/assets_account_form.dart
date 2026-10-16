@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -23,124 +24,101 @@ import 'assets_account_type_field.dart';
 
 /// Name, type, currency, opening balance and date, options and notes; Save
 /// pops. Editing adds Delete.
-class AssetsAccountForm extends ConsumerStatefulWidget {
+class AssetsAccountForm extends HookConsumerWidget {
   const AssetsAccountForm({super.key, required this.data});
 
   final AssetsAccountEditorData data;
 
   @override
-  ConsumerState<AssetsAccountForm> createState() => _AssetsAccountFormState();
-}
-
-class _AssetsAccountFormState extends ConsumerState<AssetsAccountForm> {
-  late final _account = widget.data.account;
-  late final _name = TextEditingController(text: _account?.name);
-  late final _notes = TextEditingController(text: _account?.notes);
-  final _balance = TextEditingController();
-  late var _type = _account?.type ?? AssetsAccountType.bank;
-  late var _currency = widget.data.currency;
-  late var _date = widget.data.openingBalanceDate;
-  late var _favorite = _account?.isFavorite ?? false;
-  late var _exclude = _account?.excludeFromNetWorth ?? false;
-  late var _hidden = _account?.isHidden ?? false;
-  String? _nameError;
-  String? _balanceError;
-  var _saving = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_balance.text.isEmpty) {
-      _balance.text = formatMoney(
-        widget.data.openingBalance,
-        currency: _currency,
-        locale: context.l10n.localeName,
-        symbol: false,
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _name.dispose();
-    _notes.dispose();
-    _balance.dispose();
-    super.dispose();
-  }
-
-  Future<void> _save() async {
-    final l10n = context.l10n;
-    final name = _name.text.trim();
-    final balance = _balance.text.trim().isEmpty
-        ? 0
-        : parseMoney(_balance.text, locale: l10n.localeName);
-    setState(() {
-      _nameError = name.isEmpty ? l10n.errorNameRequired : null;
-      _balanceError = balance == null ? l10n.errorInvalidAmount : null;
-    });
-    if (_nameError != null || balance == null) return;
-
-    setState(() => _saving = true);
-    final result = await ref
-        .read(assetsAccountsControllerProvider.notifier)
-        .save(
-          AssetsAccountDraft(
-            id: _account?.id,
-            name: name,
-            type: _type,
-            currency: _currency,
-            isHidden: _hidden,
-            isFavorite: _favorite,
-            excludeFromNetWorth: _exclude,
-            // Not editable (imported); kept while it is still a credit card.
-            creditLimit: _type == AssetsAccountType.creditCard
-                ? _account?.creditLimit
-                : null,
-            notes: _notes.text.trim(),
-            openingBalance: balance,
-            openingBalanceDate: _date,
-          ),
-        );
-    if (!mounted) return;
-    setState(() => _saving = false);
-    switch (result) {
-      case Ok():
-        context.pop();
-      case Err(error: RepositoryDataError.invalidName):
-        setState(() => _nameError = l10n.errorNameRequired);
-      case Err(:final error):
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              error == RepositoryDataError.currencyLocked
-                  ? l10n.errorCurrencyLocked
-                  : l10n.errorSaveFailed,
-            ),
-          ),
-        );
-    }
-  }
-
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _date,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) setState(() => _date = startOfDay(picked));
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final locked = widget.data.transactionCount > 0;
+    final account = data.account;
+    final name = useTextEditingController(text: account?.name);
+    final notes = useTextEditingController(text: account?.notes);
+    final currency = useState(data.currency);
+    final balance = useTextEditingController(
+      text: formatMoney(
+        data.openingBalance,
+        currency: data.currency,
+        locale: l10n.localeName,
+        symbol: false,
+      ),
+    );
+    final type = useState(account?.type ?? AssetsAccountType.bank);
+    final date = useState(data.openingBalanceDate);
+    final favorite = useState(account?.isFavorite ?? false);
+    final exclude = useState(account?.excludeFromNetWorth ?? false);
+    final hidden = useState(account?.isHidden ?? false);
+    final nameError = useState<String?>(null);
+    final balanceError = useState<String?>(null);
+    final saving = useState(false);
+    final locked = data.transactionCount > 0;
+
+    Future<void> save() async {
+      final trimmed = name.text.trim();
+      final amount = balance.text.trim().isEmpty
+          ? 0
+          : parseMoney(balance.text, locale: l10n.localeName);
+      nameError.value = trimmed.isEmpty ? l10n.errorNameRequired : null;
+      balanceError.value = amount == null ? l10n.errorInvalidAmount : null;
+      if (nameError.value != null || amount == null) return;
+
+      saving.value = true;
+      final result = await ref
+          .read(assetsAccountsControllerProvider.notifier)
+          .save(
+            AssetsAccountDraft(
+              id: account?.id,
+              name: trimmed,
+              type: type.value,
+              currency: currency.value,
+              isHidden: hidden.value,
+              isFavorite: favorite.value,
+              excludeFromNetWorth: exclude.value,
+              // Not editable (imported); kept while it is still a credit card.
+              creditLimit: type.value == AssetsAccountType.creditCard
+                  ? account?.creditLimit
+                  : null,
+              notes: notes.text.trim(),
+              openingBalance: amount,
+              openingBalanceDate: date.value,
+            ),
+          );
+      if (!context.mounted) return;
+      saving.value = false;
+      switch (result) {
+        case Ok():
+          context.pop();
+        case Err(error: RepositoryDataError.invalidName):
+          nameError.value = l10n.errorNameRequired;
+        case Err(:final error):
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                error == RepositoryDataError.currencyLocked
+                    ? l10n.errorCurrencyLocked
+                    : l10n.errorSaveFailed,
+              ),
+            ),
+          );
+      }
+    }
+
+    Future<void> pickDate() async {
+      final picked = await showDatePicker(
+        context: context,
+        initialDate: date.value,
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2100),
+      );
+      if (picked != null) date.value = startOfDay(picked);
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _account == null
+          account == null
               ? l10n.editorNewAssetsAccount
               : l10n.editorEditAssetsAccount,
         ),
@@ -149,41 +127,46 @@ class _AssetsAccountFormState extends ConsumerState<AssetsAccountForm> {
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
           TextField(
-            controller: _name,
+            controller: name,
             textCapitalization: TextCapitalization.sentences,
             decoration: InputDecoration(
               labelText: l10n.fieldName,
-              error: _nameError == null ? null : FieldError(_nameError!),
+              error: nameError.value == null
+                  ? null
+                  : FieldError(nameError.value!),
             ),
           ),
           const SizedBox(height: 20),
           AssetsAccountTypeField(
-            type: _type,
-            onChanged: (t) => setState(() => _type = t),
+            type: type.value,
+            onChanged: (t) => type.value = t,
           ),
           const SizedBox(height: 16),
           FieldRow(
             label: l10n.fieldCurrency,
-            value: currencyLabel(_currency, l10n),
+            value: currencyLabel(currency.value, l10n),
             onTap: locked
                 ? null
                 : () async {
-                    final picked = await showCurrencyPicker(context, _currency);
-                    if (picked != null) setState(() => _currency = picked);
+                    final picked = await showCurrencyPicker(
+                      context,
+                      currency.value,
+                    );
+                    if (picked != null) currency.value = picked;
                   },
           ),
           Text(
             locked
-                ? l10n.assetsAccountCurrencyLocked(widget.data.transactionCount)
+                ? l10n.assetsAccountCurrencyLocked(data.transactionCount)
                 : l10n.assetsAccountCurrencyNote,
             style: theme.textTheme.bodySmall,
           ),
           const SizedBox(height: 16),
           TextField(
-            controller: _balance,
-            onTap: () => _balance.selection = TextSelection(
+            controller: balance,
+            onTap: () => balance.selection = TextSelection(
               baseOffset: 0,
-              extentOffset: _balance.text.length,
+              extentOffset: balance.text.length,
             ),
             keyboardType: const TextInputType.numberWithOptions(
               decimal: true,
@@ -191,27 +174,29 @@ class _AssetsAccountFormState extends ConsumerState<AssetsAccountForm> {
             ),
             decoration: InputDecoration(
               labelText: l10n.fieldOpeningBalance,
-              prefixText: '${currencySymbol(_currency)} ',
-              error: _balanceError == null ? null : FieldError(_balanceError!),
+              prefixText: '${currencySymbol(currency.value)} ',
+              error: balanceError.value == null
+                  ? null
+                  : FieldError(balanceError.value!),
             ),
           ),
           FieldRow(
             label: l10n.fieldSince,
-            value: DateFormat.yMMMd(l10n.localeName).format(_date),
-            onTap: _pickDate,
+            value: DateFormat.yMMMd(l10n.localeName).format(date.value),
+            onTap: pickDate,
           ),
           const SizedBox(height: 16),
           AssetsAccountOptions(
-            isFavorite: _favorite,
-            excludeFromNetWorth: _exclude,
-            isHidden: _hidden,
-            onFavorite: (on) => setState(() => _favorite = on),
-            onExcludeFromNetWorth: (on) => setState(() => _exclude = on),
-            onHidden: (on) => setState(() => _hidden = on),
+            isFavorite: favorite.value,
+            excludeFromNetWorth: exclude.value,
+            isHidden: hidden.value,
+            onFavorite: (on) => favorite.value = on,
+            onExcludeFromNetWorth: (on) => exclude.value = on,
+            onHidden: (on) => hidden.value = on,
           ),
           const SizedBox(height: 8),
           TextField(
-            controller: _notes,
+            controller: notes,
             minLines: 2,
             maxLines: null,
             textCapitalization: TextCapitalization.sentences,
@@ -220,11 +205,11 @@ class _AssetsAccountFormState extends ConsumerState<AssetsAccountForm> {
               hintText: l10n.fieldNotesHint,
             ),
           ),
-          if (_account != null) ...[
+          if (account != null) ...[
             const SizedBox(height: 32),
             AssetsAccountDeleteSection(
-              account: _account,
-              transactionCount: widget.data.transactionCount,
+              account: account,
+              transactionCount: data.transactionCount,
             ),
           ],
         ],
@@ -239,7 +224,7 @@ class _AssetsAccountFormState extends ConsumerState<AssetsAccountForm> {
                 child: Text(l10n.actionCancel),
               ),
               FilledButton(
-                onPressed: _saving ? null : _save,
+                onPressed: saving.value ? null : save,
                 child: Text(l10n.actionSave),
               ),
             ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
@@ -23,63 +24,54 @@ Future<List<String>?> showLabelsPickerSheet(
   (context) => LabelsPickerSheet(selected: selected),
 );
 
-class LabelsPickerSheet extends ConsumerStatefulWidget {
+class LabelsPickerSheet extends HookConsumerWidget {
   const LabelsPickerSheet({super.key, required this.selected});
 
   final List<String> selected;
 
   @override
-  ConsumerState<LabelsPickerSheet> createState() => _LabelsPickerSheetState();
-}
-
-class _LabelsPickerSheetState extends ConsumerState<LabelsPickerSheet> {
-  late var _selected = [...widget.selected];
-  final _created = <String>{};
-  var _query = '';
-
-  Future<void> _create(String name) async {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final messenger = ScaffoldMessenger.of(context);
-    final result = await ref
-        .read(transactionsControllerProvider.notifier)
-        .createLabel(name);
-    switch (result) {
-      case Ok(:final value):
-        setState(() {
-          _created.add(value);
-          _selected = [..._selected, value];
-        });
-      case Err():
-        messenger.showSnackBar(SnackBar(content: Text(l10n.errorSaveFailed)));
-    }
-  }
+    final chosen = useState([...selected]);
+    final created = useState(const <String>{});
+    final search = useState('');
 
-  void _toggle(String id) => setState(
-    () => _selected = _selected.contains(id)
+    Future<void> create(String name) async {
+      final messenger = ScaffoldMessenger.of(context);
+      final result = await ref
+          .read(transactionsControllerProvider.notifier)
+          .createLabel(name);
+      if (!context.mounted) return;
+      switch (result) {
+        case Ok(:final value):
+          created.value = {...created.value, value};
+          chosen.value = [...chosen.value, value];
+        case Err():
+          messenger.showSnackBar(SnackBar(content: Text(l10n.errorSaveFailed)));
+      }
+    }
+
+    void toggle(String id) => chosen.value = chosen.value.contains(id)
         ? [
-            for (final other in _selected)
+            for (final other in chosen.value)
               if (other != id) other,
           ]
-        : [..._selected, id],
-  );
+        : [...chosen.value, id];
 
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final labels = ref.watch(labelsProvider).value ?? const <Label>[];
     final uses = ref.watch(labelUsesProvider).value ?? const <String, int>{};
-    final typed = _query.trim();
+    final typed = search.value.trim();
     final key = sortKey(typed);
     final isNew =
         typed.isNotEmpty && !labels.any((l) => sortKey(l.name) == key);
     // New labels first, as in the design, then the rest by name.
     final matches = [
       for (final label in labels)
-        if (_created.contains(label.id)) label,
+        if (created.value.contains(label.id)) label,
       for (final label in labels)
-        if (!_created.contains(label.id) &&
+        if (!created.value.contains(label.id) &&
             (key.isEmpty || sortKey(label.name).contains(key)))
           label,
     ];
@@ -110,24 +102,24 @@ class _LabelsPickerSheetState extends ConsumerState<LabelsPickerSheet> {
 
     return PickerSheet(
       title: l10n.fieldLabels,
-      header: _selected.isEmpty
+      header: chosen.value.isEmpty
           ? null
           : LabelChips(
-              labelIds: _selected,
+              labelIds: chosen.value,
               names: {for (final label in labels) label.id: label.name},
-              onChanged: (ids) => setState(() => _selected = ids),
+              onChanged: (ids) => chosen.value = ids,
             ),
       searchHint: l10n.labelsPickerSearchHint,
-      onSearch: (value) => setState(() => _query = value),
+      onSearch: (value) => search.value = value,
       onSearchSubmitted: (value) {
-        if (isNew) _create(value.trim());
+        if (isNew) create(value.trim());
       },
       footer: [
         SizedBox(
           width: double.infinity,
           child: FilledButton(
-            onPressed: () => Navigator.pop(context, _selected),
-            child: Text(l10n.labelsPickerDone(_selected.length)),
+            onPressed: () => Navigator.pop(context, chosen.value),
+            child: Text(l10n.labelsPickerDone(chosen.value.length)),
           ),
         ),
       ],
@@ -136,28 +128,28 @@ class _LabelsPickerSheetState extends ConsumerState<LabelsPickerSheet> {
           row(
             leading: const Icon(Icons.add),
             title: Text(l10n.labelsPickerCreate(typed)),
-            onTap: () => _create(typed),
+            onTap: () => create(typed),
           ),
         for (final label in matches)
           MergeSemantics(
             child: row(
-              onTap: () => _toggle(label.id),
+              onTap: () => toggle(label.id),
               leading: Checkbox(
                 // The whole row is the touch target.
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 visualDensity: VisualDensity.compact,
-                value: _selected.contains(label.id),
-                onChanged: (_) => _toggle(label.id),
+                value: chosen.value.contains(label.id),
+                onChanged: (_) => toggle(label.id),
               ),
               title: Text(
                 label.name,
                 style: theme.textTheme.bodyLarge!.copyWith(
-                  fontWeight: _selected.contains(label.id)
+                  fontWeight: chosen.value.contains(label.id)
                       ? FontWeight.w600
                       : null,
                 ),
               ),
-              trailing: _created.contains(label.id)
+              trailing: created.value.contains(label.id)
                   ? Text(
                       l10n.labelsPickerCreatedNow,
                       style: theme.textTheme.bodySmall!.copyWith(

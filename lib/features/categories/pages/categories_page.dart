@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/routes.dart';
@@ -15,19 +16,13 @@ import '../../shell/widgets/page_load_error.dart';
 
 /// Income and Expenses, each with its groups and the categories inside them.
 /// The + in the top bar creates a category of the chosen type.
-class CategoriesPage extends ConsumerStatefulWidget {
+class CategoriesPage extends HookConsumerWidget {
   const CategoriesPage({super.key});
 
   @override
-  ConsumerState<CategoriesPage> createState() => _CategoriesPageState();
-}
-
-class _CategoriesPageState extends ConsumerState<CategoriesPage> {
-  var _kind = CategoryKind.income;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final selected = useState(CategoryKind.income);
     final groups = ref.watch(categoryGroupsProvider);
     final categories = ref.watch(categoriesProvider);
 
@@ -38,7 +33,7 @@ class _CategoriesPageState extends ConsumerState<CategoriesPage> {
           IconButton(
             tooltip: l10n.editorNewCategory,
             icon: const Icon(Icons.add),
-            onPressed: () => context.push(Routes.newCategory(_kind)),
+            onPressed: () => context.push(Routes.newCategory(selected.value)),
           ),
         ],
         bottom: PreferredSize(
@@ -56,8 +51,8 @@ class _CategoriesPageState extends ConsumerState<CategoriesPage> {
                     ),
                   ),
               ],
-              selected: _kind,
-              onChanged: (kind) => setState(() => _kind = kind),
+              selected: selected.value,
+              onChanged: (kind) => selected.value = kind,
             ),
           ),
         ),
@@ -68,8 +63,8 @@ class _CategoriesPageState extends ConsumerState<CategoriesPage> {
           AsyncValue(value: final categories?),
         ) =>
           CategoryKindTab(
-            key: ValueKey(_kind),
-            kind: _kind,
+            key: ValueKey(selected.value),
+            kind: selected.value,
             groups: groups,
             categories: categories,
           ),

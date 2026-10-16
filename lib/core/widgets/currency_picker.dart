@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
 
 import '../l10n.dart';
@@ -23,30 +24,24 @@ Future<String?> showCurrencyPicker(BuildContext context, String selected) =>
       (context) => _CurrencyPicker(selected: selected),
     );
 
-class _CurrencyPicker extends StatefulWidget {
+class _CurrencyPicker extends HookWidget {
   const _CurrencyPicker({required this.selected});
 
   final String selected;
 
   @override
-  State<_CurrencyPicker> createState() => _CurrencyPickerState();
-}
-
-class _CurrencyPickerState extends State<_CurrencyPicker> {
-  String _query = '';
-
-  @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final query = _query.trim().toLowerCase();
+    final search = useState('');
+    final query = search.value.trim().toLowerCase();
     final codes = [
-      widget.selected,
-      ...isoCurrencies.where((c) => c != widget.selected),
+      selected,
+      ...isoCurrencies.where((c) => c != selected),
     ].where((c) => currencyLabel(c, l10n).toLowerCase().contains(query));
     return PickerSheet(
       title: l10n.fieldCurrency,
       searchHint: l10n.currencySearch,
-      onSearch: (value) => setState(() => _query = value),
+      onSearch: (value) => search.value = value,
       children: [
         for (final code in codes)
           PickerRow(
@@ -55,7 +50,7 @@ class _CurrencyPickerState extends State<_CurrencyPicker> {
               width: 40,
               child: Text(currencySymbol(code), textAlign: TextAlign.center),
             ),
-            selected: code == widget.selected,
+            selected: code == selected,
             onTap: () => Navigator.pop(context, code),
           ),
       ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../app/main_currency.dart';
 import '../../../app/now.dart';
@@ -23,90 +24,110 @@ import '../widgets/label_name_dialog.dart';
 import '../widgets/label_total_row.dart';
 import '../../shell/widgets/page_load_error.dart';
 
-class LabelsPage extends ConsumerStatefulWidget {
+class LabelsPage extends HookConsumerWidget {
   const LabelsPage({super.key});
 
   @override
-  ConsumerState<LabelsPage> createState() => _LabelsPageState();
-}
-
-class _LabelsPageState extends ConsumerState<LabelsPage> {
-  late var _month = ref.read(currentMonthProvider);
-
-  Future<void> _pickMonth() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _month.start,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
-      initialDatePickerMode: DatePickerMode.year,
-      helpText: context.l10n.transactionsPickMonth,
-    );
-    if (picked != null) setState(() => _month = YearMonth.of(picked));
-  }
-
-  void _open(Label label) {
-    ref
-        .read(transactionsDrillDownProvider.notifier)
-        .show(_month, TransactionFilter(labelId: label.id));
-    context.go(Routes.transactions);
-  }
-
-  Future<void> _delete(Label label) async {
-    final controller = ref.read(labelsControllerProvider.notifier);
-    final uses = await controller.uses(label.id);
-    if (!mounted) return;
-    final confirmed = await showDeleteLabelDialog(
-      context,
-      label: label,
-      uses: uses,
-    );
-    if (confirmed) {
-      await controller.remove(label.id);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final totals = ref.watch(labelTotalsProvider(_month));
+    final month = useState(useMemoized(() => ref.read(currentMonthProvider)));
+
+    Future<void> pickMonth() async {
+      final picked = await showDatePicker(
+        context: context,
+        initialDate: month.value.start,
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2100),
+        initialDatePickerMode: DatePickerMode.year,
+        helpText: l10n.transactionsPickMonth,
+      );
+      if (picked != null) month.value = YearMonth.of(picked);
+    }
+
+    void open(Label label) {
+      ref
+          .read(transactionsDrillDownProvider.notifier)
+          .show(month.value, TransactionFilter(labelId: label.id));
+      context.go(Routes.transactions);
+    }
+
+    Future<void> delete(Label label) async {
+      final controller = ref.read(labelsControllerProvider.notifier);
+      final uses = await controller.uses(label.id);
+      if (!context.mounted) return;
+      final confirmed = await showDeleteLabelDialog(
+        context,
+        label: label,
+        uses: uses,
+      );
+      if (confirmed) {
+        await controller.remove(label.id);
+      }
+    }
+
+    final totals = ref.watch(labelTotalsProvider(month.value));
     final converter = ref.watch(currencyConverterProvider).value;
     return Column(
       children: [
         MonthSwitcher(
-          month: _month,
-          onChanged: (month) => setState(() => _month = month),
-          onPick: _pickMonth,
+          month: month.value,
+          onChanged: (value) => month.value = value,
+          onPick: pickMonth,
         ),
         const Divider(),
         Expanded(
           child: switch ((totals, converter)) {
             (AsyncError(), _) => PageLoadError(
-              providers: [labelTotalsProvider(_month)],
+              providers: [labelTotalsProvider(month.value)],
             ),
             (AsyncValue(value: []), _) => Center(
               child: EmptyState(
                 title: l10n.labelsEmpty,
                 message: l10n.labelsEmptyMessage,
-                actions: [_newButton()],
+                actions: const [_NewLabelButton()],
               ),
             ),
             (AsyncValue(:final value?), final CurrencyConverter converter) =>
-              _list(value, converter),
+              _LabelList(
+                totals: value,
+                converter: converter,
+                onOpen: open,
+                onDelete: delete,
+              ),
             _ => PagePlaceholder(label: l10n.pageLabels),
           },
         ),
       ],
     );
   }
+}
 
-  Widget _newButton() => OutlinedButton.icon(
+class _NewLabelButton extends StatelessWidget {
+  const _NewLabelButton();
+
+  @override
+  Widget build(BuildContext context) => OutlinedButton.icon(
     onPressed: () => showLabelNameDialog(context),
     icon: const Icon(Icons.add, size: 18),
     label: Text(context.l10n.labelsNew),
   );
+}
 
-  Widget _list(List<LabelTotal> totals, CurrencyConverter converter) {
+class _LabelList extends StatelessWidget {
+  const _LabelList({
+    required this.totals,
+    required this.converter,
+    required this.onOpen,
+    required this.onDelete,
+  });
+
+  final List<LabelTotal> totals;
+  final CurrencyConverter converter;
+  final ValueChanged<Label> onOpen;
+  final ValueChanged<Label> onDelete;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     return ListView(
@@ -141,19 +162,19 @@ class _LabelsPageState extends ConsumerState<LabelsPage> {
           LabelTotalRow(
             total: total,
             converter: converter,
-            onTap: () => _open(total.label),
+            onTap: () => onOpen(total.label),
             onRename: () => showLabelNameDialog(context, label: total.label),
-            onDelete: () => _delete(total.label),
+            onDelete: () => onDelete(total.label),
           ),
         DecoratedBox(
           decoration: BoxDecoration(
             border: Border(top: BorderSide(color: theme.colorScheme.onSurface)),
           ),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 18),
+          child: const Padding(
+            padding: EdgeInsets.only(top: 18),
             child: Align(
               alignment: AlignmentDirectional.centerStart,
-              child: _newButton(),
+              child: _NewLabelButton(),
             ),
           ),
         ),

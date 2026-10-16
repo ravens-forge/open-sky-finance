@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../core/l10n.dart';
 import '../../../core/widgets/editor_row.dart';
@@ -10,7 +11,7 @@ import '../providers/transactions_controller.dart';
 /// Title with autocomplete over previous titles; choosing one hands the
 /// caller its latest use, to pre-fill the category and assets accounts, and
 /// [suggested] then says what it brought.
-class TransactionTitleField extends ConsumerStatefulWidget {
+class TransactionTitleField extends HookConsumerWidget {
   const TransactionTitleField({
     super.key,
     required this.controller,
@@ -28,25 +29,12 @@ class TransactionTitleField extends ConsumerStatefulWidget {
   final String? error;
 
   @override
-  ConsumerState<TransactionTitleField> createState() =>
-      _TransactionTitleFieldState();
-}
-
-class _TransactionTitleFieldState extends ConsumerState<TransactionTitleField> {
-  final _focus = FocusNode();
-
-  @override
-  void dispose() {
-    _focus.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final focus = useFocusNode();
     final autocomplete = RawAutocomplete<TitleSuggestion>(
-      textEditingController: widget.controller,
-      focusNode: _focus,
+      textEditingController: controller,
+      focusNode: focus,
       displayStringForOption: (suggestion) => suggestion.title,
       optionsBuilder: (value) async {
         final prefix = value.text.trim();
@@ -55,7 +43,7 @@ class _TransactionTitleFieldState extends ConsumerState<TransactionTitleField> {
             .read(transactionsControllerProvider.notifier)
             .titleSuggestions(prefix);
       },
-      onSelected: widget.onSuggestion,
+      onSelected: onSuggestion,
       fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) =>
           TextField(
             controller: controller,
@@ -95,20 +83,18 @@ class _TransactionTitleFieldState extends ConsumerState<TransactionTitleField> {
     final row = EditorRow(
       icon: Icons.article_outlined,
       label: l10n.fieldTitle,
-      helper: widget.suggested == null
-          ? null
-          : l10n.transactionSuggested(widget.suggested!),
+      helper: suggested == null ? null : l10n.transactionSuggested(suggested!),
       helperColor: Theme.of(context).colorScheme.primary,
       child: autocomplete,
     );
-    if (widget.error == null) return row;
+    if (error == null) return row;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         row,
         Padding(
           padding: const EdgeInsets.only(top: 4),
-          child: FieldError(widget.error!),
+          child: FieldError(error!),
         ),
       ],
     );

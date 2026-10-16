@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/routes.dart';
@@ -47,29 +48,21 @@ class TransactionEditorPage extends ConsumerWidget {
 }
 
 /// Sends the user to the assets account editor, where opening balances live.
-class _OpeningBalanceRedirect extends StatefulWidget {
+class _OpeningBalanceRedirect extends HookWidget {
   const _OpeningBalanceRedirect({required this.assetsAccountId});
 
   final String assetsAccountId;
 
   @override
-  State<_OpeningBalanceRedirect> createState() =>
-      _OpeningBalanceRedirectState();
-}
-
-class _OpeningBalanceRedirectState extends State<_OpeningBalanceRedirect> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.pushReplacement(
-          Routes.editAssetsAccount(widget.assetsAccountId),
-        );
-      }
-    });
+  Widget build(BuildContext context) {
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) {
+          context.pushReplacement(Routes.editAssetsAccount(assetsAccountId));
+        }
+      });
+      return null;
+    }, const []);
+    return Scaffold(appBar: AppBar());
   }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(appBar: AppBar());
 }

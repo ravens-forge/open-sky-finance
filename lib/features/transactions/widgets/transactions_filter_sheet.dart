@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../core/l10n.dart';
 import '../../../core/labels.dart';
@@ -27,41 +28,35 @@ Future<TransactionFilter?> showTransactionsFilterSheet(
   (context) => TransactionsFilterSheet(filter: filter),
 );
 
-class TransactionsFilterSheet extends ConsumerStatefulWidget {
+class TransactionsFilterSheet extends HookConsumerWidget {
   const TransactionsFilterSheet({super.key, required this.filter});
 
   final TransactionFilter filter;
 
   @override
-  ConsumerState<TransactionsFilterSheet> createState() =>
-      _TransactionsFilterSheetState();
-}
-
-class _TransactionsFilterSheetState
-    extends ConsumerState<TransactionsFilterSheet> {
-  late var _filter = widget.filter;
-
-  /// Picks one of [options] or "All" (the empty id, so a dismissed sheet
-  /// stays apart from clearing the filter).
-  Future<void> _pick(
-    String title,
-    String? current,
-    List<(String, String)> options,
-    TransactionFilter Function(String? id) apply,
-  ) async {
-    final picked = await showChoiceSheet<String>(
-      context,
-      title: title,
-      options: [('', context.l10n.filterAll), ...options],
-      selected: current ?? '',
-    );
-    if (picked == null) return;
-    setState(() => _filter = apply(picked.isEmpty ? null : picked));
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final state = useState(filter);
+    final current = state.value;
+
+    // Picks one of [options] or "All" (the empty id, so a dismissed sheet
+    // stays apart from clearing the filter).
+    Future<void> pick(
+      String title,
+      String? selected,
+      List<(String, String)> options,
+      TransactionFilter Function(String? id) apply,
+    ) async {
+      final picked = await showChoiceSheet<String>(
+        context,
+        title: title,
+        options: [('', l10n.filterAll), ...options],
+        selected: selected ?? '',
+      );
+      if (picked == null) return;
+      state.value = apply(picked.isEmpty ? null : picked);
+    }
+
     final accounts =
         ref.watch(assetsAccountsProvider).value ?? const <AssetsAccount>[];
     final categories =
@@ -87,11 +82,11 @@ class _TransactionsFilterSheetState
       title: l10n.transactionsFilterTitle,
       footer: [
         TextButton(
-          onPressed: () => setState(() => _filter = _filter.cleared()),
+          onPressed: () => state.value = current.cleared(),
           child: Text(l10n.actionClear),
         ),
         FilledButton(
-          onPressed: () => Navigator.pop(context, _filter),
+          onPressed: () => Navigator.pop(context, current),
           child: Text(l10n.actionApply),
         ),
       ],
@@ -108,9 +103,8 @@ class _TransactionsFilterSheetState
               ])
                 (type, type.label(l10n)),
             ],
-            selected: _filter.type,
-            onChanged: (type) =>
-                setState(() => _filter = _filter.withType(type)),
+            selected: current.type,
+            onChanged: (type) => state.value = current.withType(type),
           ),
         ),
         Padding(
@@ -120,36 +114,36 @@ class _TransactionsFilterSheetState
             children: [
               FieldRow(
                 label: l10n.fieldAssetsAccount,
-                value: nameOf(accountOptions, _filter.assetsAccountId),
-                onTap: () => _pick(
+                value: nameOf(accountOptions, current.assetsAccountId),
+                onTap: () => pick(
                   l10n.fieldAssetsAccount,
-                  _filter.assetsAccountId,
+                  current.assetsAccountId,
                   accountOptions,
-                  _filter.withAssetsAccount,
+                  current.withAssetsAccount,
                 ),
               ),
               FieldRow(
                 label: l10n.fieldCategory,
                 value:
-                    groups[_filter.categoryGroupId] ??
-                    nameOf(categoryOptions, _filter.categoryId),
-                onTap: _filter.type == TransactionType.transfer
+                    groups[current.categoryGroupId] ??
+                    nameOf(categoryOptions, current.categoryId),
+                onTap: current.type == TransactionType.transfer
                     ? null
-                    : () => _pick(
+                    : () => pick(
                         l10n.fieldCategory,
-                        _filter.categoryId,
+                        current.categoryId,
                         categoryOptions,
-                        _filter.withCategory,
+                        current.withCategory,
                       ),
               ),
               FieldRow(
                 label: l10n.fieldLabel,
-                value: nameOf(labelOptions, _filter.labelId),
-                onTap: () => _pick(
+                value: nameOf(labelOptions, current.labelId),
+                onTap: () => pick(
                   l10n.fieldLabel,
-                  _filter.labelId,
+                  current.labelId,
                   labelOptions,
-                  _filter.withLabel,
+                  current.withLabel,
                 ),
               ),
             ],

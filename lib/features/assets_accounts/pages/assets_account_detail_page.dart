@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/now.dart';
@@ -19,30 +20,20 @@ import '../widgets/assets_account_month_view.dart';
 import '../widgets/credit_usage_section.dart';
 
 /// Balance, credit usage, balance chart and the transactions of a month.
-class AssetsAccountDetailPage extends ConsumerStatefulWidget {
+class AssetsAccountDetailPage extends HookConsumerWidget {
   const AssetsAccountDetailPage({super.key, required this.id});
 
   final String id;
 
   @override
-  ConsumerState<AssetsAccountDetailPage> createState() =>
-      _AssetsAccountDetailPageState();
-}
-
-class _AssetsAccountDetailPageState
-    extends ConsumerState<AssetsAccountDetailPage> {
-  late var _month = ref.read(currentMonthProvider);
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final month = useState(useMemoized(() => ref.read(currentMonthProvider)));
     final text = Theme.of(context).textTheme;
-    final account = ref.watch(assetsAccountProvider(widget.id));
+    final account = ref.watch(assetsAccountProvider(id));
     final balances = ref.watch(assetsAccountBalancesProvider);
-    final balance = balances.value?[widget.id];
-    final history = ref
-        .watch(assetsAccountBalanceHistoryProvider(widget.id))
-        .value;
+    final balance = balances.value?[id];
+    final history = ref.watch(assetsAccountBalanceHistoryProvider(id)).value;
 
     final a = account.value;
     if (account is AsyncData && a == null) {
@@ -53,10 +44,7 @@ class _AssetsAccountDetailPageState
       return Scaffold(
         appBar: AppBar(),
         body: PageLoadError(
-          providers: [
-            assetsAccountProvider(widget.id),
-            assetsAccountBalancesProvider,
-          ],
+          providers: [assetsAccountProvider(id), assetsAccountBalancesProvider],
         ),
       );
     }
@@ -130,8 +118,8 @@ class _AssetsAccountDetailPageState
           const SizedBox(height: 20),
           AssetsAccountMonthView(
             account: a,
-            month: _month,
-            onMonthChanged: (m) => setState(() => _month = m),
+            month: month.value,
+            onMonthChanged: (m) => month.value = m,
           ),
         ],
       ),

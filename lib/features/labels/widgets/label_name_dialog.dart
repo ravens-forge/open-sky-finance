@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../core/l10n.dart';
 import '../../../core/result.dart';
@@ -14,66 +15,52 @@ Future<void> showLabelNameDialog(BuildContext context, {Label? label}) =>
       builder: (context) => _LabelNameDialog(label: label),
     );
 
-class _LabelNameDialog extends ConsumerStatefulWidget {
+class _LabelNameDialog extends HookConsumerWidget {
   const _LabelNameDialog({this.label});
 
   final Label? label;
 
   @override
-  ConsumerState<_LabelNameDialog> createState() => _LabelNameDialogState();
-}
-
-class _LabelNameDialogState extends ConsumerState<_LabelNameDialog> {
-  late final _name = TextEditingController(text: widget.label?.name);
-  String? _error;
-  var _saving = false;
-
-  @override
-  void dispose() {
-    _name.dispose();
-    super.dispose();
-  }
-
-  Future<void> _save() async {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    setState(() => _saving = true);
-    final result = await ref
-        .read(labelsControllerProvider.notifier)
-        .save(id: widget.label?.id, name: _name.text);
-    if (!mounted) return;
-    setState(() => _saving = false);
-    switch (result) {
-      case Ok():
-        Navigator.pop(context);
-      case Err(error: RepositoryDataError.invalidName):
-        setState(() => _error = l10n.errorNameRequired);
-      case Err(error: RepositoryDataError.duplicateName):
-        setState(() => _error = l10n.errorNameTaken);
-      case Err():
-        setState(() => _error = l10n.errorSaveFailed);
+    final name = useTextEditingController(text: label?.name);
+    final error = useState<String?>(null);
+    final saving = useState(false);
+
+    Future<void> save() async {
+      saving.value = true;
+      final result = await ref
+          .read(labelsControllerProvider.notifier)
+          .save(id: label?.id, name: name.text);
+      if (!context.mounted) return;
+      saving.value = false;
+      switch (result) {
+        case Ok():
+          Navigator.pop(context);
+        case Err(error: RepositoryDataError.invalidName):
+          error.value = l10n.errorNameRequired;
+        case Err(error: RepositoryDataError.duplicateName):
+          error.value = l10n.errorNameTaken;
+        case Err():
+          error.value = l10n.errorSaveFailed;
+      }
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
     return AlertDialog(
       scrollable: true,
-      title: Text(widget.label == null ? l10n.labelsNew : l10n.labelsRename),
+      title: Text(label == null ? l10n.labelsNew : l10n.labelsRename),
       content: TextField(
-        controller: _name,
+        controller: name,
         maxLength: 100,
         textCapitalization: TextCapitalization.sentences,
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           labelText: l10n.fieldName,
-          error: _error == null ? null : FieldError(_error!),
+          error: error.value == null ? null : FieldError(error.value!),
           counterText: '',
         ),
-        onChanged: (_) {
-          if (_error != null) setState(() => _error = null);
-        },
-        onSubmitted: (_) => _saving ? null : _save(),
+        onChanged: (_) => error.value = null,
+        onSubmitted: (_) => saving.value ? null : save(),
       ),
       actions: [
         TextButton(
@@ -81,7 +68,7 @@ class _LabelNameDialogState extends ConsumerState<_LabelNameDialog> {
           child: Text(l10n.actionCancel),
         ),
         FilledButton(
-          onPressed: _saving ? null : _save,
+          onPressed: saving.value ? null : save,
           child: Text(l10n.actionSave),
         ),
       ],

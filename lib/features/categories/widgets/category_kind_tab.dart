@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/routes.dart';
@@ -16,7 +17,7 @@ import 'category_group_tile.dart';
 import 'category_row.dart';
 
 /// The groups of [kind] with their categories, expandable and reorderable.
-class CategoryKindTab extends ConsumerStatefulWidget {
+class CategoryKindTab extends HookConsumerWidget {
   const CategoryKindTab({
     super.key,
     required this.kind,
@@ -32,21 +33,11 @@ class CategoryKindTab extends ConsumerStatefulWidget {
   final List<Category> categories;
 
   @override
-  ConsumerState<CategoryKindTab> createState() => _CategoryKindTabState();
-}
-
-class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
-  /// Groups start expanded, so a group that is still empty says so.
-  final _collapsed = <String>{};
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final nodes = groupCategories(
-      widget.groups,
-      widget.categories,
-      widget.kind,
-    );
+    // Groups start expanded, so a group that is still empty says so.
+    final collapsed = useState(const <String>{});
+    final nodes = groupCategories(groups, categories, kind);
     if (nodes.isEmpty) {
       return Center(
         child: SingleChildScrollView(
@@ -54,8 +45,7 @@ class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
             title: l10n.categoriesEmpty,
             actions: [
               FilledButton(
-                onPressed: () =>
-                    context.push(Routes.newCategoryGroup(widget.kind)),
+                onPressed: () => context.push(Routes.newCategoryGroup(kind)),
                 child: Text(l10n.editorNewCategoryGroup),
               ),
             ],
@@ -65,8 +55,8 @@ class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
     }
 
     final controller = ref.read(categoriesControllerProvider.notifier);
-    final allGroupIds = [for (final g in widget.groups) g.id];
-    final allIds = [for (final c in widget.categories) c.id];
+    final allGroupIds = [for (final g in groups) g.id];
+    final allIds = [for (final c in categories) c.id];
     final groupIds = [for (final node in nodes) node.group.id];
 
     // Groups and categories share one list; a row only moves within its own
@@ -76,7 +66,7 @@ class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
     final position = <int>[];
     for (final (g, node) in nodes.indexed) {
       final group = node.group;
-      final expanded = !_collapsed.contains(group.id);
+      final expanded = !collapsed.value.contains(group.id);
       void moveGroup(int to) {
         final from = allGroupIds.indexOf(group.id);
         final target = allGroupIds.indexOf(groupIds[to]);
@@ -89,11 +79,9 @@ class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
           node: node,
           index: children.length,
           expanded: expanded,
-          onToggle: () => setState(
-            () => expanded
-                ? _collapsed.add(group.id)
-                : _collapsed.remove(group.id),
-          ),
+          onToggle: () => collapsed.value = expanded
+              ? {...collapsed.value, group.id}
+              : ({...collapsed.value}..remove(group.id)),
           onTap: () => context.push(Routes.categoryGroup(group.id)),
           onMoveUp: g > 0 ? () => moveGroup(g - 1) : null,
           onMoveDown: g < nodes.length - 1 ? () => moveGroup(g + 1) : null,
@@ -140,7 +128,7 @@ class _CategoryKindTabState extends ConsumerState<CategoryKindTab> {
       footer: Padding(
         padding: const EdgeInsets.only(top: 16),
         child: OutlinedButton.icon(
-          onPressed: () => context.push(Routes.newCategoryGroup(widget.kind)),
+          onPressed: () => context.push(Routes.newCategoryGroup(kind)),
           icon: const Icon(Icons.add, size: 18),
           label: Text(l10n.categoriesNewGroup),
         ),

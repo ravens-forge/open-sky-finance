@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/main_currency.dart';
@@ -27,31 +28,37 @@ import '../widgets/net_income_period_switcher.dart';
 import '../widgets/net_income_summary_header.dart';
 import '../../shell/widgets/page_load_error.dart';
 
-class NetIncomePage extends ConsumerStatefulWidget {
+class NetIncomePage extends HookConsumerWidget {
   const NetIncomePage({super.key});
 
   @override
-  ConsumerState<NetIncomePage> createState() => _NetIncomePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    // Opens on what another page drilled down to, if anything.
+    final drilled = useMemoized(() => ref.read(netIncomeDrillDownProvider));
+    final state = useState(
+      useMemoized(
+        () => drilled ?? NetIncomePeriod.month(ref.read(currentMonthProvider)),
+      ),
+    );
+    final period = state.value;
 
-class _NetIncomePageState extends ConsumerState<NetIncomePage> {
-  late var _period = NetIncomePeriod.month(ref.read(currentMonthProvider));
-
-  @override
-  void initState() {
-    super.initState();
-    // Shows what another page drilled down to, then clears it.
-    ref.listenManual(netIncomeDrillDownProvider, (_, next) {
+    // Clears the drill-down once shown, so it is not shown again.
+    void clearDrillDown() =>
+        Future.microtask(ref.read(netIncomeDrillDownProvider.notifier).clear);
+    useEffect(() {
+      if (drilled != null) clearDrillDown();
+      return null;
+    }, const []);
+    ref.listen(netIncomeDrillDownProvider, (_, next) {
       if (next == null) return;
-      setState(() => _period = next);
-      Future.microtask(ref.read(netIncomeDrillDownProvider.notifier).clear);
-    }, fireImmediately: true);
-  }
+      state.value = next;
+      clearDrillDown();
+    });
 
-  void _switchKind(NetIncomePeriodKind kind) {
-    final anchor = _period.start;
-    setState(() {
-      _period = switch (kind) {
+    void switchKind(NetIncomePeriodKind kind) {
+      final anchor = period.start;
+      state.value = switch (kind) {
         NetIncomePeriodKind.month => NetIncomePeriod.month(
           YearMonth.of(anchor),
         ),
@@ -62,71 +69,65 @@ class _NetIncomePageState extends ConsumerState<NetIncomePage> {
         NetIncomePeriodKind.year => NetIncomePeriod.year(anchor.year),
         NetIncomePeriodKind.range => NetIncomePeriod.range(
           anchor,
-          _period.end.subtract(const Duration(days: 1)),
+          period.end.subtract(const Duration(days: 1)),
         ),
       };
-    });
-  }
+    }
 
-  Future<void> _pick() async {
-    if (_period.kind == NetIncomePeriodKind.range) {
-      final picked = await showDateRangePicker(
+    Future<void> pick() async {
+      if (period.kind == NetIncomePeriodKind.range) {
+        final picked = await showDateRangePicker(
+          context: context,
+          initialDateRange: DateTimeRange(
+            start: period.start,
+            end: period.end.subtract(const Duration(days: 1)),
+          ),
+          firstDate: DateTime(1900),
+          lastDate: ref.read(todayProvider),
+        );
+        if (picked != null) {
+          state.value = NetIncomePeriod.range(picked.start, picked.end);
+        }
+        return;
+      }
+      final picked = await showDatePicker(
         context: context,
-        initialDateRange: DateTimeRange(
-          start: _period.start,
-          end: _period.end.subtract(const Duration(days: 1)),
-        ),
+        initialDate: period.start,
         firstDate: DateTime(1900),
-        lastDate: ref.read(todayProvider),
+        lastDate: DateTime(2100),
+        initialDatePickerMode: DatePickerMode.year,
+        helpText: l10n.transactionsPickMonth,
       );
       if (picked != null) {
-        setState(
-          () => _period = NetIncomePeriod.range(picked.start, picked.end),
-        );
+        state.value = NetIncomePeriod.month(YearMonth.of(picked));
       }
-      return;
     }
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _period.start,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
-      initialDatePickerMode: DatePickerMode.year,
-      helpText: context.l10n.transactionsPickMonth,
-    );
-    if (picked != null) {
-      setState(() => _period = NetIncomePeriod.month(YearMonth.of(picked)));
-    }
-  }
 
-  /// Only a Month has a single [YearMonth] Transactions can jump to.
-  void _open(String? categoryId) {
-    if (_period.month case final month?) {
-      ref
-          .read(transactionsDrillDownProvider.notifier)
-          .show(month, TransactionFilter(categoryId: categoryId));
-      context.go(Routes.transactions);
+    // Only a Month has a single [YearMonth] Transactions can jump to.
+    void open(String? categoryId) {
+      if (period.month case final month?) {
+        ref
+            .read(transactionsDrillDownProvider.notifier)
+            .show(month, TransactionFilter(categoryId: categoryId));
+        context.go(Routes.transactions);
+      }
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final summary = ref.watch(netIncomeSummaryProvider(_period));
+    final summary = ref.watch(netIncomeSummaryProvider(period));
     final income = ref.watch(
-      netIncomeCategoriesProvider(_period, CategoryKind.income),
+      netIncomeCategoriesProvider(period, CategoryKind.income),
     );
     final expenses = ref.watch(
-      netIncomeCategoriesProvider(_period, CategoryKind.expense),
+      netIncomeCategoriesProvider(period, CategoryKind.expense),
     );
     final currency = ref.watch(mainCurrencyProvider).value;
 
     return Column(
       children: [
         NetIncomePeriodSwitcher(
-          period: _period,
-          onChanged: (p) => setState(() => _period = p),
-          onPick: _pick,
+          period: period,
+          onChanged: (p) => state.value = p,
+          onPick: pick,
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
@@ -139,8 +140,8 @@ class _NetIncomePageState extends ConsumerState<NetIncomePage> {
                 (NetIncomePeriodKind.year, l10n.netIncomePeriodYear),
                 (NetIncomePeriodKind.range, l10n.netIncomePeriodRange),
               ],
-              selected: _period.kind,
-              onChanged: _switchKind,
+              selected: period.kind,
+              onChanged: switchKind,
             ),
           ),
         ),
@@ -150,7 +151,7 @@ class _NetIncomePageState extends ConsumerState<NetIncomePage> {
             (_, AsyncError(), _, _) ||
             (_, _, AsyncError(), _) => PageLoadError(
               providers: [
-                netIncomeSummaryProvider(_period),
+                netIncomeSummaryProvider(period),
                 netIncomeCategoriesProvider,
               ],
             ),
@@ -160,20 +161,40 @@ class _NetIncomePageState extends ConsumerState<NetIncomePage> {
               AsyncValue(value: final expenses?),
               final String currency,
             ) =>
-              _body(summary, income, expenses, currency),
+              _NetIncomeBody(
+                summary: summary,
+                income: income,
+                expenses: expenses,
+                currency: currency,
+                onOpen: period.kind == NetIncomePeriodKind.month ? open : null,
+              ),
             _ => PagePlaceholder(label: l10n.pageNetIncome),
           },
         ),
       ],
     );
   }
+}
 
-  Widget _body(
-    NetIncomeSummary summary,
-    List<NetIncomeCategoryGroup> income,
-    List<NetIncomeCategoryGroup> expenses,
-    String currency,
-  ) {
+class _NetIncomeBody extends StatelessWidget {
+  const _NetIncomeBody({
+    required this.summary,
+    required this.income,
+    required this.expenses,
+    required this.currency,
+    required this.onOpen,
+  });
+
+  final NetIncomeSummary summary;
+  final List<NetIncomeCategoryGroup> income;
+  final List<NetIncomeCategoryGroup> expenses;
+  final String currency;
+
+  /// Opens a category's transactions; `null` when the period is not a month.
+  final ValueChanged<String?>? onOpen;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     if (income.isEmpty && expenses.isEmpty) {
       return Center(child: EmptyState(title: l10n.netIncomeEmpty));
@@ -182,21 +203,21 @@ class _NetIncomePageState extends ConsumerState<NetIncomePage> {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
       children: [
         NetIncomeSummaryHeader(summary: summary, currency: currency),
-        _section(l10n.netIncomeIncome, income, summary.income, currency),
-        _section(l10n.netIncomeExpenses, expenses, summary.expense, currency),
+        _section(context, l10n.netIncomeIncome, income, summary.income),
+        _section(context, l10n.netIncomeExpenses, expenses, summary.expense),
       ],
     );
   }
 
   Widget _section(
+    BuildContext context,
     String title,
     List<NetIncomeCategoryGroup> groups,
     ConvertedTotal total,
-    String currency,
   ) {
     if (groups.isEmpty) return const SizedBox.shrink();
     final theme = Theme.of(context);
-    final tappable = _period.kind == NetIncomePeriodKind.month;
+    final onOpen = this.onOpen;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -237,7 +258,7 @@ class _NetIncomePageState extends ConsumerState<NetIncomePage> {
             NetIncomeCategoryRow(
               category: category,
               currency: currency,
-              onTap: tappable ? () => _open(category.categoryId) : null,
+              onTap: onOpen == null ? null : () => onOpen(category.categoryId),
             ),
         ],
       ],

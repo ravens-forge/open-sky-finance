@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/main_currency.dart';
@@ -20,24 +21,15 @@ import '../../shell/widgets/page_load_error.dart';
 
 /// Assets and liabilities grouped by type with subtotals; favorite star, show
 /// hidden, and reorder within a type by drag or move up/down.
-class AssetsAccountsPage extends ConsumerStatefulWidget {
+class AssetsAccountsPage extends HookConsumerWidget {
   const AssetsAccountsPage({super.key});
 
   @override
-  ConsumerState<AssetsAccountsPage> createState() => _AssetsAccountsPageState();
-}
-
-class _AssetsAccountsPageState extends ConsumerState<AssetsAccountsPage> {
-  var _showHidden = false;
-
-  AssetsAccountsController get _controller =>
-      ref.read(assetsAccountsControllerProvider.notifier);
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final showHidden = useState(false);
     final all = ref.watch(assetsAccountsWithBalanceProvider);
-    final sides = ref.watch(assetsAccountsSidesProvider(_showHidden));
+    final sides = ref.watch(assetsAccountsSidesProvider(showHidden.value));
     final main = ref.watch(mainCurrencyProvider).value;
 
     return Scaffold(
@@ -70,7 +62,12 @@ class _AssetsAccountsPageState extends ConsumerState<AssetsAccountsPage> {
           AsyncValue(value: final sides?),
           final String main,
         ) =>
-          _list(all, sides, main),
+          _AssetsAccountList(
+            all: all,
+            sides: sides,
+            main: main,
+            showHidden: showHidden,
+          ),
         (AsyncError(), _, _) || (_, AsyncError(), _) => PageLoadError(
           providers: [
             assetsAccountsWithBalanceProvider,
@@ -81,17 +78,29 @@ class _AssetsAccountsPageState extends ConsumerState<AssetsAccountsPage> {
       },
     );
   }
+}
 
-  Widget _list(
-    List<AssetsAccountWithBalance> all,
-    List<AssetsAccountsSide> sides,
-    String main,
-  ) {
+class _AssetsAccountList extends ConsumerWidget {
+  const _AssetsAccountList({
+    required this.all,
+    required this.sides,
+    required this.main,
+    required this.showHidden,
+  });
+
+  final List<AssetsAccountWithBalance> all;
+  final List<AssetsAccountsSide> sides;
+  final String main;
+  final ValueNotifier<bool> showHidden;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final controller = ref.read(assetsAccountsControllerProvider.notifier);
     final allIds = [for (final a in all) a.account.id];
     void move(List<String> group, int from, int to) {
-      if (from != to) _controller.move(allIds, group, from, to);
+      if (from != to) controller.move(allIds, group, from, to);
     }
 
     // Headers and rows share one list; rows only move within their type
@@ -135,7 +144,7 @@ class _AssetsAccountsPageState extends ConsumerState<AssetsAccountsPage> {
               index: children.length,
               mainCurrency: main,
               onTap: () => context.push(Routes.assetsAccount(item.account.id)),
-              onFavorite: (on) => _controller.setFavorite(item.account.id, on),
+              onFavorite: (on) => controller.setFavorite(item.account.id, on),
               onMoveUp: i > 0 ? () => move(ids, i, i - 1) : null,
               onMoveDown: i < ids.length - 1 ? () => move(ids, i, i + 1) : null,
             ),
@@ -157,8 +166,8 @@ class _AssetsAccountsPageState extends ConsumerState<AssetsAccountsPage> {
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(l10n.assetsAccountsShowHidden(hiddenCount)),
-              value: _showHidden,
-              onChanged: (on) => setState(() => _showHidden = on),
+              value: showHidden.value,
+              onChanged: (on) => showHidden.value = on,
             ),
           Padding(
             padding: const EdgeInsets.only(top: 12),

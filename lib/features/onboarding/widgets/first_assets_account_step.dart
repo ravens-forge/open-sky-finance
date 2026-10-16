@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../app/now.dart';
 import '../../../core/l10n.dart';
@@ -22,117 +23,94 @@ import 'onboarding_step_layout.dart';
 /// Name, type, currency and current balance of the first assets account; its
 /// currency becomes the main currency. "Skip for now" keeps the seeded Cash
 /// assets account.
-class FirstAssetsAccountStep extends ConsumerStatefulWidget {
+class FirstAssetsAccountStep extends HookConsumerWidget {
   const FirstAssetsAccountStep({super.key, required this.onSkip});
 
   final VoidCallback onSkip;
 
-  @override
-  ConsumerState<FirstAssetsAccountStep> createState() =>
-      _FirstAssetsAccountStepState();
-}
-
-class _FirstAssetsAccountStepState
-    extends ConsumerState<FirstAssetsAccountStep> {
   static const _quickTypes = [
     AssetsAccountType.bank,
     AssetsAccountType.cash,
     AssetsAccountType.creditCard,
   ];
 
-  final _name = TextEditingController();
-  final _balance = TextEditingController();
-  var _type = AssetsAccountType.bank;
-  // Suggested from the device region.
-  late var _currency = deviceCurrency(
-    WidgetsBinding.instance.platformDispatcher.locale,
-  );
-  String? _nameError;
-  String? _balanceError;
-  var _saving = false;
-
-  // Zero in the locale and currency's format (0.00, 0,00, 0 for JPY).
-  String _zero(String currency) => formatMoney(
-    0,
-    currency: currency,
-    locale: context.l10n.localeName,
-    symbol: false,
-  );
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_balance.text.isEmpty) _balance.text = _zero(_currency);
-  }
-
-  @override
-  void dispose() {
-    _name.dispose();
-    _balance.dispose();
-    super.dispose();
-  }
-
-  Future<void> _start() async {
-    final l10n = context.l10n;
-    final name = _name.text.trim();
-    final balance = _balance.text.trim().isEmpty
-        ? 0
-        : parseMoney(_balance.text, locale: l10n.localeName);
-    setState(() {
-      _nameError = name.isEmpty ? l10n.errorNameRequired : null;
-      _balanceError = balance == null ? l10n.errorInvalidAmount : null;
-    });
-    if (_nameError != null || balance == null) return;
-
-    setState(() => _saving = true);
-    final result = await ref
-        .read(onboardingProvider.notifier)
-        .createFirstAssetsAccount(
-          AssetsAccountDraft(
-            name: name,
-            type: _type,
-            currency: _currency,
-            openingBalance: balance,
-            openingBalanceDate: ref.read(todayProvider),
-          ),
-        );
-    if (!mounted) return;
-    setState(() => _saving = false);
-    if (result case Err(:final error)) {
-      if (error == RepositoryDataError.invalidName) {
-        setState(() => _nameError = l10n.errorNameRequired);
-      } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.errorSaveFailed)));
-      }
-    }
-  }
-
-  Future<void> _pickOtherType() async {
-    final l10n = context.l10n;
-    final picked = await showChoiceSheet(
-      context,
-      title: l10n.fieldType,
-      selected: _type,
-      options: [for (final t in AssetsAccountType.values) (t, t.label(l10n))],
-    );
-    if (picked != null) setState(() => _type = picked);
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final symbol = currencySymbol(_currency);
+    // Zero in the locale and currency's format (0.00, 0,00, 0 for JPY).
+    String zero(String currency) => formatMoney(
+      0,
+      currency: currency,
+      locale: l10n.localeName,
+      symbol: false,
+    );
+    // Suggested from the device region.
+    final currency = useState(
+      useMemoized(
+        () => deviceCurrency(WidgetsBinding.instance.platformDispatcher.locale),
+      ),
+    );
+    final name = useTextEditingController();
+    final balance = useTextEditingController(text: zero(currency.value));
+    final type = useState(AssetsAccountType.bank);
+    final nameError = useState<String?>(null);
+    final balanceError = useState<String?>(null);
+    final saving = useState(false);
+
+    Future<void> start() async {
+      final trimmed = name.text.trim();
+      final amount = balance.text.trim().isEmpty
+          ? 0
+          : parseMoney(balance.text, locale: l10n.localeName);
+      nameError.value = trimmed.isEmpty ? l10n.errorNameRequired : null;
+      balanceError.value = amount == null ? l10n.errorInvalidAmount : null;
+      if (nameError.value != null || amount == null) return;
+
+      saving.value = true;
+      final result = await ref
+          .read(onboardingProvider.notifier)
+          .createFirstAssetsAccount(
+            AssetsAccountDraft(
+              name: trimmed,
+              type: type.value,
+              currency: currency.value,
+              openingBalance: amount,
+              openingBalanceDate: ref.read(todayProvider),
+            ),
+          );
+      if (!context.mounted) return;
+      saving.value = false;
+      if (result case Err(:final error)) {
+        if (error == RepositoryDataError.invalidName) {
+          nameError.value = l10n.errorNameRequired;
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(l10n.errorSaveFailed)));
+        }
+      }
+    }
+
+    Future<void> pickOtherType() async {
+      final picked = await showChoiceSheet(
+        context,
+        title: l10n.fieldType,
+        selected: type.value,
+        options: [for (final t in AssetsAccountType.values) (t, t.label(l10n))],
+      );
+      if (picked != null) type.value = picked;
+    }
+
+    final symbol = currencySymbol(currency.value);
 
     return OnboardingStepLayout(
       actions: [
         OutlinedButton(
-          onPressed: _saving ? null : widget.onSkip,
+          onPressed: saving.value ? null : onSkip,
           child: Text(l10n.actionSkipForNow),
         ),
         FilledButton(
-          onPressed: _saving ? null : _start,
+          onPressed: saving.value ? null : start,
           child: Text(l10n.actionStart),
         ),
       ],
@@ -153,12 +131,14 @@ class _FirstAssetsAccountStepState
         ),
         const SizedBox(height: 12),
         TextField(
-          controller: _name,
+          controller: name,
           textCapitalization: TextCapitalization.sentences,
           style: theme.textTheme.bodyLarge!.copyWith(fontSize: 18),
           decoration: InputDecoration(
             labelText: l10n.fieldName,
-            error: _nameError == null ? null : FieldError(_nameError!),
+            error: nameError.value == null
+                ? null
+                : FieldError(nameError.value!),
           ),
         ),
         const SizedBox(height: 16),
@@ -166,27 +146,27 @@ class _FirstAssetsAccountStepState
         const SizedBox(height: 8),
         SegmentedFilter<AssetsAccountType>(
           options: [
-            for (final t in {..._quickTypes, _type}) (t, t.label(l10n)),
+            for (final t in {..._quickTypes, type.value}) (t, t.label(l10n)),
           ],
-          selected: _type,
-          onChanged: (t) => setState(() => _type = t),
+          selected: type.value,
+          onChanged: (t) => type.value = t,
           trailing: ActionChip(
             label: Text(l10n.actionOther),
-            onPressed: _pickOtherType,
+            onPressed: pickOtherType,
           ),
         ),
         const SizedBox(height: 16),
         FieldRow(
           label: l10n.fieldCurrency,
-          value: currencyLabel(_currency, l10n),
+          value: currencyLabel(currency.value, l10n),
           onTap: () async {
-            final picked = await showCurrencyPicker(context, _currency);
+            final picked = await showCurrencyPicker(context, currency.value);
             if (picked == null) return;
             // Keep the default zero in the new currency's format.
-            if (_balance.text == _zero(_currency)) {
-              _balance.text = _zero(picked);
+            if (balance.text == zero(currency.value)) {
+              balance.text = zero(picked);
             }
-            setState(() => _currency = picked);
+            currency.value = picked;
           },
         ),
         Padding(
@@ -197,11 +177,11 @@ class _FirstAssetsAccountStepState
           ),
         ),
         TextField(
-          controller: _balance,
+          controller: balance,
           // Tapping selects the default so typing replaces it.
-          onTap: () => _balance.selection = TextSelection(
+          onTap: () => balance.selection = TextSelection(
             baseOffset: 0,
-            extentOffset: _balance.text.length,
+            extentOffset: balance.text.length,
           ),
           keyboardType: const TextInputType.numberWithOptions(
             decimal: true,
@@ -220,7 +200,9 @@ class _FirstAssetsAccountStepState
               ),
             ),
             prefixIconConstraints: const BoxConstraints(),
-            error: _balanceError == null ? null : FieldError(_balanceError!),
+            error: balanceError.value == null
+                ? null
+                : FieldError(balanceError.value!),
           ),
         ),
       ],

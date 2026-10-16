@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../app/theme.dart';
 import '../../../core/l10n.dart';
@@ -14,36 +15,30 @@ import '../widgets/welcome_step.dart';
 
 /// The pending onboarding steps, one per screen. The router leaves this page
 /// once the session is finished.
-class OnboardingPage extends ConsumerStatefulWidget {
+class OnboardingPage extends HookConsumerWidget {
   const OnboardingPage({super.key});
 
   @override
-  ConsumerState<OnboardingPage> createState() => _OnboardingPageState();
-}
-
-class _OnboardingPageState extends ConsumerState<OnboardingPage> {
-  var _index = 0;
-  OnboardingStep? _marked;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final current = useState(0);
+    final marked = useRef<OnboardingStep?>(null);
     final session = ref.watch(onboardingProvider).value;
     if (session == null || session.steps.isEmpty) return const Scaffold();
 
     final notifier = ref.read(onboardingProvider.notifier);
     final steps = session.steps;
-    final index = _index.clamp(0, steps.length - 1);
+    final index = current.value.clamp(0, steps.length - 1);
     final step = steps[index];
     // Seen as soon as displayed, so a restart resumes at the next one.
-    if (_marked != step) {
-      _marked = step;
+    if (marked.value != step) {
+      marked.value = step;
       unawaited(notifier.markSeen(step));
     }
     void next() => index == steps.length - 1
         ? unawaited(notifier.finish())
-        : setState(() => _index = index + 1);
-    final back = index == 0 ? null : () => setState(() => _index = index - 1);
+        : current.value = index + 1;
+    final back = index == 0 ? null : () => current.value = index - 1;
 
     return Scaffold(
       body: SafeArea(

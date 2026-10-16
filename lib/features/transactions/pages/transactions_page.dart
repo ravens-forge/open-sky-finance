@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -35,112 +36,132 @@ import '../widgets/transactions_search_bar.dart';
 import '../widgets/transactions_summary_row.dart';
 import '../../shell/widgets/page_load_error.dart';
 
-class TransactionsPage extends ConsumerStatefulWidget {
+class TransactionsPage extends HookConsumerWidget {
   const TransactionsPage({super.key});
 
   @override
-  ConsumerState<TransactionsPage> createState() => _TransactionsPageState();
-}
-
-class _TransactionsPageState extends ConsumerState<TransactionsPage> {
-  late var _month = ref.read(currentMonthProvider);
-  var _filter = const TransactionFilter();
-  final _search = TextEditingController();
-
-  /// The last month loaded.
-  TransactionsMonth? _shown;
-
-  @override
-  void initState() {
-    super.initState();
-    // Shows what another page drilled down to, then clears it so it is not
-    // shown again.
-    ref.listenManual(transactionsDrillDownProvider, (_, next) {
-      if (next == null) return;
-      _search.clear();
-      setState(() {
-        _month = next.month;
-        _filter = next.filter;
-      });
-      Future.microtask(ref.read(transactionsDrillDownProvider.notifier).clear);
-    }, fireImmediately: true);
-  }
-
-  @override
-  void dispose() {
-    _search.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickMonth() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _month.start,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
-      initialDatePickerMode: DatePickerMode.year,
-      helpText: context.l10n.transactionsPickMonth,
-    );
-    if (picked != null) setState(() => _month = YearMonth.of(picked));
-  }
-
-  Future<void> _openFilters() async {
-    final picked = await showTransactionsFilterSheet(context, _filter);
-    if (picked != null) setState(() => _filter = picked);
-  }
-
-  void _trash(Transaction transaction) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final messenger = ScaffoldMessenger.of(context);
-    final controller = ref.read(transactionsControllerProvider.notifier);
-    controller.trash(transaction.id);
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(l10n.transactionsMovedToTrash),
-        action: SnackBarAction(
-          label: l10n.actionUndo,
-          onPressed: () => controller.restore(transaction.id),
-        ),
+    // Opens on what another page drilled down to, if anything.
+    final drilled = useMemoized(() => ref.read(transactionsDrillDownProvider));
+    final selected = useState(
+      useMemoized<YearMonth>(
+        () => drilled?.month ?? ref.read(currentMonthProvider),
       ),
     );
-  }
+    final filter = useState(drilled?.filter ?? const TransactionFilter());
+    final search = useTextEditingController();
+    // The last month loaded.
+    final last = useRef<TransactionsMonth?>(null);
 
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final month = ref.watch(transactionsMonthProvider(_month, _filter));
+    // Clears the drill-down once shown, so it is not shown again.
+    void clearDrillDown() => Future.microtask(
+      ref.read(transactionsDrillDownProvider.notifier).clear,
+    );
+    useEffect(() {
+      if (drilled != null) clearDrillDown();
+      return null;
+    }, const []);
+    ref.listen(transactionsDrillDownProvider, (_, next) {
+      if (next == null) return;
+      search.clear();
+      selected.value = next.month;
+      filter.value = next.filter;
+      clearDrillDown();
+    });
+
+    Future<void> pickMonth() async {
+      final picked = await showDatePicker(
+        context: context,
+        initialDate: selected.value.start,
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2100),
+        initialDatePickerMode: DatePickerMode.year,
+        helpText: l10n.transactionsPickMonth,
+      );
+      if (picked != null) selected.value = YearMonth.of(picked);
+    }
+
+    final month = ref.watch(
+      transactionsMonthProvider(selected.value, filter.value),
+    );
     final converter = ref.watch(currencyConverterProvider).value;
     // Each keystroke is a new filter, so a new provider that starts out
     // loading. The previous result stays meanwhile, and with it the search
     // field inside the list, so the keyboard stays open.
-    final shown = _shown = month.value ?? _shown;
+    final shown = last.value = month.value ?? last.value;
 
     return Column(
       children: [
         MonthSwitcher(
-          month: _month,
-          onChanged: (month) => setState(() => _month = month),
-          onPick: _pickMonth,
+          month: selected.value,
+          onChanged: (value) => selected.value = value,
+          onPick: pickMonth,
         ),
         const Divider(),
         Expanded(
           child: switch ((month, shown, converter)) {
             (AsyncError(), _, _) => PageLoadError(
-              providers: [transactionsMonthProvider(_month, _filter)],
+              providers: [
+                transactionsMonthProvider(selected.value, filter.value),
+              ],
             ),
-            (_, final shown?, final CurrencyConverter converter) => ListView(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 96),
-              children: _sections(shown, converter),
-            ),
+            (_, final shown?, final CurrencyConverter converter) =>
+              _TransactionList(
+                month: shown,
+                converter: converter,
+                selected: selected,
+                filter: filter,
+                search: search,
+              ),
             _ => PagePlaceholder(label: l10n.pageTransactions),
           },
         ),
       ],
     );
   }
+}
 
-  List<Widget> _sections(TransactionsMonth month, CurrencyConverter converter) {
+/// The totals, the search and the transactions of [month] by day.
+class _TransactionList extends ConsumerWidget {
+  const _TransactionList({
+    required this.month,
+    required this.converter,
+    required this.selected,
+    required this.filter,
+    required this.search,
+  });
+
+  final TransactionsMonth month;
+  final CurrencyConverter converter;
+  final ValueNotifier<YearMonth> selected;
+  final ValueNotifier<TransactionFilter> filter;
+  final TextEditingController search;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+
+    Future<void> openFilters() async {
+      final picked = await showTransactionsFilterSheet(context, filter.value);
+      if (picked != null) filter.value = picked;
+    }
+
+    void trash(Transaction transaction) {
+      final messenger = ScaffoldMessenger.of(context);
+      final controller = ref.read(transactionsControllerProvider.notifier);
+      controller.trash(transaction.id);
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.transactionsMovedToTrash),
+          action: SnackBarAction(
+            label: l10n.actionUndo,
+            onPressed: () => controller.restore(transaction.id),
+          ),
+        ),
+      );
+    }
+
     final categories = {
       for (final c in ref.watch(categoriesProvider).value ?? const <Category>[])
         c.id: c,
@@ -151,7 +172,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
         a.id: a,
     };
     final labels =
-        ref.watch(transactionLabelsProvider(_month)).value ??
+        ref.watch(transactionLabelsProvider(selected.value)).value ??
         const <String, List<Label>>{};
     final tomorrow = ref.watch(tomorrowProvider);
     final day = DateFormat.MMMMEEEEd(l10n.localeName);
@@ -174,7 +195,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
       key: ValueKey(t.id),
       customSemanticsActions: {
         CustomSemanticsAction(label: l10n.actionEdit): () => edit(t),
-        CustomSemanticsAction(label: l10n.actionDelete): () => _trash(t),
+        CustomSemanticsAction(label: l10n.actionDelete): () => trash(t),
       },
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -193,51 +214,54 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
               context,
               t,
               onEdit: () => edit(t),
-              onDelete: () => _trash(t),
+              onDelete: () => trash(t),
             );
           },
         ),
       ),
     );
-    final filtered = _filter.count > 0 || _filter.query.trim().isNotEmpty;
+    final current = filter.value;
+    final filtered = current.count > 0 || current.query.trim().isNotEmpty;
 
-    return [
-      TransactionsSummaryRow(totals: month.totals, converter: converter),
-      // An empty period offers its next steps instead of a search.
-      if (!month.isEmpty || filtered)
-        TransactionsSearchBar(
-          controller: _search,
-          onChanged: (text) =>
-              setState(() => _filter = _filter.withQuery(text)),
-          filterCount: _filter.count,
-          onFilters: _openFilters,
-        ),
-      if (month.isEmpty)
-        TransactionsEmptyState(
-          month: _month,
-          filtered: filtered,
-          onClear: () {
-            _search.clear();
-            setState(() => _filter = const TransactionFilter());
-          },
-          onPreviousMonth: () => setState(() => _month = _month.plus(-1)),
-          onAdd: () => context.push(Routes.newTransaction()),
-          onImport: () => context.push(Routes.backups),
-        ),
-      if (month.scheduled.isNotEmpty) ...[
-        DayHeader(
-          title: l10n.chipScheduled,
-          trailing: total(month.scheduledNet),
-        ),
-        for (final (i, t) in month.scheduled.indexed) row(t, first: i == 0),
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 96),
+      children: [
+        TransactionsSummaryRow(totals: month.totals, converter: converter),
+        // An empty period offers its next steps instead of a search.
+        if (!month.isEmpty || filtered)
+          TransactionsSearchBar(
+            controller: search,
+            onChanged: (text) => filter.value = current.withQuery(text),
+            filterCount: current.count,
+            onFilters: openFilters,
+          ),
+        if (month.isEmpty)
+          TransactionsEmptyState(
+            month: selected.value,
+            filtered: filtered,
+            onClear: () {
+              search.clear();
+              filter.value = const TransactionFilter();
+            },
+            onPreviousMonth: () => selected.value = selected.value.plus(-1),
+            onAdd: () => context.push(Routes.newTransaction()),
+            onImport: () => context.push(Routes.backups),
+          ),
+        if (month.scheduled.isNotEmpty) ...[
+          DayHeader(
+            title: l10n.chipScheduled,
+            trailing: total(month.scheduledNet),
+          ),
+          for (final (i, t) in month.scheduled.indexed) row(t, first: i == 0),
+        ],
+        for (final d in month.days) ...[
+          DayHeader(
+            title: capitalizeFirst(day.format(d.date)),
+            trailing: total(d.net),
+          ),
+          for (final (i, t) in d.transactions.indexed) row(t, first: i == 0),
+        ],
       ],
-      for (final d in month.days) ...[
-        DayHeader(
-          title: capitalizeFirst(day.format(d.date)),
-          trailing: total(d.net),
-        ),
-        for (final (i, t) in d.transactions.indexed) row(t, first: i == 0),
-      ],
-    ];
+    );
   }
 }

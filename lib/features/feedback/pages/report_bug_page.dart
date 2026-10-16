@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../core/l10n.dart';
 import '../../../core/links.dart';
@@ -12,18 +13,10 @@ import '../widgets/issue_kind_picker.dart';
 import '../widgets/report_bug_actions.dart';
 import '../widgets/technical_info_section.dart';
 
-class ReportBugPage extends ConsumerStatefulWidget {
+class ReportBugPage extends HookConsumerWidget {
   const ReportBugPage({super.key});
 
-  @override
-  ConsumerState<ReportBugPage> createState() => _ReportBugPageState();
-}
-
-class _ReportBugPageState extends ConsumerState<ReportBugPage> {
-  IssueKind _kind = IssueKind.bug;
-  bool _include = true;
-
-  Future<void> _copy(Map<String, String> rows) async {
+  Future<void> _copy(BuildContext context, Map<String, String> rows) async {
     final messenger = ScaffoldMessenger.of(context);
     final copied = context.l10n.reportBugCopied;
     await Clipboard.setData(
@@ -35,11 +28,13 @@ class _ReportBugPageState extends ConsumerState<ReportBugPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final kind = useState(IssueKind.bug);
+    final include = useState(true);
     final info = ref.watch(technicalInfoProvider(l10n.localeName)).value;
-    final shared = _include ? info : null;
+    final shared = include.value ? info : null;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.actionReportBug)),
@@ -54,13 +49,13 @@ class _ReportBugPageState extends ConsumerState<ReportBugPage> {
             ),
           ),
           IssueKindPicker(
-            value: _kind,
-            onChanged: (kind) => setState(() => _kind = kind),
+            value: kind.value,
+            onChanged: (value) => kind.value = value,
           ),
           TechnicalInfoSection(
             info: info,
-            include: _include,
-            onIncludeChanged: (on) => setState(() => _include = on),
+            include: include.value,
+            onIncludeChanged: (on) => include.value = on,
           ),
           const SizedBox(height: 18),
           WarningBanner(
@@ -72,10 +67,10 @@ class _ReportBugPageState extends ConsumerState<ReportBugPage> {
       bottomNavigationBar: ReportBugActions(
         onCopy: shared == null
             ? null
-            : () => _copy(technicalInfoRows(l10n, shared)),
+            : () => _copy(context, technicalInfoRows(l10n, shared)),
         onOpen: () => openLink(
           context,
-          Links.issueForm(_kind.form, shared?.formFields ?? const {}),
+          Links.issueForm(kind.value.form, shared?.formFields ?? const {}),
         ),
       ),
     );

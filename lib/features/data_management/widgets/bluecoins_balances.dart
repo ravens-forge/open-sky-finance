@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../core/l10n.dart';
 import '../../../core/widgets/amount_text.dart';
@@ -10,22 +11,15 @@ const _shown = 3;
 
 /// The balance of each assets account to import, the first few until the
 /// user asks for all.
-class BluecoinsBalances extends StatefulWidget {
+class BluecoinsBalances extends HookWidget {
   const BluecoinsBalances(this.balances, {super.key});
 
   final List<AssetsAccountWithBalance> balances;
 
   @override
-  State<BluecoinsBalances> createState() => _BluecoinsBalancesState();
-}
-
-class _BluecoinsBalancesState extends State<BluecoinsBalances> {
-  var _all = false;
-
-  @override
   Widget build(BuildContext context) {
-    final balances = widget.balances;
-    final shown = _all ? balances : balances.take(_shown);
+    final all = useState(false);
+    final shown = all.value ? balances : balances.take(_shown);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -38,9 +32,9 @@ class _BluecoinsBalancesState extends State<BluecoinsBalances> {
               amountStyle: AmountStyle.balance,
             ),
           ),
-        if (!_all && balances.length > _shown)
+        if (!all.value && balances.length > _shown)
           TextButton(
-            onPressed: () => setState(() => _all = true),
+            onPressed: () => all.value = true,
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,
               foregroundColor: Theme.of(context).colorScheme.primary,

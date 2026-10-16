@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../finance_colors.dart';
 import '../l10n.dart';
@@ -8,7 +9,7 @@ import 'app_logo.dart';
 
 /// Shown while the app opens its data. Stays blank paper for the first
 /// [delay] so fast starts never flash it.
-class LaunchScreen extends StatefulWidget {
+class LaunchScreen extends HookWidget {
   const LaunchScreen({
     super.key,
     this.delay = const Duration(milliseconds: 400),
@@ -17,32 +18,17 @@ class LaunchScreen extends StatefulWidget {
   final Duration delay;
 
   @override
-  State<LaunchScreen> createState() => _LaunchScreenState();
-}
-
-class _LaunchScreenState extends State<LaunchScreen> {
-  late final Timer _timer;
-  bool _visible = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer(widget.delay, () => setState(() => _visible = true));
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final visible = useState(false);
+    useEffect(() {
+      final timer = Timer(delay, () => visible.value = true);
+      return timer.cancel;
+    }, const []);
     return ColoredBox(
       color: theme.colorScheme.surface,
-      child: !_visible
+      child: !visible.value
           ? const SizedBox.expand()
           : Semantics(
               container: true,
