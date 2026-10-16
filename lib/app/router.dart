@@ -57,9 +57,32 @@ GoRouter router(Ref ref) {
 
   void goHome(BuildContext context) => context.go(Routes.home);
 
-  // Full-screen editor on the root navigator, above the shell.
-  Page<void> editor(GoRouterState state, Widget child) =>
-      MaterialPage(key: state.pageKey, fullscreenDialog: true, child: child);
+  // Full-screen editor on the root navigator, above the shell: it rises from
+  // the bottom and fades, so it reads as a sheet over the page under it.
+  Page<void> editor(GoRouterState state, Widget child) => CustomTransitionPage(
+    key: state.pageKey,
+    fullscreenDialog: true,
+    transitionDuration: const Duration(milliseconds: 350),
+    reverseTransitionDuration: const Duration(milliseconds: 250),
+    transitionsBuilder: (context, animation, _, child) {
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      );
+      return FadeTransition(
+        opacity: curved,
+        child: SlideTransition(
+          position: Tween(
+            begin: const Offset(0, 0.08),
+            end: Offset.zero,
+          ).animate(curved),
+          child: child,
+        ),
+      );
+    },
+    child: child,
+  );
 
   // The type a new transaction starts with (`/transactions/new?type=income`).
   TransactionType typeOf(GoRouterState state) =>

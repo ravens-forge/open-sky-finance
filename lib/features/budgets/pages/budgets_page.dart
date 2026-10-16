@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../app/now.dart';
 import '../../../app/routes.dart';
@@ -22,54 +23,49 @@ import '../widgets/budget_not_budgeted_row.dart';
 import '../widgets/budget_totals_header.dart';
 import '../widgets/budgets_empty_state.dart';
 
-class BudgetsPage extends ConsumerStatefulWidget {
+class BudgetsPage extends HookConsumerWidget {
   const BudgetsPage({super.key});
 
   @override
-  ConsumerState<BudgetsPage> createState() => _BudgetsPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final month = useState(useMemoized(() => ref.read(currentMonthProvider)));
 
-class _BudgetsPageState extends ConsumerState<BudgetsPage> {
-  late var _month = ref.read(currentMonthProvider);
+    Future<void> pickMonth() async {
+      final picked = await showDatePicker(
+        context: context,
+        initialDate: month.value.start,
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2100),
+        initialDatePickerMode: DatePickerMode.year,
+        helpText: context.l10n.transactionsPickMonth,
+      );
+      if (picked != null) month.value = YearMonth.of(picked);
+    }
 
-  Future<void> _pickMonth() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _month.start,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
-      initialDatePickerMode: DatePickerMode.year,
-      helpText: context.l10n.transactionsPickMonth,
-    );
-    if (picked != null) setState(() => _month = YearMonth.of(picked));
-  }
+    void edit() => context.push(Routes.editBudgets);
 
-  void _edit() => context.push(Routes.editBudgets);
+    void open(BudgetLine line) {
+      ref
+          .read(transactionsDrillDownProvider.notifier)
+          .show(
+            month.value,
+            line.isGroup
+                ? TransactionFilter(categoryGroupId: line.id)
+                : TransactionFilter(categoryId: line.id),
+          );
+      context.go(Routes.transactions);
+    }
 
-  void _open(BudgetLine line) {
-    ref
-        .read(transactionsDrillDownProvider.notifier)
-        .show(
-          _month,
-          line.isGroup
-              ? TransactionFilter(categoryGroupId: line.id)
-              : TransactionFilter(categoryId: line.id),
-        );
-    context.go(Routes.transactions);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final overview = ref.watch(budgetOverviewProvider(_month));
+    final overview = ref.watch(budgetOverviewProvider(month.value));
     // Budgets are not per month: with none, there is no month to switch.
     final empty = overview.value?.lines.isEmpty ?? false;
     return Column(
       children: [
         if (!empty) ...[
           MonthSwitcher(
-            month: _month,
-            onChanged: (month) => setState(() => _month = month),
-            onPick: _pickMonth,
+            month: month.value,
+            onChanged: (value) => month.value = value,
+            onPick: pickMonth,
           ),
           const Divider(),
         ],
@@ -82,16 +78,36 @@ class _BudgetsPageState extends ConsumerState<BudgetsPage> {
                 budgetOverviewProvider,
               ],
             ),
-            AsyncValue(value: _?) when empty => BudgetsEmptyState(onSet: _edit),
-            AsyncValue(:final value?) => _list(value),
+            AsyncValue(value: _?) when empty => BudgetsEmptyState(onSet: edit),
+            AsyncValue(:final value?) => _BudgetList(
+              overview: value,
+              month: month.value,
+              onEdit: edit,
+              onOpen: open,
+            ),
             _ => PagePlaceholder(label: context.l10n.pageBudgets),
           },
         ),
       ],
     );
   }
+}
 
-  Widget _list(BudgetOverview overview) {
+class _BudgetList extends ConsumerWidget {
+  const _BudgetList({
+    required this.overview,
+    required this.month,
+    required this.onEdit,
+    required this.onOpen,
+  });
+
+  final BudgetOverview overview;
+  final YearMonth month;
+  final VoidCallback onEdit;
+  final ValueChanged<BudgetLine> onOpen;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final today = ref.watch(todayProvider);
@@ -100,8 +116,8 @@ class _BudgetsPageState extends ConsumerState<BudgetsPage> {
       children: [
         BudgetTotalsHeader(
           overview: overview,
-          daysInMonth: _month.daysInMonth,
-          day: _month.contains(today) ? today.day : null,
+          daysInMonth: month.daysInMonth,
+          day: month.contains(today) ? today.day : null,
         ),
         const SizedBox(height: 12),
         Container(
@@ -135,7 +151,7 @@ class _BudgetsPageState extends ConsumerState<BudgetsPage> {
               ),
               SectionLink(
                 l10n.budgetEdit,
-                onPressed: _edit,
+                onPressed: onEdit,
                 color: theme.colorScheme.primary,
               ),
             ],
@@ -145,14 +161,14 @@ class _BudgetsPageState extends ConsumerState<BudgetsPage> {
           BudgetLineRow(
             line: line,
             currency: overview.currency,
-            onTap: () => _open(line),
+            onTap: () => onOpen(line),
           ),
         if (overview.notBudgeted.amount > 0 ||
             overview.notBudgeted.notIncluded.isNotEmpty)
           BudgetNotBudgetedRow(
             total: overview.notBudgeted,
             currency: overview.currency,
-            onAdd: _edit,
+            onAdd: onEdit,
           ),
       ],
     );

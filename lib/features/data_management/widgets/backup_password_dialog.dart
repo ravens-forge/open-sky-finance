@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../core/l10n.dart';
 
@@ -10,53 +11,43 @@ Future<String?> showBackupPasswordDialog(BuildContext context) =>
       builder: (_) => const BackupPasswordDialog(),
     );
 
-class BackupPasswordDialog extends StatefulWidget {
+class BackupPasswordDialog extends HookWidget {
   const BackupPasswordDialog({super.key});
 
   /// Shorter passwords are refused.
   static const minLength = 8;
 
   @override
-  State<BackupPasswordDialog> createState() => _BackupPasswordDialogState();
-}
-
-class _BackupPasswordDialogState extends State<BackupPasswordDialog> {
-  final _form = GlobalKey<FormState>();
-  final _password = TextEditingController();
-  var _hidden = true;
-
-  @override
-  void dispose() {
-    _password.dispose();
-    super.dispose();
-  }
-
-  void _save() {
-    if (_form.currentState!.validate()) Navigator.pop(context, _password.text);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final form = useMemoized(GlobalKey<FormState>.new);
+    final password = useTextEditingController();
+    final hidden = useState(true);
+    void save() {
+      if (form.currentState!.validate()) Navigator.pop(context, password.text);
+    }
+
     final toggle = IconButton(
-      tooltip: _hidden ? l10n.passwordShow : l10n.passwordHide,
-      icon: Icon(_hidden ? Icons.visibility_outlined : Icons.visibility_off),
-      onPressed: () => setState(() => _hidden = !_hidden),
+      tooltip: hidden.value ? l10n.passwordShow : l10n.passwordHide,
+      icon: Icon(
+        hidden.value ? Icons.visibility_outlined : Icons.visibility_off,
+      ),
+      onPressed: () => hidden.value = !hidden.value,
     );
     return AlertDialog(
       scrollable: true,
       title: Text(l10n.backupPasswordTitle),
       content: Form(
-        key: _form,
+        key: form,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 12,
           children: [
             Text(l10n.backupPasswordBody),
             TextFormField(
-              controller: _password,
+              controller: password,
               autofocus: true,
-              obscureText: _hidden,
+              obscureText: hidden.value,
               enableSuggestions: false,
               autocorrect: false,
               decoration: InputDecoration(
@@ -72,13 +63,13 @@ class _BackupPasswordDialogState extends State<BackupPasswordDialog> {
                   : null,
             ),
             TextFormField(
-              obscureText: _hidden,
+              obscureText: hidden.value,
               enableSuggestions: false,
               autocorrect: false,
               decoration: InputDecoration(labelText: l10n.backupPasswordRepeat),
               validator: (v) =>
-                  v != _password.text ? l10n.backupPasswordMismatch : null,
-              onFieldSubmitted: (_) => _save(),
+                  v != password.text ? l10n.backupPasswordMismatch : null,
+              onFieldSubmitted: (_) => save(),
             ),
           ],
         ),
@@ -88,7 +79,7 @@ class _BackupPasswordDialogState extends State<BackupPasswordDialog> {
           onPressed: () => Navigator.pop(context),
           child: Text(l10n.actionCancel),
         ),
-        FilledButton(onPressed: _save, child: Text(l10n.backupPasswordSave)),
+        FilledButton(onPressed: save, child: Text(l10n.backupPasswordSave)),
       ],
     );
   }

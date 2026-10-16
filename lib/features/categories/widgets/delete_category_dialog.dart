@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../core/l10n.dart';
 import '../../../core/widgets/ledger_dialog.dart';
@@ -24,42 +25,22 @@ Future<CategoryDeleteChoice?> showDeleteCategoryDialog(
 /// Where the transactions and reminders go.
 enum _Target { other, none }
 
-class _DeleteCategoryDialog extends ConsumerStatefulWidget {
+class _DeleteCategoryDialog extends HookConsumerWidget {
   const _DeleteCategoryDialog({required this.category, required this.usage});
 
   final Category category;
   final CategoryUsage usage;
 
   @override
-  ConsumerState<_DeleteCategoryDialog> createState() =>
-      _DeleteCategoryDialogState();
-}
-
-class _DeleteCategoryDialogState extends ConsumerState<_DeleteCategoryDialog> {
-  var _target = _Target.other;
-  String? _otherId;
-
-  Future<void> _pickOther(CategoryKind kind) async {
-    final id = await showCategoryPickerSheet(
-      context,
-      kind: kind,
-      excludeId: widget.category.id,
-      selectedId: _otherId,
-      showActions: false,
-    );
-    if (!mounted || id == null) return;
-    setState(() => _otherId = id);
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final usage = widget.usage;
     final scheme = Theme.of(context).colorScheme;
-    final canDelete = _target != _Target.other || _otherId != null;
+    final target = useState(_Target.other);
+    final otherId = useState<String?>(null);
+    final canDelete = target.value != _Target.other || otherId.value != null;
     return LedgerDialog(
       kind: DialogKind.warning,
-      title: l10n.categoryDeleteTitle(widget.category.name),
+      title: l10n.categoryDeleteTitle(category.name),
       body: [
         if (usage.transactions > 0)
           l10n.categoryDeleteTransactions(usage.transactions),
@@ -67,7 +48,9 @@ class _DeleteCategoryDialogState extends ConsumerState<_DeleteCategoryDialog> {
         if (usage.hasBudget) l10n.categoryDeleteBudget,
         l10n.assetsAccountDeleteNoUndo,
       ].join(' '),
-      extra: usage.isUnused ? null : _reassign(l10n),
+      extra: usage.isUnused
+          ? null
+          : _Reassign(category: category, target: target, otherId: otherId),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
@@ -82,7 +65,7 @@ class _DeleteCategoryDialogState extends ConsumerState<_DeleteCategoryDialog> {
               ? () => Navigator.pop(
                   context,
                   CategoryDeleteChoice(
-                    _target == _Target.other ? _otherId : null,
+                    target.value == _Target.other ? otherId.value : null,
                   ),
                 )
               : null,
@@ -91,14 +74,41 @@ class _DeleteCategoryDialogState extends ConsumerState<_DeleteCategoryDialog> {
       ],
     );
   }
+}
 
-  Widget _reassign(AppLocalizations l10n) {
+/// Where the transactions and reminders of [category] go.
+class _Reassign extends ConsumerWidget {
+  const _Reassign({
+    required this.category,
+    required this.target,
+    required this.otherId,
+  });
+
+  final Category category;
+  final ValueNotifier<_Target> target;
+  final ValueNotifier<String?> otherId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    Future<void> pickOther(CategoryKind kind) async {
+      final id = await showCategoryPickerSheet(
+        context,
+        kind: kind,
+        excludeId: category.id,
+        selectedId: otherId.value,
+        showActions: false,
+      );
+      if (!context.mounted || id == null) return;
+      otherId.value = id;
+    }
+
     final all = ref.watch(categoriesProvider).value ?? const <Category>[];
-    final chosen = all.where((c) => c.id == _otherId).firstOrNull;
+    final chosen = all.where((c) => c.id == otherId.value).firstOrNull;
     final kind = ref
         .watch(categoryGroupsProvider)
         .value
-        ?.where((g) => g.id == widget.category.groupId)
+        ?.where((g) => g.id == category.groupId)
         .firstOrNull
         ?.kind;
     return Column(
@@ -109,11 +119,13 @@ class _DeleteCategoryDialogState extends ConsumerState<_DeleteCategoryDialog> {
           style: Theme.of(context).textTheme.titleSmall,
         ),
         RadioGroup<_Target>(
-          groupValue: _target,
-          onChanged: (target) {
-            setState(() => _target = target ?? _Target.none);
-            if (target == _Target.other && _otherId == null && kind != null) {
-              _pickOther(kind);
+          groupValue: target.value,
+          onChanged: (value) {
+            target.value = value ?? _Target.none;
+            if (value == _Target.other &&
+                otherId.value == null &&
+                kind != null) {
+              pickOther(kind);
             }
           },
           child: Column(
@@ -122,13 +134,13 @@ class _DeleteCategoryDialogState extends ConsumerState<_DeleteCategoryDialog> {
                 contentPadding: EdgeInsets.zero,
                 value: _Target.other,
                 title: Text(l10n.categoryDeleteToOther),
-                subtitle: _target == _Target.other
+                subtitle: target.value == _Target.other
                     ? Align(
                         alignment: AlignmentDirectional.centerStart,
                         child: TextButton(
                           onPressed: kind == null
                               ? null
-                              : () => _pickOther(kind),
+                              : () => pickOther(kind),
                           child: Text(chosen?.name ?? l10n.actionChoose),
                         ),
                       )

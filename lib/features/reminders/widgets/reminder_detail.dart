@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/now.dart';
@@ -32,86 +33,74 @@ import 'reminder_history_section.dart';
 import 'reminder_notify_switch.dart';
 import 'reminder_upcoming_section.dart';
 
-class ReminderDetail extends ConsumerStatefulWidget {
+class ReminderDetail extends HookConsumerWidget {
   const ReminderDetail({super.key, required this.reminder});
 
   final Reminder reminder;
 
   @override
-  ConsumerState<ReminderDetail> createState() => _ReminderDetailState();
-}
-
-class _ReminderDetailState extends ConsumerState<ReminderDetail> {
-  // Changed here and not saved yet; `null` shows the reminder as stored.
-  bool? _paused;
-  bool? _autoPost;
-  bool? _notify;
-  String? _categoryId;
-  String? _assetsAccountId;
-  var _saving = false;
-
-  Reminder get _reminder => widget.reminder;
-
-  RemindersController get _controller =>
-      ref.read(remindersControllerProvider.notifier);
-
-  void _openForm() => context.push(Routes.editReminder(_reminder.id));
-
-  Future<void> _pickCategory() async {
-    final picked = await showCategoryPickerSheet(
-      context,
-      kind: _reminder.type == TransactionType.income
-          ? CategoryKind.income
-          : CategoryKind.expense,
-      selectedId: _categoryId ?? _reminder.categoryId,
-    );
-    if (picked != null) setState(() => _categoryId = picked);
-  }
-
-  Future<void> _pickAssetsAccount() async {
-    final picked = await showAssetsAccountPickerSheet(
-      context,
-      selectedId: _assetsAccountId ?? _reminder.assetsAccountId,
-    );
-    if (picked != null) setState(() => _assetsAccountId = picked);
-  }
-
-  Future<void> _save() async {
-    final l10n = context.l10n;
-    setState(() => _saving = true);
-    final result = await _controller.saveChanges(
-      _reminder,
-      isPaused: _paused ?? _reminder.isPaused,
-      autoPost: _autoPost ?? _reminder.autoPost,
-      notify: _notify ?? _reminder.notify,
-      assetsAccountId: _assetsAccountId ?? _reminder.assetsAccountId,
-      categoryId: _categoryId ?? _reminder.categoryId,
-    );
-    if (!mounted) return;
-    setState(() => _saving = false);
-    switch (result) {
-      case Ok():
-        context.pop();
-      case Err(:final error):
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(transactionErrorMessage(error, l10n))),
-        );
-    }
-  }
-
-  Future<void> _delete() async {
-    final controller = _controller;
-    final id = _reminder.id;
-    if (!await showDeleteReminderDialog(context) || !mounted) return;
-    context.pop();
-    await controller.remove(id);
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final r = _reminder;
+    final r = reminder;
+    final controller = ref.read(remindersControllerProvider.notifier);
+    // Changed here and not saved yet; `null` shows the reminder as stored.
+    final paused = useState<bool?>(null);
+    final autoPostChange = useState<bool?>(null);
+    final notify = useState<bool?>(null);
+    final categoryId = useState<String?>(null);
+    final assetsAccountId = useState<String?>(null);
+    final saving = useState(false);
+
+    void openForm() => context.push(Routes.editReminder(r.id));
+
+    Future<void> pickCategory() async {
+      final picked = await showCategoryPickerSheet(
+        context,
+        kind: r.type == TransactionType.income
+            ? CategoryKind.income
+            : CategoryKind.expense,
+        selectedId: categoryId.value ?? r.categoryId,
+      );
+      if (picked != null) categoryId.value = picked;
+    }
+
+    Future<void> pickAssetsAccount() async {
+      final picked = await showAssetsAccountPickerSheet(
+        context,
+        selectedId: assetsAccountId.value ?? r.assetsAccountId,
+      );
+      if (picked != null) assetsAccountId.value = picked;
+    }
+
+    Future<void> save() async {
+      saving.value = true;
+      final result = await controller.saveChanges(
+        r,
+        isPaused: paused.value ?? r.isPaused,
+        autoPost: autoPostChange.value ?? r.autoPost,
+        notify: notify.value ?? r.notify,
+        assetsAccountId: assetsAccountId.value ?? r.assetsAccountId,
+        categoryId: categoryId.value ?? r.categoryId,
+      );
+      if (!context.mounted) return;
+      saving.value = false;
+      switch (result) {
+        case Ok():
+          context.pop();
+        case Err(:final error):
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(transactionErrorMessage(error, l10n))),
+          );
+      }
+    }
+
+    Future<void> delete() async {
+      if (!await showDeleteReminderDialog(context) || !context.mounted) return;
+      context.pop();
+      await controller.remove(r.id);
+    }
+
     final today = ref.watch(todayProvider);
     final categories = {
       for (final c in ref.watch(categoriesProvider).value ?? const <Category>[])
@@ -129,10 +118,10 @@ class _ReminderDetailState extends ConsumerState<ReminderDetail> {
     };
     final recorded =
         ref.watch(reminderHistoryProvider(r.id)).value ?? const <Transaction>[];
-    final category = categories[_categoryId ?? r.categoryId];
-    final account = accounts[_assetsAccountId ?? r.assetsAccountId];
+    final category = categories[categoryId.value ?? r.categoryId];
+    final account = accounts[assetsAccountId.value ?? r.assetsAccountId];
     final transfer = r.type == TransactionType.transfer;
-    final autoPost = _autoPost ?? r.autoPost;
+    final autoPost = autoPostChange.value ?? r.autoPost;
 
     return Scaffold(
       appBar: AppBar(
@@ -151,14 +140,14 @@ class _ReminderDetailState extends ConsumerState<ReminderDetail> {
             secondary: const Icon(Icons.pause),
             title: Text(l10n.reminderPause),
             subtitle: Text(l10n.reminderPauseHint),
-            value: _paused ?? r.isPaused,
-            onChanged: (on) => setState(() => _paused = on),
+            value: paused.value ?? r.isPaused,
+            onChanged: (on) => paused.value = on,
           ),
           const Divider(),
           EditorRow(
             icon: Icons.paid_outlined,
             label: l10n.fieldAmount,
-            onTap: _openForm,
+            onTap: openForm,
             child: Text(
               l10n.reminderDetails(
                 // The typographic minus of every other amount.
@@ -171,7 +160,7 @@ class _ReminderDetailState extends ConsumerState<ReminderDetail> {
             EditorRow(
               icon: Icons.grid_view,
               label: l10n.fieldCategory,
-              onTap: _pickCategory,
+              onTap: pickCategory,
               child: Text(
                 category == null
                     ? l10n.categoryNone
@@ -185,7 +174,7 @@ class _ReminderDetailState extends ConsumerState<ReminderDetail> {
             icon: Icons.account_balance_outlined,
             label: l10n.fieldAssetsAccount,
             // Both sides of a transfer are chosen in the full form.
-            onTap: transfer ? _openForm : _pickAssetsAccount,
+            onTap: transfer ? openForm : pickAssetsAccount,
             child: Text(
               transfer
                   ? l10n.transferFromTo(
@@ -201,7 +190,7 @@ class _ReminderDetailState extends ConsumerState<ReminderDetail> {
           EditorRow(
             icon: Icons.repeat,
             label: l10n.reminderSchedule,
-            onTap: _openForm,
+            onTap: openForm,
             child: Text(reminderScheduleSummary(r.schedule, l10n)),
           ),
           SwitchListTile(
@@ -211,17 +200,17 @@ class _ReminderDetailState extends ConsumerState<ReminderDetail> {
               autoPost ? l10n.reminderAutoOnHint : l10n.reminderAutoOffHint,
             ),
             value: autoPost,
-            onChanged: (on) => setState(() => _autoPost = on),
+            onChanged: (on) => autoPostChange.value = on,
           ),
           ReminderNotifySwitch(
-            value: _notify ?? r.notify,
-            onChanged: (on) => setState(() => _notify = on),
+            value: notify.value ?? r.notify,
+            onChanged: (on) => notify.value = on,
           ),
           ReminderUpcomingSection(
             reminder: r,
             today: today,
             onRecord: () => recordReminder(context, ref, r),
-            onSkip: () => _controller.skip(r.id),
+            onSkip: () => controller.skip(r.id),
           ),
           ReminderHistorySection(
             recorded: recorded,
@@ -231,9 +220,9 @@ class _ReminderDetailState extends ConsumerState<ReminderDetail> {
         ],
       ),
       bottomNavigationBar: TransactionFormActions(
-        saving: _saving,
-        onSave: _save,
-        onDelete: _delete,
+        saving: saving.value,
+        onSave: save,
+        onDelete: delete,
       ),
     );
   }

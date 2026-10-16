@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/l10n.dart';
@@ -20,33 +21,27 @@ import '../widgets/restore_preview_row.dart';
 
 /// What a CSV or QIF file adds, and the assets account its rows without one
 /// go to. Pops a [TransactionsImportChoice].
-class TransactionsImportPreviewPage extends ConsumerStatefulWidget {
+class TransactionsImportPreviewPage extends HookConsumerWidget {
   const TransactionsImportPreviewPage({super.key, required this.preview});
 
   final TransactionsImportPreview preview;
 
   @override
-  ConsumerState<TransactionsImportPreviewPage> createState() =>
-      _TransactionsImportPreviewPageState();
-}
-
-class _TransactionsImportPreviewPageState
-    extends ConsumerState<TransactionsImportPreviewPage> {
-  late var _assetsAccountId = widget.preview.defaultAssetsAccountId;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final count = NumberFormat.decimalPattern(l10n.localeName).format;
     final day = DateFormat.yMMMd(l10n.localeName).format;
-    final p = widget.preview;
+    final p = preview;
+    final assetsAccountId = useState(p.defaultAssetsAccountId);
     final rows = p.parsed.transactions;
     final transfers = rows
         .where((t) => t.type == TransactionType.transfer)
         .length;
     final needsAccount = p.parsed.needsAssetsAccount;
     final accounts = ref.watch(assetsAccountsProvider).value ?? const [];
-    final account = accounts.where((a) => a.id == _assetsAccountId).firstOrNull;
+    final account = accounts
+        .where((a) => a.id == assetsAccountId.value)
+        .firstOrNull;
     void pop([TransactionsImportChoice? choice]) =>
         Navigator.pop(context, choice);
 
@@ -94,9 +89,9 @@ class _TransactionsImportPreviewPageState
               onTap: () async {
                 final picked = await showAssetsAccountPickerSheet(
                   context,
-                  selectedId: _assetsAccountId,
+                  selectedId: assetsAccountId.value,
                 );
-                if (picked != null) setState(() => _assetsAccountId = picked);
+                if (picked != null) assetsAccountId.value = picked;
               },
             ),
           ],
@@ -111,7 +106,7 @@ class _TransactionsImportPreviewPageState
             : () => pop(
                 TransactionsImportChoice(
                   RestoreChoice.restore,
-                  assetsAccountId: _assetsAccountId,
+                  assetsAccountId: assetsAccountId.value,
                 ),
               ),
         label: l10n.importAction,

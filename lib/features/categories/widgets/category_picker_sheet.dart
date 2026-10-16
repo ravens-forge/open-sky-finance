@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/routes.dart';
@@ -37,7 +38,7 @@ Future<String?> showCategoryPickerSheet(
   ),
 );
 
-class CategoryPickerSheet extends ConsumerStatefulWidget {
+class CategoryPickerSheet extends HookConsumerWidget {
   const CategoryPickerSheet({
     super.key,
     required this.kind,
@@ -56,14 +57,6 @@ class CategoryPickerSheet extends ConsumerStatefulWidget {
   /// what the caller is in the middle of.
   final bool showActions;
 
-  @override
-  ConsumerState<CategoryPickerSheet> createState() =>
-      _CategoryPickerSheetState();
-}
-
-class _CategoryPickerSheetState extends ConsumerState<CategoryPickerSheet> {
-  var _query = '';
-
   void _leave(BuildContext context, String location) {
     final router = GoRouter.of(context);
     Navigator.pop(context);
@@ -71,16 +64,17 @@ class _CategoryPickerSheetState extends ConsumerState<CategoryPickerSheet> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final search = useState('');
     final nodes = groupCategories(
       ref.watch(categoryGroupsProvider).value ?? const <CategoryGroup>[],
       ref.watch(categoriesProvider).value ?? const <Category>[],
-      widget.kind,
+      kind,
       includeHidden: false,
     );
-    final query = sortKey(_query.trim());
+    final query = sortKey(search.value.trim());
     bool matches(String name) => sortKey(name).contains(query);
 
     final rows = <Widget>[];
@@ -88,7 +82,7 @@ class _CategoryPickerSheetState extends ConsumerState<CategoryPickerSheet> {
       final wholeGroup = query.isEmpty || matches(node.group.name);
       final categories = [
         for (final category in node.categories)
-          if (category.id != widget.excludeId &&
+          if (category.id != excludeId &&
               (wholeGroup || matches(category.name)))
             category,
       ];
@@ -123,7 +117,7 @@ class _CategoryPickerSheetState extends ConsumerState<CategoryPickerSheet> {
               color: Color(category.color),
               size: 32,
             ),
-            selected: category.id == widget.selectedId,
+            selected: category.id == selectedId,
             onTap: () => Navigator.pop(context, category.id),
           ),
         );
@@ -133,8 +127,8 @@ class _CategoryPickerSheetState extends ConsumerState<CategoryPickerSheet> {
     return PickerSheet(
       title: l10n.categoryPickerTitle,
       searchHint: l10n.categoryPickerSearchHint,
-      onSearch: (value) => setState(() => _query = value),
-      footer: widget.showActions
+      onSearch: (value) => search.value = value,
+      footer: showActions
           ? [
               Row(
                 spacing: 10,
@@ -142,7 +136,7 @@ class _CategoryPickerSheetState extends ConsumerState<CategoryPickerSheet> {
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () =>
-                          _leave(context, Routes.newCategory(widget.kind)),
+                          _leave(context, Routes.newCategory(kind)),
                       icon: const Icon(Icons.add),
                       label: Text(l10n.editorNewCategory),
                     ),

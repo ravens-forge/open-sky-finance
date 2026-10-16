@@ -62,6 +62,36 @@ void main() {
     },
   );
 
+  testWidgets('back on a tab goes Home, back on Home leaves', (tester) async {
+    final router = (await pumpApp(tester)).read(routerProvider);
+
+    router.go(Routes.budgets);
+    await settle(tester);
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    await settle(tester);
+    expect(location(router), Routes.home);
+
+    expect(await tester.binding.handlePopRoute(), isFalse);
+  });
+
+  testWidgets('back closes a pushed page before going Home', (tester) async {
+    final router = (await pumpApp(tester)).read(routerProvider);
+
+    await tester.tap(find.text('Transactions'));
+    await settle(tester);
+    await tester.tap(find.byTooltip('Calendar'));
+    await settle(tester);
+    expect(location(router), Routes.calendar);
+
+    await tester.binding.handlePopRoute();
+    await settle(tester);
+    expect(location(router), Routes.transactions);
+
+    await tester.binding.handlePopRoute();
+    await settle(tester);
+    expect(location(router), Routes.home);
+  });
+
   testWidgets('drawer opens other pages', (tester) async {
     final router = (await pumpApp(tester)).read(routerProvider);
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
@@ -15,18 +16,12 @@ Future<bool> showEraseStepTwoDialog(BuildContext context) async =>
 
 /// The last chance: Erase stays disabled until the user checks that they
 /// understand. Cancel is the default action.
-class EraseStepTwoDialog extends StatefulWidget {
+class EraseStepTwoDialog extends HookWidget {
   const EraseStepTwoDialog({super.key});
 
   @override
-  State<EraseStepTwoDialog> createState() => _EraseStepTwoDialogState();
-}
-
-class _EraseStepTwoDialogState extends State<EraseStepTwoDialog> {
-  bool _understood = false;
-
-  @override
   Widget build(BuildContext context) {
+    final understood = useState(false);
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final line = BorderSide(color: theme.colorScheme.outlineVariant);
@@ -39,8 +34,8 @@ class _EraseStepTwoDialogState extends State<EraseStepTwoDialog> {
           border: Border(top: line, bottom: line),
         ),
         child: CheckboxListTile(
-          value: _understood,
-          onChanged: (on) => setState(() => _understood = on ?? false),
+          value: understood.value,
+          onChanged: (on) => understood.value = on ?? false,
           controlAffinity: ListTileControlAffinity.leading,
           contentPadding: EdgeInsets.zero,
           horizontalTitleGap: 4,
@@ -55,7 +50,9 @@ class _EraseStepTwoDialogState extends State<EraseStepTwoDialog> {
           child: Text(l10n.actionCancel),
         ),
         DestructiveButton(
-          onPressed: _understood ? () => Navigator.pop(context, true) : null,
+          onPressed: understood.value
+              ? () => Navigator.pop(context, true)
+              : null,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             spacing: 6,

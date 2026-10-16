@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../app/main_currency.dart';
 import '../../../app/theme.dart';
@@ -17,7 +18,7 @@ import 'calendar_transactions_tab.dart';
 
 /// The selected period: its heading, the tabs, the mini summary and the open
 /// tab's content.
-class CalendarPeriodPanel extends ConsumerStatefulWidget {
+class CalendarPeriodPanel extends HookConsumerWidget {
   const CalendarPeriodPanel({
     super.key,
     required this.period,
@@ -30,35 +31,25 @@ class CalendarPeriodPanel extends ConsumerStatefulWidget {
   final ValueChanged<CalendarTab> onTab;
 
   @override
-  ConsumerState<CalendarPeriodPanel> createState() =>
-      _CalendarPeriodPanelState();
-}
-
-class _CalendarPeriodPanelState extends ConsumerState<CalendarPeriodPanel>
-    with SingleTickerProviderStateMixin {
-  late final _tabs = TabController(
-    length: CalendarTab.values.length,
-    initialIndex: widget.tab.index,
-    vsync: this,
-  )..addListener(_onTab);
-
-  void _onTab() {
-    if (_tabs.index != widget.tab.index) {
-      widget.onTab(CalendarTab.values[_tabs.index]);
-    }
-  }
-
-  @override
-  void dispose() {
-    _tabs.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final period = widget.period;
+    final tabs = useTabController(
+      initialLength: CalendarTab.values.length,
+      initialIndex: tab.index,
+    );
+    // Reads the latest widget: the tab and callback change between builds.
+    final latest = useRef(this)..value = this;
+    useEffect(() {
+      void listener() {
+        if (tabs.index != latest.value.tab.index) {
+          latest.value.onTab(CalendarTab.values[tabs.index]);
+        }
+      }
+
+      tabs.addListener(listener);
+      return () => tabs.removeListener(listener);
+    }, [tabs]);
     final summary = ref
         .watch(netIncomeSummaryProvider(period.netIncomePeriod))
         .value;
@@ -85,7 +76,7 @@ class _CalendarPeriodPanelState extends ConsumerState<CalendarPeriodPanel>
         ),
         const SizedBox(height: 6),
         TabBar(
-          controller: _tabs,
+          controller: tabs,
           // Scrolls when the labels do not fit (Spanish, large text).
           isScrollable: true,
           labelPadding: const EdgeInsets.symmetric(horizontal: 5),
@@ -96,9 +87,9 @@ class _CalendarPeriodPanelState extends ConsumerState<CalendarPeriodPanel>
           unselectedLabelStyle: theme.textTheme.tab.copyWith(fontSize: 13),
           dividerHeight: 1,
           tabs: [
-            for (final tab in CalendarTab.values)
+            for (final t in CalendarTab.values)
               Tab(
-                text: switch (tab) {
+                text: switch (t) {
                   CalendarTab.transactions => l10n.pageTransactions,
                   CalendarTab.reminders => l10n.pageReminders,
                   CalendarTab.netIncome => l10n.pageNetIncome,
@@ -118,7 +109,7 @@ class _CalendarPeriodPanelState extends ConsumerState<CalendarPeriodPanel>
             netWorth: netWorth,
             currency: currency,
           ),
-        switch (widget.tab) {
+        switch (tab) {
           CalendarTab.transactions => CalendarTransactionsTab(period: period),
           CalendarTab.reminders => CalendarRemindersTab(period: period),
           CalendarTab.netIncome => CalendarNetIncomeTab(period: period),

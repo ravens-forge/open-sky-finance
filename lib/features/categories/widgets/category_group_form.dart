@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/routes.dart';
@@ -24,7 +25,7 @@ import 'category_row.dart';
 /// Name, type (locked once the group is in use) and hidden, plus the
 /// categories inside it. A group has no icon and no colour to pick: it is
 /// drawn in the colour of its type.
-class CategoryGroupForm extends ConsumerStatefulWidget {
+class CategoryGroupForm extends HookConsumerWidget {
   const CategoryGroupForm({super.key, required this.data, required this.kind});
 
   final CategoryEditorData data;
@@ -33,70 +34,55 @@ class CategoryGroupForm extends ConsumerStatefulWidget {
   final CategoryKind kind;
 
   @override
-  ConsumerState<CategoryGroupForm> createState() => _CategoryGroupFormState();
-}
-
-class _CategoryGroupFormState extends ConsumerState<CategoryGroupForm> {
-  late final _group = widget.data.group;
-  late final _name = TextEditingController(text: _group?.name);
-  late var _kind = _group?.kind ?? widget.kind;
-  late var _hidden = _group?.isHidden ?? false;
-  String? _nameError;
-  var _saving = false;
-
-  /// The type is fixed once categories or their transactions hang from it.
-  bool get _kindLocked =>
-      widget.data.usage.categories > 0 || widget.data.usage.transactions > 0;
-
-  @override
-  void dispose() {
-    _name.dispose();
-    super.dispose();
-  }
-
-  Future<void> _save() async {
-    final l10n = context.l10n;
-    final name = _name.text.trim();
-    setState(() => _nameError = name.isEmpty ? l10n.errorNameRequired : null);
-    if (_nameError != null) return;
-
-    setState(() => _saving = true);
-    final result = await ref
-        .read(categoriesControllerProvider.notifier)
-        .saveGroup(
-          CategoryGroupDraft(
-            id: _group?.id,
-            name: name,
-            kind: _kind,
-            isHidden: _hidden,
-          ),
-        );
-    if (!mounted) return;
-    setState(() => _saving = false);
-    switch (result) {
-      case Ok():
-        context.pop();
-      case Err(error: RepositoryDataError.invalidName):
-        setState(() => _nameError = l10n.errorNameRequired);
-      case Err(error: RepositoryDataError.kindLocked):
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.errorCategoryKindLocked)));
-      case Err():
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l10n.errorSaveFailed)));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final group = data.group;
+    final name = useTextEditingController(text: group?.name);
+    final selectedKind = useState(group?.kind ?? kind);
+    final hidden = useState(group?.isHidden ?? false);
+    final nameError = useState<String?>(null);
+    final saving = useState(false);
+    // The type is fixed once categories or their transactions hang from it.
+    final kindLocked = data.usage.categories > 0 || data.usage.transactions > 0;
+
+    Future<void> save() async {
+      final trimmed = name.text.trim();
+      nameError.value = trimmed.isEmpty ? l10n.errorNameRequired : null;
+      if (nameError.value != null) return;
+
+      saving.value = true;
+      final result = await ref
+          .read(categoriesControllerProvider.notifier)
+          .saveGroup(
+            CategoryGroupDraft(
+              id: group?.id,
+              name: trimmed,
+              kind: selectedKind.value,
+              isHidden: hidden.value,
+            ),
+          );
+      if (!context.mounted) return;
+      saving.value = false;
+      switch (result) {
+        case Ok():
+          context.pop();
+        case Err(error: RepositoryDataError.invalidName):
+          nameError.value = l10n.errorNameRequired;
+        case Err(error: RepositoryDataError.kindLocked):
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.errorCategoryKindLocked)));
+        case Err():
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(l10n.errorSaveFailed)));
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _group == null
+          group == null
               ? l10n.editorNewCategoryGroup
               : l10n.editorEditCategoryGroup,
         ),
@@ -105,24 +91,25 @@ class _CategoryGroupFormState extends ConsumerState<CategoryGroupForm> {
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
           TextField(
-            controller: _name,
+            controller: name,
             textCapitalization: TextCapitalization.sentences,
             decoration: InputDecoration(
               labelText: l10n.fieldName,
-              error: _nameError == null ? null : FieldError(_nameError!),
+              error: nameError.value == null
+                  ? null
+                  : FieldError(nameError.value!),
             ),
           ),
           const SizedBox(height: 20),
           TypeSelector<CategoryKind>(
             options: [
-              for (final kind in CategoryKind.values)
-                (kind, kind.signedLabel(l10n)),
+              for (final k in CategoryKind.values) (k, k.signedLabel(l10n)),
             ],
-            selected: _kind,
-            locked: _kindLocked,
-            onChanged: (kind) => setState(() => _kind = kind),
+            selected: selectedKind.value,
+            locked: kindLocked,
+            onChanged: (value) => selectedKind.value = value,
           ),
-          if (_kindLocked)
+          if (kindLocked)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
@@ -135,14 +122,14 @@ class _CategoryGroupFormState extends ConsumerState<CategoryGroupForm> {
             contentPadding: EdgeInsets.zero,
             title: Text(l10n.categoryHidden),
             subtitle: Text(l10n.categoryGroupHiddenNote),
-            value: _hidden,
-            onChanged: (on) => setState(() => _hidden = on),
+            value: hidden.value,
+            onChanged: (on) => hidden.value = on,
           ),
-          if (_group case final group?) ...[
+          if (group != null) ...[
             const SizedBox(height: 24),
-            _categories(group),
+            _GroupCategories(group: group, kind: selectedKind.value),
             const SizedBox(height: 24),
-            CategoryDeleteSection(group: group, usage: widget.data.usage),
+            CategoryDeleteSection(group: group, usage: data.usage),
           ],
         ],
       ),
@@ -156,7 +143,7 @@ class _CategoryGroupFormState extends ConsumerState<CategoryGroupForm> {
                 child: Text(l10n.actionCancel),
               ),
               FilledButton(
-                onPressed: _saving ? null : _save,
+                onPressed: saving.value ? null : save,
                 child: Text(l10n.actionSave),
               ),
             ],
@@ -165,9 +152,17 @@ class _CategoryGroupFormState extends ConsumerState<CategoryGroupForm> {
       ),
     );
   }
+}
 
-  /// The categories of the group: open, reorder, or add another one.
-  Widget _categories(CategoryGroup group) {
+/// The categories of the group: open, reorder, or add another one.
+class _GroupCategories extends ConsumerWidget {
+  const _GroupCategories({required this.group, required this.kind});
+
+  final CategoryGroup group;
+  final CategoryKind kind;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final all = ref.watch(categoriesProvider).value ?? const <Category>[];
@@ -215,7 +210,7 @@ class _CategoryGroupFormState extends ConsumerState<CategoryGroupForm> {
           ),
         TextButton.icon(
           onPressed: () =>
-              context.push(Routes.newCategory(_kind, groupId: group.id)),
+              context.push(Routes.newCategory(kind, groupId: group.id)),
           icon: const Icon(Icons.add, size: 18),
           label: Text(l10n.categoryAdd),
         ),

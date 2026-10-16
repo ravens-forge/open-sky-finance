@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../core/l10n.dart';
 
@@ -12,32 +13,20 @@ Future<String?> showBackupUnlockDialog(
   builder: (_) => BackupUnlockDialog(wrong: wrong),
 );
 
-class BackupUnlockDialog extends StatefulWidget {
+class BackupUnlockDialog extends HookWidget {
   const BackupUnlockDialog({super.key, this.wrong = false});
 
   final bool wrong;
 
   @override
-  State<BackupUnlockDialog> createState() => _BackupUnlockDialogState();
-}
-
-class _BackupUnlockDialogState extends State<BackupUnlockDialog> {
-  final _password = TextEditingController();
-  var _hidden = true;
-
-  @override
-  void dispose() {
-    _password.dispose();
-    super.dispose();
-  }
-
-  void _open() {
-    if (_password.text.isNotEmpty) Navigator.pop(context, _password.text);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final password = useTextEditingController();
+    final hidden = useState(true);
+    void open() {
+      if (password.text.isNotEmpty) Navigator.pop(context, password.text);
+    }
+
     return AlertDialog(
       scrollable: true,
       title: Text(l10n.backupUnlockTitle),
@@ -47,23 +36,25 @@ class _BackupUnlockDialogState extends State<BackupUnlockDialog> {
         children: [
           Text(l10n.backupUnlockBody),
           TextField(
-            controller: _password,
+            controller: password,
             autofocus: true,
-            obscureText: _hidden,
+            obscureText: hidden.value,
             enableSuggestions: false,
             autocorrect: false,
             decoration: InputDecoration(
               labelText: l10n.backupPassword,
-              errorText: widget.wrong ? l10n.backupUnlockWrong : null,
+              errorText: wrong ? l10n.backupUnlockWrong : null,
               suffixIcon: IconButton(
-                tooltip: _hidden ? l10n.passwordShow : l10n.passwordHide,
+                tooltip: hidden.value ? l10n.passwordShow : l10n.passwordHide,
                 icon: Icon(
-                  _hidden ? Icons.visibility_outlined : Icons.visibility_off,
+                  hidden.value
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off,
                 ),
-                onPressed: () => setState(() => _hidden = !_hidden),
+                onPressed: () => hidden.value = !hidden.value,
               ),
             ),
-            onSubmitted: (_) => _open(),
+            onSubmitted: (_) => open(),
           ),
         ],
       ),
@@ -72,7 +63,7 @@ class _BackupUnlockDialogState extends State<BackupUnlockDialog> {
           onPressed: () => Navigator.pop(context),
           child: Text(l10n.actionCancel),
         ),
-        FilledButton(onPressed: _open, child: Text(l10n.backupUnlockOpen)),
+        FilledButton(onPressed: open, child: Text(l10n.backupUnlockOpen)),
       ],
     );
   }

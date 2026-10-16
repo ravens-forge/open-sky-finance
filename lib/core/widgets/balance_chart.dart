@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
 
 import '../../app/theme.dart';
@@ -12,7 +13,7 @@ import 'chart_range.dart';
 import 'chart_semantics.dart';
 import 'month_chart_axes.dart';
 
-class BalanceChart extends StatefulWidget {
+class BalanceChart extends HookWidget {
   const BalanceChart({
     super.key,
     required this.history,
@@ -28,22 +29,16 @@ class BalanceChart extends StatefulWidget {
   final ValueChanged<YearMonth>? onMonthTap;
 
   @override
-  State<BalanceChart> createState() => _BalanceChartState();
-}
-
-class _BalanceChartState extends State<BalanceChart> {
-  int? _touched;
-
-  @override
   Widget build(BuildContext context) {
+    final touched = useState<int?>(null);
     final l10n = context.l10n;
     final locale = l10n.localeName;
     final theme = Theme.of(context);
-    final months = widget.history.keys.toList();
+    final months = history.keys.toList();
     // Plotted in currency units: a display value only.
     final spots = [
       for (final (i, m) in months.indexed)
-        FlSpot(i.toDouble(), widget.history[m]! / microsPerUnit),
+        FlSpot(i.toDouble(), history[m]! / microsPerUnit),
     ];
     final monthLong = DateFormat.yMMMM(locale);
     final values = [for (final s in spots) s.y];
@@ -58,11 +53,11 @@ class _BalanceChartState extends State<BalanceChart> {
     // The point label rounds to whole units, like "€48,230".
     final whole = NumberFormat.simpleCurrency(
       locale: locale,
-      name: widget.currency,
+      name: currency,
       decimalDigits: 0,
     );
     String money(int micros) =>
-        formatMoney(micros, currency: widget.currency, locale: locale);
+        formatMoney(micros, currency: currency, locale: locale);
     final bar = LineChartBarData(
       spots: spots,
       color: theme.colorScheme.primary,
@@ -78,20 +73,23 @@ class _BalanceChartState extends State<BalanceChart> {
         ),
       ),
     );
-    final labelled = (_touched ?? spots.length - 1).clamp(0, spots.length - 1);
+    final labelled = (touched.value ?? spots.length - 1).clamp(
+      0,
+      spots.length - 1,
+    );
 
     return ChartSemantics(
-      label: widget.describe(
+      label: describe(
         [
           for (final m in months)
             l10n.chartPointSemantic(
               monthLong.format(m.start),
-              money(widget.history[m]!),
+              money(history[m]!),
             ),
         ].join(', '),
       ),
       months: months,
-      onMonthTap: widget.onMonthTap,
+      onMonthTap: onMonthTap,
       child: SizedBox(
         height: 160,
         child: LineChart(
@@ -115,12 +113,12 @@ class _BalanceChartState extends State<BalanceChart> {
               touchCallback: (event, response) {
                 final spot = response?.lineBarSpots?.firstOrNull;
                 if (!event.isInterestedForInteractions) {
-                  setState(() => _touched = null);
+                  touched.value = null;
                 } else if (spot != null) {
-                  setState(() => _touched = spot.x.round());
+                  touched.value = spot.x.round();
                 }
                 if (event is FlTapUpEvent && spot != null) {
-                  widget.onMonthTap?.call(months[spot.x.round()]);
+                  onMonthTap?.call(months[spot.x.round()]);
                 }
               },
               touchTooltipData: LineTouchTooltipData(
