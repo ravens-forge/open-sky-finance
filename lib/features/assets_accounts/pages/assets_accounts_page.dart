@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../app/main_currency.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
 import '../../../core/l10n.dart';
 import '../../../core/labels.dart';
+import '../../../core/reorder_ids.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/home_section_header.dart';
 import '../../../core/widgets/page_placeholder.dart';
+import '../../../data/providers.dart';
+import '../../shell/widgets/page_load_error.dart';
 import '../models/assets_account_with_balance.dart';
 import '../models/assets_accounts_side.dart';
-import '../providers/assets_accounts_controller.dart';
 import '../providers/assets_accounts_providers.dart';
 import '../widgets/assets_account_row.dart';
 import '../widgets/assets_accounts_side_header.dart';
-import '../../shell/widgets/page_load_error.dart';
 
 /// Assets and liabilities grouped by type with subtotals; favorite star, show
 /// hidden, and reorder within a type by drag or move up/down.
@@ -97,10 +98,12 @@ class _AssetsAccountList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final controller = ref.read(assetsAccountsControllerProvider.notifier);
+    final repository = ref.read(assetsAccountsRepositoryProvider);
     final allIds = [for (final a in all) a.account.id];
     void move(List<String> group, int from, int to) {
-      if (from != to) controller.move(allIds, group, from, to);
+      if (from != to) {
+        repository.reorder(reorderIds(allIds, group, from, to));
+      }
     }
 
     // Headers and rows share one list; rows only move within their type
@@ -144,7 +147,7 @@ class _AssetsAccountList extends ConsumerWidget {
               index: children.length,
               mainCurrency: main,
               onTap: () => context.push(Routes.assetsAccount(item.account.id)),
-              onFavorite: (on) => controller.setFavorite(item.account.id, on),
+              onFavorite: (on) => repository.setFavorite(item.account.id, on),
               onMoveUp: i > 0 ? () => move(ids, i, i - 1) : null,
               onMoveDown: i < ids.length - 1 ? () => move(ids, i, i + 1) : null,
             ),

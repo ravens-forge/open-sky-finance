@@ -5,6 +5,7 @@ import 'package:open_sky_finance/app/router.dart';
 import 'package:open_sky_finance/app/theme.dart';
 import 'package:open_sky_finance/app/theme_mode.dart';
 import 'package:open_sky_finance/core/l10n.dart';
+import 'package:open_sky_finance/core/widgets/keyboard_hider.dart';
 import 'package:open_sky_finance/core/widgets/launch_screen.dart';
 import 'package:open_sky_finance/features/onboarding/providers/onboarding_provider.dart';
 
@@ -31,7 +32,8 @@ class App extends ConsumerWidget {
       darkTheme: darkTheme,
       themeMode: themeMode.value,
       routerConfig: ref.watch(routerProvider),
-      builder: (context, child) => loading ? const LaunchScreen() : child!,
+      builder: (context, child) =>
+          loading ? const LaunchScreen() : KeyboardHider(child: child!),
     );
   }
 }

@@ -8,7 +8,7 @@ import '../../../core/result.dart';
 import '../../../core/text/sort_key.dart';
 import '../../../core/widgets/picker_sheet.dart';
 import '../../../data/models/label.dart';
-import '../providers/transactions_controller.dart';
+import '../../../data/providers.dart';
 import '../providers/transactions_providers.dart';
 import 'transaction_labels_field.dart';
 
@@ -38,9 +38,7 @@ class LabelsPickerSheet extends HookConsumerWidget {
 
     Future<void> create(String name) async {
       final messenger = ScaffoldMessenger.of(context);
-      final result = await ref
-          .read(transactionsControllerProvider.notifier)
-          .createLabel(name);
+      final result = await ref.read(labelsRepositoryProvider).save(name: name);
       if (!context.mounted) return;
       switch (result) {
         case Ok(:final value):

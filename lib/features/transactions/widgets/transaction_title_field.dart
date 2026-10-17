@@ -6,7 +6,7 @@ import '../../../core/l10n.dart';
 import '../../../core/widgets/editor_row.dart';
 import '../../../core/widgets/field_error.dart';
 import '../../../data/models/title_suggestion.dart';
-import '../providers/transactions_controller.dart';
+import '../../../data/providers.dart';
 
 /// Title with autocomplete over previous titles; choosing one hands the
 /// caller its latest use, to pre-fill the category and assets accounts, and
@@ -40,7 +40,7 @@ class TransactionTitleField extends HookConsumerWidget {
         final prefix = value.text.trim();
         if (prefix.isEmpty) return const <TitleSuggestion>[];
         return ref
-            .read(transactionsControllerProvider.notifier)
+            .read(transactionsRepositoryProvider)
             .titleSuggestions(prefix);
       },
       onSelected: onSuggestion,

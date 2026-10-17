@@ -60,6 +60,37 @@ class RemindersRepository extends DatabaseAccessor<AppDatabase>
     reminderLabelsTable,
   )..where((l) => l.reminderId.equals(reminderId))).map((l) => l.labelId).get();
 
+  /// Saves what the page of a reminder changes and keeps the rest of
+  /// [reminder], its labels included.
+  Future<Result<String, RepositoryDataError>> saveChanges(
+    Reminder reminder, {
+    required bool isPaused,
+    required bool autoPost,
+    required bool notify,
+    required String assetsAccountId,
+    required String? categoryId,
+  }) async => save(
+    ReminderDraft(
+      id: reminder.id,
+      template: TransactionDraft(
+        type: reminder.type,
+        occurredAt: reminder.schedule.startDate,
+        amount: reminder.amount.micros,
+        assetsAccountId: assetsAccountId,
+        toAssetsAccountId: reminder.transfer?.assetsAccountId,
+        toAmount: reminder.transfer?.amountReceived,
+        categoryId: categoryId,
+        title: reminder.title,
+        notes: reminder.notes,
+        labelIds: await labelIdsOf(reminder.id),
+      ),
+      schedule: reminder.schedule,
+      autoPost: autoPost,
+      notify: notify,
+      isPaused: isPaused,
+    ),
+  );
+
   /// Validates the template like a transaction, then inserts or updates the
   /// row and its labels in one database transaction. A schedule whose end
   /// conditions are already met is saved finished. Returns the id.

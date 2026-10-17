@@ -7,10 +7,10 @@ import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_placeholder.dart';
+import '../../../data/providers.dart';
 import '../../assets_accounts/providers/assets_account_detail_providers.dart';
 import '../../assets_accounts/providers/assets_accounts_providers.dart';
 import '../../reminders/models/reminder_labels.dart';
-import '../../reminders/providers/reminders_controller.dart';
 import '../../reminders/widgets/record_reminder.dart';
 import '../../reminders/widgets/reminder_list_row.dart';
 import '../../shell/widgets/page_load_error.dart';
@@ -67,7 +67,7 @@ class CalendarRemindersTab extends ConsumerWidget {
                     : null,
                 onSkip: o.isNext && reminderIsDue(o.reminder, today)
                     ? () => ref
-                          .read(remindersControllerProvider.notifier)
+                          .read(remindersRepositoryProvider)
                           .skip(o.reminder.id)
                     : null,
                 onTap: () => context.push(Routes.reminder(o.reminder.id)),

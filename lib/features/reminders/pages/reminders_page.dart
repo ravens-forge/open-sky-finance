@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../app/now.dart';
 import '../../../app/routes.dart';
@@ -15,11 +15,11 @@ import '../../../data/enums/reminder_status.dart';
 import '../../../data/models/assets_account.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/reminder.dart';
+import '../../../data/providers.dart';
 import '../../assets_accounts/providers/assets_accounts_providers.dart';
 import '../../categories/providers/categories_providers.dart';
 import '../../shell/widgets/page_load_error.dart';
 import '../models/reminder_sections.dart';
-import '../providers/reminders_controller.dart';
 import '../providers/reminders_providers.dart';
 import '../widgets/record_reminder.dart';
 import '../widgets/reminder_list_row.dart';
@@ -79,8 +79,7 @@ class _ReminderList extends HookConsumerWidget {
       assetsAccounts: accounts,
       today: today,
       onRecord: () => recordReminder(context, ref, reminder),
-      onSkip: () =>
-          ref.read(remindersControllerProvider.notifier).skip(reminder.id),
+      onSkip: () => ref.read(remindersRepositoryProvider).skip(reminder.id),
       onTap: () => context.push(Routes.reminder(reminder.id)),
     );
 

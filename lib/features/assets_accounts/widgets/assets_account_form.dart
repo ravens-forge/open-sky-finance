@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/dates/wall_clock.dart';
@@ -9,15 +9,16 @@ import '../../../core/l10n.dart';
 import '../../../core/money/format_money.dart';
 import '../../../core/money/parse_money.dart';
 import '../../../core/result.dart';
+import '../../../core/widgets/above_keyboard.dart';
+import '../../../core/widgets/button_row.dart';
 import '../../../core/widgets/currency_picker.dart';
 import '../../../core/widgets/field_error.dart';
 import '../../../core/widgets/field_row.dart';
-import '../../../core/widgets/button_row.dart';
 import '../../../data/enums/assets_account_type.dart';
 import '../../../data/models/assets_account_draft.dart';
+import '../../../data/providers.dart';
 import '../../../data/repositories/repository_data_error.dart';
 import '../models/assets_account_editor_data.dart';
-import '../providers/assets_accounts_controller.dart';
 import 'assets_account_delete_section.dart';
 import 'assets_account_options.dart';
 import 'assets_account_type_field.dart';
@@ -66,7 +67,7 @@ class AssetsAccountForm extends HookConsumerWidget {
 
       saving.value = true;
       final result = await ref
-          .read(assetsAccountsControllerProvider.notifier)
+          .read(assetsAccountsRepositoryProvider)
           .save(
             AssetsAccountDraft(
               id: account?.id,
@@ -214,20 +215,22 @@ class AssetsAccountForm extends HookConsumerWidget {
           ],
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-          child: ButtonRow(
-            children: [
-              OutlinedButton(
-                onPressed: () => context.pop(),
-                child: Text(l10n.actionCancel),
-              ),
-              FilledButton(
-                onPressed: saving.value ? null : save,
-                child: Text(l10n.actionSave),
-              ),
-            ],
+      bottomNavigationBar: AboveKeyboard(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+            child: ButtonRow(
+              children: [
+                OutlinedButton(
+                  onPressed: () => context.pop(),
+                  child: Text(l10n.actionCancel),
+                ),
+                FilledButton(
+                  onPressed: saving.value ? null : save,
+                  child: Text(l10n.actionSave),
+                ),
+              ],
+            ),
           ),
         ),
       ),

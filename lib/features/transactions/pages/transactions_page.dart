@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/main_currency.dart';
@@ -22,10 +22,11 @@ import '../../../data/models/category.dart';
 import '../../../data/models/label.dart';
 import '../../../data/models/transaction.dart';
 import '../../../data/models/transaction_filter.dart';
+import '../../../data/providers.dart';
 import '../../assets_accounts/providers/assets_accounts_providers.dart';
 import '../../categories/providers/categories_providers.dart';
+import '../../shell/widgets/page_load_error.dart';
 import '../models/transactions_month.dart';
-import '../providers/transactions_controller.dart';
 import '../providers/transactions_drill_down.dart';
 import '../providers/transactions_providers.dart';
 import '../widgets/transaction_list_row.dart';
@@ -34,7 +35,6 @@ import '../widgets/transactions_empty_state.dart';
 import '../widgets/transactions_filter_sheet.dart';
 import '../widgets/transactions_search_bar.dart';
 import '../widgets/transactions_summary_row.dart';
-import '../../shell/widgets/page_load_error.dart';
 
 class TransactionsPage extends HookConsumerWidget {
   const TransactionsPage({super.key});
@@ -149,14 +149,14 @@ class _TransactionList extends ConsumerWidget {
 
     void trash(Transaction transaction) {
       final messenger = ScaffoldMessenger.of(context);
-      final controller = ref.read(transactionsControllerProvider.notifier);
-      controller.trash(transaction.id);
+      final repository = ref.read(transactionsRepositoryProvider);
+      repository.trash(transaction.id);
       messenger.showSnackBar(
         SnackBar(
           content: Text(l10n.transactionsMovedToTrash),
           action: SnackBarAction(
             label: l10n.actionUndo,
-            onPressed: () => controller.restore(transaction.id),
+            onPressed: () => repository.restore(transaction.id),
           ),
         ),
       );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../app/now.dart';
 import '../../../app/routes.dart';
@@ -9,11 +9,11 @@ import '../../../core/l10n.dart';
 import '../../../core/widgets/balance_chart.dart';
 import '../../../core/widgets/not_found_page.dart';
 import '../../../core/widgets/page_placeholder.dart';
+import '../../../data/providers.dart';
 import '../../shell/widgets/add_fab.dart';
 import '../../shell/widgets/page_load_error.dart';
 import '../models/credit_usage.dart';
 import '../providers/assets_account_detail_providers.dart';
-import '../providers/assets_accounts_controller.dart';
 import '../providers/assets_accounts_providers.dart';
 import '../widgets/assets_account_balance_header.dart';
 import '../widgets/assets_account_month_view.dart';
@@ -69,7 +69,7 @@ class AssetsAccountDetailPage extends HookConsumerWidget {
               color: Theme.of(context).colorScheme.secondary,
             ),
             onPressed: () => ref
-                .read(assetsAccountsControllerProvider.notifier)
+                .read(assetsAccountsRepositoryProvider)
                 .setFavorite(a.id, !a.isFavorite),
           ),
           IconButton(

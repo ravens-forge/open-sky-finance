@@ -143,7 +143,13 @@ presentation → providers → services/repositories → Drift.
 - Pages match `AsyncValue(:final value?)`, never `AsyncData(...)`: a derived provider
   reloads as `AsyncLoading` with its previous value, and matching `AsyncData` flashes the
   placeholder.
-- Mutations live in `AsyncNotifier` classes or repository methods called from them.
+- Writes call the repository straight from the widget
+  (`ref.read(categoriesRepositoryProvider).saveCategory(draft)`); the UI then updates
+  through its streams. Add an `AsyncNotifier` only when there is state to hold or logic
+  beyond one repository call (backups, imports, onboarding, the calendar's selection),
+  never one that just forwards to a repository.
+- A page closes after a save or delete with `pop`, never `go`: `go` replaces the whole
+  back stack, and Back would then leave the app.
 - Aggregations (balances, totals) are computed in SQL inside repositories, not by loading all rows
   into Dart.
 - Writes touching more than one table run inside `db.transaction(...)`;
