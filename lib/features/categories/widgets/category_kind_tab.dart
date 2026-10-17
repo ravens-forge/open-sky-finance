@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
+import '../../../core/reorder_ids.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/home_section_header.dart';
 import '../../../data/enums/category_kind.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/category_group.dart';
+import '../../../data/providers.dart';
 import '../models/category_group_node.dart';
-import '../providers/categories_controller.dart';
 import 'category_add_row.dart';
 import 'category_group_tile.dart';
 import 'category_row.dart';
@@ -54,10 +55,15 @@ class CategoryKindTab extends HookConsumerWidget {
       );
     }
 
-    final controller = ref.read(categoriesControllerProvider.notifier);
+    final repository = ref.read(categoriesRepositoryProvider);
     final allGroupIds = [for (final g in groups) g.id];
     final allIds = [for (final c in categories) c.id];
     final groupIds = [for (final node in nodes) node.group.id];
+    void moveGroups(int from, int to) => repository.reorderGroups(
+      reorderIds(allGroupIds, allGroupIds, from, to),
+    );
+    void moveCategories(List<String> ids, int from, int to) =>
+        repository.reorderCategories(reorderIds(allIds, ids, from, to));
 
     // Groups and categories share one list; a row only moves within its own
     // ids, kept per row index together with its position in them.
@@ -70,7 +76,7 @@ class CategoryKindTab extends HookConsumerWidget {
       void moveGroup(int to) {
         final from = allGroupIds.indexOf(group.id);
         final target = allGroupIds.indexOf(groupIds[to]);
-        if (from != target) controller.moveGroup(allGroupIds, from, target);
+        if (from != target) moveGroups(from, target);
       }
 
       children.add(
@@ -93,7 +99,7 @@ class CategoryKindTab extends HookConsumerWidget {
 
       final ids = [for (final category in node.categories) category.id];
       void move(int from, int to) {
-        if (from != to) controller.move(allIds, ids, from, to);
+        if (from != to) moveCategories(ids, from, to);
       }
 
       for (final (i, category) in node.categories.indexed) {
@@ -141,12 +147,12 @@ class CategoryKindTab extends HookConsumerWidget {
           final start = allGroupIds.indexOf(ids[position[from]]);
           final target = allGroupIds.indexOf(ids[position[to]]);
           if (start != target) {
-            controller.moveGroup(allGroupIds, start, target);
+            moveGroups(start, target);
           }
           return;
         }
         if (position[from] != position[to]) {
-          controller.move(allIds, ids, position[from], position[to]);
+          moveCategories(ids, position[from], position[to]);
         }
       },
       children: children,

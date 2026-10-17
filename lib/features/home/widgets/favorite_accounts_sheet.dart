@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme.dart';
-import '../../../core/labels.dart';
 import '../../../core/l10n.dart';
+import '../../../core/labels.dart';
 import '../../../core/money/format_money.dart';
 import '../../../core/widgets/picker_sheet.dart';
+import '../../../data/providers.dart';
 import '../../assets_accounts/models/assets_account_with_balance.dart';
-import '../../assets_accounts/providers/assets_accounts_controller.dart';
 import '../../assets_accounts/providers/assets_accounts_providers.dart';
 
 Future<void> showFavoriteAccountsSheet(BuildContext context) =>
@@ -41,7 +41,7 @@ class FavoriteAccountsSheet extends ConsumerWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
         value: a.isFavorite,
         onChanged: (on) => ref
-            .read(assetsAccountsControllerProvider.notifier)
+            .read(assetsAccountsRepositoryProvider)
             .setFavorite(a.id, on ?? false),
         title: Text(a.name, style: theme.textTheme.rowTitle),
         subtitle: Text(

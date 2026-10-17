@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/theme.dart';
@@ -9,10 +9,11 @@ import '../../../core/l10n.dart';
 import '../../../core/money/format_money.dart';
 import '../../../core/money/parse_money.dart';
 import '../../../core/result.dart';
+import '../../../core/widgets/above_keyboard.dart';
 import '../../../core/widgets/button_row.dart';
 import '../../../core/widgets/info_note.dart';
+import '../../../data/providers.dart';
 import '../models/budget_editor_data.dart';
-import '../providers/budgets_controller.dart';
 import 'edit_budget_row.dart';
 
 class EditBudgetsForm extends HookConsumerWidget {
@@ -81,9 +82,7 @@ class EditBudgetsForm extends HookConsumerWidget {
       if (wrong.isNotEmpty) return;
 
       saving.value = true;
-      final result = await ref
-          .read(budgetsControllerProvider.notifier)
-          .save(changes);
+      final result = await ref.read(budgetsRepositoryProvider).setAll(changes);
       if (!context.mounted) return;
       saving.value = false;
       switch (result) {
@@ -184,31 +183,35 @@ class EditBudgetsForm extends HookConsumerWidget {
           ),
         ],
       ),
-      bottomNavigationBar: DecoratedBox(
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainer,
-          border: Border(top: BorderSide(color: scheme.outline)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 12),
-            child: ButtonRow(
-              spacing: 10,
-              children: [
-                OutlinedButton(
-                  onPressed: () => context.pop(),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(0, 52),
+      bottomNavigationBar: AboveKeyboard(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: scheme.surfaceContainer,
+            border: Border(top: BorderSide(color: scheme.outline)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 12),
+              child: ButtonRow(
+                spacing: 10,
+                children: [
+                  OutlinedButton(
+                    onPressed: () => context.pop(),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 52),
+                    ),
+                    child: Text(l10n.actionCancel),
                   ),
-                  child: Text(l10n.actionCancel),
-                ),
-                FilledButton(
-                  onPressed: saving.value ? null : save,
-                  style: FilledButton.styleFrom(minimumSize: const Size(0, 52)),
-                  child: Text(l10n.budgetSave, textAlign: TextAlign.center),
-                ),
-              ],
+                  FilledButton(
+                    onPressed: saving.value ? null : save,
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 52),
+                    ),
+                    child: Text(l10n.budgetSave, textAlign: TextAlign.center),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

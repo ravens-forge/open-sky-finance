@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
 import '../../../core/widgets/destructive_button.dart';
 import '../../../data/models/assets_account.dart';
+import '../../../data/providers.dart';
 import '../models/delete_choice.dart';
-import '../providers/assets_accounts_controller.dart';
 import 'delete_assets_account_dialog.dart';
 
 /// "Delete assets account" at the bottom of the editor, with what it removes.
@@ -22,8 +21,8 @@ class AssetsAccountDeleteSection extends ConsumerWidget {
   final int transactionCount;
 
   Future<void> _delete(BuildContext context, WidgetRef ref) async {
-    final controller = ref.read(assetsAccountsControllerProvider.notifier);
-    final usage = await controller.usage(account.id);
+    final repository = ref.read(assetsAccountsRepositoryProvider);
+    final usage = await repository.usage(account.id);
     if (!context.mounted) return;
     final choice = await showDeleteAssetsAccountDialog(
       context,
@@ -32,10 +31,15 @@ class AssetsAccountDeleteSection extends ConsumerWidget {
     );
     switch (choice) {
       case DeleteChoice.delete:
-        await controller.remove(account.id);
-        if (context.mounted) context.go(Routes.assetsAccounts);
+        await repository.remove(account.id);
+        // The editor and, under it, the deleted assets account's page.
+        if (context.mounted) {
+          Navigator.of(context)
+            ..pop()
+            ..pop();
+        }
       case DeleteChoice.hide:
-        await controller.hide(account.id);
+        await repository.setHidden(account.id, true);
         if (context.mounted) context.pop();
       case null:
     }

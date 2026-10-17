@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/now.dart';
@@ -10,8 +10,9 @@ import '../../../core/l10n.dart';
 import '../../../core/money/format_money.dart';
 import '../../../core/money/parse_money.dart';
 import '../../../core/result.dart';
-import '../../../core/widgets/field_error.dart';
+import '../../../core/widgets/above_keyboard.dart';
 import '../../../core/widgets/editor_row.dart';
+import '../../../core/widgets/field_error.dart';
 import '../../../core/widgets/ledger_dialog.dart';
 import '../../../core/widgets/type_selector.dart';
 import '../../../data/enums/category_kind.dart';
@@ -23,17 +24,16 @@ import '../../../data/models/category_group.dart';
 import '../../../data/models/reminder_draft.dart';
 import '../../../data/models/reminder_schedule.dart';
 import '../../../data/models/transaction_draft.dart';
+import '../../../data/providers.dart';
 import '../../assets_accounts/models/assets_account_with_balance.dart';
 import '../../assets_accounts/providers/assets_accounts_providers.dart';
 import '../../assets_accounts/widgets/assets_account_picker_sheet.dart';
 import '../../categories/providers/categories_providers.dart';
 import '../../categories/widgets/category_picker_sheet.dart';
-import '../../reminders/providers/reminders_controller.dart';
 import '../models/transaction_editor_data.dart';
 import '../models/transaction_error.dart';
 import '../models/transaction_form_errors.dart';
 import '../models/transaction_form_values.dart';
-import '../providers/transactions_controller.dart';
 import 'transaction_amount_field.dart';
 import 'transaction_date_time_fields.dart';
 import 'transaction_form_actions.dart';
@@ -324,10 +324,9 @@ class TransactionForm extends HookConsumerWidget {
         reminderId: t?.reminderId,
       );
       final repeats = !isReminder && v.repeat != ReminderFrequency.once;
-      final transactions = ref.read(transactionsControllerProvider.notifier);
       final result = isReminder
           ? await ref
-                .read(remindersControllerProvider.notifier)
+                .read(remindersRepositoryProvider)
                 .save(
                   ReminderDraft(
                     id: reminder?.id,
@@ -339,8 +338,14 @@ class TransactionForm extends HookConsumerWidget {
                   ),
                 )
           : repeats
-          ? await transactions.saveRepeating(draft, v.repeat)
-          : await transactions.save(draft);
+          ? await ref
+                .read(remindersRepositoryProvider)
+                .saveRepeating(
+                  draft,
+                  v.repeat,
+                  tomorrow: ref.read(tomorrowProvider),
+                )
+          : await ref.read(transactionsRepositoryProvider).save(draft);
       if (!context.mounted) return;
       saving.value = false;
       final messenger = ScaffoldMessenger.of(context);
@@ -364,8 +369,8 @@ class TransactionForm extends HookConsumerWidget {
     Future<void> delete() async {
       final id = t!.id;
       final messenger = ScaffoldMessenger.of(context);
-      final controller = ref.read(transactionsControllerProvider.notifier);
-      await controller.trash(id);
+      final repository = ref.read(transactionsRepositoryProvider);
+      await repository.trash(id);
       if (!context.mounted) return;
       context.pop();
       messenger.showSnackBar(
@@ -373,7 +378,7 @@ class TransactionForm extends HookConsumerWidget {
           content: Text(l10n.transactionsMovedToTrash),
           action: SnackBarAction(
             label: l10n.actionUndo,
-            onPressed: () => controller.restore(id),
+            onPressed: () => repository.restore(id),
           ),
         ),
       );
@@ -578,14 +583,16 @@ class TransactionForm extends HookConsumerWidget {
             ),
         ],
       ),
-      bottomNavigationBar: TransactionFormActions(
-        saving: saving.value,
-        onSave: () => save(again: false),
-        onSaveAndAddAnother: t == null && !isReminder
-            ? () => save(again: true)
-            : null,
-        // A reminder is deleted from its own page.
-        onDelete: t == null || isReminder ? null : delete,
+      bottomNavigationBar: AboveKeyboard(
+        child: TransactionFormActions(
+          saving: saving.value,
+          onSave: () => save(again: false),
+          onSaveAndAddAnother: t == null && !isReminder
+              ? () => save(again: true)
+              : null,
+          // A reminder is deleted from its own page.
+          onDelete: t == null || isReminder ? null : delete,
+        ),
       ),
     );
   }

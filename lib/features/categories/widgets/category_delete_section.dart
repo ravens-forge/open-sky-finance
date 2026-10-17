@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
 import '../../../core/result.dart';
 import '../../../core/widgets/destructive_button.dart';
@@ -10,7 +9,7 @@ import '../../../core/widgets/ledger_dialog.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/category_group.dart';
 import '../../../data/models/category_usage.dart';
-import '../providers/categories_controller.dart';
+import '../../../data/providers.dart';
 import 'delete_category_dialog.dart';
 
 /// Delete at the bottom of both editors, with what it takes with it. A group
@@ -38,12 +37,12 @@ class CategoryDeleteSection extends ConsumerWidget {
     );
     if (choice == null) return;
     final result = await ref
-        .read(categoriesControllerProvider.notifier)
+        .read(categoriesRepositoryProvider)
         .remove(category!.id, reassignTo: choice.reassignTo);
     if (!context.mounted) return;
     switch (result) {
       case Ok():
-        context.go(Routes.categories);
+        context.pop();
       case Err():
         messenger.showSnackBar(SnackBar(content: Text(l10n.errorDeleteFailed)));
     }
@@ -81,12 +80,12 @@ class CategoryDeleteSection extends ConsumerWidget {
     );
     if (confirmed != true) return;
     final result = await ref
-        .read(categoriesControllerProvider.notifier)
+        .read(categoriesRepositoryProvider)
         .removeGroup(group!.id);
     if (!context.mounted) return;
     switch (result) {
       case Ok():
-        context.go(Routes.categories);
+        context.pop();
       case Err():
         messenger.showSnackBar(SnackBar(content: Text(l10n.errorDeleteFailed)));
     }

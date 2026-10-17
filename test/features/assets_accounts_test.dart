@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -351,7 +353,14 @@ void main() {
       );
       expect(saved!.isHidden, isTrue);
 
-      await open(tester, Routes.editAssetsAccount(id));
+      // Opened from another page, deleting goes back to it, so Back does not
+      // leave the app.
+      final router = container.read(routerProvider);
+      await open(tester, Routes.balanceSheet);
+      unawaited(router.push(Routes.assetsAccount(id)));
+      await settle(tester);
+      unawaited(router.push(Routes.editAssetsAccount(id)));
+      await settle(tester);
       await tapDelete();
       await tester.tap(find.text('Delete'));
       await settle(tester);
@@ -359,10 +368,7 @@ void main() {
         () => db.assetsAccountsRepository.findById(id),
       );
       expect(saved, isNull);
-      expect(
-        container.read(routerProvider).state.uri.toString(),
-        Routes.assetsAccounts,
-      );
+      expect(router.state.uri.toString(), Routes.balanceSheet);
       expect(find.text('Other'), findsOneWidget);
       expect(other, isNotEmpty);
     });

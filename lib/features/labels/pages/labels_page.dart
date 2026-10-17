@@ -16,13 +16,13 @@ import '../../../core/widgets/page_placeholder.dart';
 import '../../../data/models/label.dart';
 import '../../../data/models/label_total.dart';
 import '../../../data/models/transaction_filter.dart';
+import '../../../data/providers.dart';
+import '../../shell/widgets/page_load_error.dart';
 import '../../transactions/providers/transactions_drill_down.dart';
-import '../providers/labels_controller.dart';
 import '../providers/labels_providers.dart';
 import '../widgets/delete_label_dialog.dart';
 import '../widgets/label_name_dialog.dart';
 import '../widgets/label_total_row.dart';
-import '../../shell/widgets/page_load_error.dart';
 
 class LabelsPage extends HookConsumerWidget {
   const LabelsPage({super.key});
@@ -52,8 +52,8 @@ class LabelsPage extends HookConsumerWidget {
     }
 
     Future<void> delete(Label label) async {
-      final controller = ref.read(labelsControllerProvider.notifier);
-      final uses = await controller.uses(label.id);
+      final repository = ref.read(labelsRepositoryProvider);
+      final uses = await repository.uses(label.id);
       if (!context.mounted) return;
       final confirmed = await showDeleteLabelDialog(
         context,
@@ -61,7 +61,7 @@ class LabelsPage extends HookConsumerWidget {
         uses: uses,
       );
       if (confirmed) {
-        await controller.remove(label.id);
+        await repository.remove(label.id);
       }
     }
 

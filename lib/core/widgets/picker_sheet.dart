@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n.dart';
+import 'above_keyboard.dart';
 
 /// Opens a [PickerSheet] as a tall modal bottom sheet.
 Future<T?> showPickerSheet<T>(BuildContext context, WidgetBuilder builder) =>
@@ -10,8 +11,9 @@ Future<T?> showPickerSheet<T>(BuildContext context, WidgetBuilder builder) =>
       useSafeArea: true,
       // Above the shell's FAB, which would otherwise cover the footer.
       useRootNavigator: true,
-      builder: (context) =>
-          FractionallySizedBox(heightFactor: 0.9, child: builder(context)),
+      builder: (context) => AboveKeyboard(
+        child: FractionallySizedBox(heightFactor: 0.9, child: builder(context)),
+      ),
     );
 
 class PickerSheet extends StatelessWidget {

@@ -7,10 +7,10 @@ import '../database/tables/labels_table.dart';
 import '../database/tables/transaction_labels_table.dart';
 import '../database/tables/transactions_table.dart';
 import '../models/label.dart';
-import 'repository_data_error.dart';
-import 'report_sql.dart';
-import 'valid_name.dart';
 import '../models/label_total.dart';
+import 'report_sql.dart';
+import 'repository_data_error.dart';
+import 'valid_name.dart';
 
 part 'labels_repository.g.dart';
 
@@ -48,6 +48,12 @@ class LabelsRepository extends DatabaseAccessor<AppDatabase>
         .write(LabelsTableCompanion(name: Value(valid)));
     return updated == 0 ? const Err(RepositoryDataError.notFound) : Ok(id);
   });
+
+  /// How many live transactions carry it, over all time.
+  Future<int> uses(String id) async {
+    final totals = await watchTotals(DateTime(1), DateTime(9999)).first;
+    return totals.where((t) => t.label.id == id).firstOrNull?.count ?? 0;
+  }
 
   /// Removes the label from its transactions and reminders (cascade).
   Future<void> remove(String id) =>

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../app/now.dart';
 import '../../../app/routes.dart';
@@ -17,6 +17,7 @@ import '../../../data/models/category.dart';
 import '../../../data/models/category_group.dart';
 import '../../../data/models/reminder.dart';
 import '../../../data/models/transaction.dart';
+import '../../../data/providers.dart';
 import '../../assets_accounts/providers/assets_accounts_providers.dart';
 import '../../assets_accounts/widgets/assets_account_picker_sheet.dart';
 import '../../categories/providers/categories_providers.dart';
@@ -24,7 +25,6 @@ import '../../categories/widgets/category_picker_sheet.dart';
 import '../../transactions/models/transaction_error.dart';
 import '../../transactions/widgets/transaction_form_actions.dart';
 import '../models/reminder_labels.dart';
-import '../providers/reminders_controller.dart';
 import '../providers/reminders_providers.dart';
 import 'delete_reminder_dialog.dart';
 import 'record_reminder.dart';
@@ -43,7 +43,7 @@ class ReminderDetail extends HookConsumerWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final r = reminder;
-    final controller = ref.read(remindersControllerProvider.notifier);
+    final repository = ref.read(remindersRepositoryProvider);
     // Changed here and not saved yet; `null` shows the reminder as stored.
     final paused = useState<bool?>(null);
     final autoPostChange = useState<bool?>(null);
@@ -75,7 +75,7 @@ class ReminderDetail extends HookConsumerWidget {
 
     Future<void> save() async {
       saving.value = true;
-      final result = await controller.saveChanges(
+      final result = await repository.saveChanges(
         r,
         isPaused: paused.value ?? r.isPaused,
         autoPost: autoPostChange.value ?? r.autoPost,
@@ -98,7 +98,7 @@ class ReminderDetail extends HookConsumerWidget {
     Future<void> delete() async {
       if (!await showDeleteReminderDialog(context) || !context.mounted) return;
       context.pop();
-      await controller.remove(r.id);
+      await repository.remove(r.id);
     }
 
     final today = ref.watch(todayProvider);
@@ -210,7 +210,7 @@ class ReminderDetail extends HookConsumerWidget {
             reminder: r,
             today: today,
             onRecord: () => recordReminder(context, ref, r),
-            onSkip: () => controller.skip(r.id),
+            onSkip: () => repository.skip(r.id),
           ),
           ReminderHistorySection(
             recorded: recorded,

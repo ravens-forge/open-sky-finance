@@ -13,14 +13,14 @@ import '../../../core/widgets/info_note.dart';
 import '../../../core/widgets/page_placeholder.dart';
 import '../../../data/models/assets_account.dart';
 import '../../../data/models/category.dart';
+import '../../../data/providers.dart';
 import '../../assets_accounts/providers/assets_accounts_providers.dart';
 import '../../categories/providers/categories_providers.dart';
+import '../../shell/widgets/page_load_error.dart';
 import '../models/trash_day.dart';
-import '../providers/trash_controller.dart';
 import '../providers/trash_providers.dart';
 import '../widgets/delete_permanently_dialog.dart';
 import '../widgets/trash_row.dart';
-import '../../shell/widgets/page_load_error.dart';
 
 class TrashPage extends ConsumerWidget {
   const TrashPage({super.key});
@@ -34,7 +34,7 @@ class TrashPage extends ConsumerWidget {
 
     Future<void> empty() async {
       if (await showDeletePermanentlyDialog(context, count: count)) {
-        await ref.read(trashControllerProvider.notifier).empty();
+        await ref.read(transactionsRepositoryProvider).emptyTrash();
       }
     }
 
@@ -83,7 +83,7 @@ class _TrashList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final controller = ref.read(trashControllerProvider.notifier);
+    final repository = ref.read(transactionsRepositoryProvider);
     final categories = {
       for (final c in ref.watch(categoriesProvider).value ?? const <Category>[])
         c.id: c,
@@ -105,7 +105,7 @@ class _TrashList extends ConsumerWidget {
 
     Future<void> delete(String id) async {
       if (await showDeletePermanentlyDialog(context)) {
-        await controller.deletePermanently(id);
+        await repository.deletePermanently(id);
       }
     }
 
@@ -125,7 +125,7 @@ class _TrashList extends ConsumerWidget {
               transaction: t,
               categories: categories,
               assetsAccounts: accounts,
-              onRestore: () => controller.restore(t.id),
+              onRestore: () => repository.restore(t.id),
               onDelete: () => delete(t.id),
             ),
         ],

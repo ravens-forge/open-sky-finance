@@ -6,8 +6,8 @@ import '../../../core/l10n.dart';
 import '../../../core/result.dart';
 import '../../../core/widgets/field_error.dart';
 import '../../../data/models/label.dart';
+import '../../../data/providers.dart';
 import '../../../data/repositories/repository_data_error.dart';
-import '../providers/labels_controller.dart';
 
 Future<void> showLabelNameDialog(BuildContext context, {Label? label}) =>
     showDialog<void>(
@@ -30,7 +30,7 @@ class _LabelNameDialog extends HookConsumerWidget {
     Future<void> save() async {
       saving.value = true;
       final result = await ref
-          .read(labelsControllerProvider.notifier)
+          .read(labelsRepositoryProvider)
           .save(id: label?.id, name: name.text);
       if (!context.mounted) return;
       saving.value = false;

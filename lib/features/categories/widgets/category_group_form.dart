@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
 import '../../../core/l10n.dart';
 import '../../../core/labels.dart';
+import '../../../core/reorder_ids.dart';
 import '../../../core/result.dart';
+import '../../../core/widgets/above_keyboard.dart';
+import '../../../core/widgets/button_row.dart';
 import '../../../core/widgets/field_error.dart';
 import '../../../core/widgets/type_selector.dart';
-import '../../../core/widgets/button_row.dart';
 import '../../../data/enums/category_kind.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/category_group.dart';
 import '../../../data/models/category_group_draft.dart';
+import '../../../data/providers.dart';
 import '../../../data/repositories/repository_data_error.dart';
 import '../models/category_editor_data.dart';
-import '../providers/categories_controller.dart';
 import '../providers/categories_providers.dart';
 import 'category_delete_section.dart';
 import 'category_row.dart';
@@ -53,7 +55,7 @@ class CategoryGroupForm extends HookConsumerWidget {
 
       saving.value = true;
       final result = await ref
-          .read(categoriesControllerProvider.notifier)
+          .read(categoriesRepositoryProvider)
           .saveGroup(
             CategoryGroupDraft(
               id: group?.id,
@@ -133,20 +135,22 @@ class CategoryGroupForm extends HookConsumerWidget {
           ],
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-          child: ButtonRow(
-            children: [
-              OutlinedButton(
-                onPressed: () => context.pop(),
-                child: Text(l10n.actionCancel),
-              ),
-              FilledButton(
-                onPressed: saving.value ? null : save,
-                child: Text(l10n.actionSave),
-              ),
-            ],
+      bottomNavigationBar: AboveKeyboard(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+            child: ButtonRow(
+              children: [
+                OutlinedButton(
+                  onPressed: () => context.pop(),
+                  child: Text(l10n.actionCancel),
+                ),
+                FilledButton(
+                  onPressed: saving.value ? null : save,
+                  child: Text(l10n.actionSave),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -175,8 +179,8 @@ class _GroupCategories extends ConsumerWidget {
     void move(int from, int to) {
       if (from != to) {
         ref
-            .read(categoriesControllerProvider.notifier)
-            .move(allIds, ids, from, to);
+            .read(categoriesRepositoryProvider)
+            .reorderCategories(reorderIds(allIds, ids, from, to));
       }
     }
 
