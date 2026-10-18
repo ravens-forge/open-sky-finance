@@ -14,9 +14,6 @@ Open Sky Finance is a free and open-source personal finance app built with Flutt
 
 Everything stays on your device. There is no server, no sign-up, no user profile, no analytics and no network access.
 
-> **Status:** pre-alpha. The app is being built; the documentation is written first.
-> There is no release yet.
-
 ## Key features
 
 - Unlimited assets accounts (bank, cash, credit cards, loans, investments, crypto, property…)
