@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 
-import '../../../core/money/currency_converter.dart';
 import '../../../data/enums/assets_account_type.dart';
 import '../../assets_accounts/models/assets_account_with_balance.dart';
 import 'balance_sheet_type_group.dart';
@@ -15,42 +14,38 @@ class BalanceSheetSide {
   });
 
   final bool isLiability;
-  final ConvertedTotal total;
+
+  /// Micro-units of the sheet's one currency.
+  final int total;
   final List<BalanceSheetTypeGroup> groups;
 }
 
 /// Assets then liabilities (an empty side is left out), types in enum order,
-/// [accounts] kept in their order. [accounts] must already exclude hidden
-/// ones; subtotals (side and type) also leave out those excluded from net
-/// worth, which stay in the list.
+/// [accounts] kept in their order. [accounts] must already be the non-hidden
+/// ones of a single currency; subtotals (side and type) also leave out those
+/// excluded from net worth, which stay in the list.
 List<BalanceSheetSide> groupBalanceSheet(
   List<AssetsAccountWithBalance> accounts,
-  CurrencyConverter converter,
 ) => [
   for (final isLiability in const [false, true])
     if (accounts.where((a) => a.account.type.isLiability == isLiability)
         case final side when side.isNotEmpty)
       BalanceSheetSide(
         isLiability: isLiability,
-        total: converter.convert(_sumByCurrency(side)),
+        total: _sum(side),
         groups: [
           for (final type in AssetsAccountType.values)
             if (side.where((a) => a.account.type == type).toList()
                 case final group when group.isNotEmpty)
               BalanceSheetTypeGroup(
                 type: type,
-                total: converter.convert(_sumByCurrency(group)),
+                total: _sum(group),
                 accounts: group,
               ),
         ],
       ),
 ];
 
-Map<String, int> _sumByCurrency(Iterable<AssetsAccountWithBalance> accounts) {
-  final sums = <String, int>{};
-  for (final AssetsAccountWithBalance(:account, :balance) in accounts) {
-    if (account.excludeFromNetWorth) continue;
-    sums[account.currency] = (sums[account.currency] ?? 0) + balance;
-  }
-  return sums;
-}
+int _sum(Iterable<AssetsAccountWithBalance> accounts) => accounts
+    .where((a) => !a.account.excludeFromNetWorth)
+    .fold(0, (sum, a) => sum + a.balance);

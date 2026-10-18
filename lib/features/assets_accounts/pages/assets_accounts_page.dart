@@ -3,11 +3,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/default_currency.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
 import '../../../core/l10n.dart';
 import '../../../core/labels.dart';
+import '../../../core/money/format_money.dart';
 import '../../../core/reorder_ids.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/home_section_header.dart';
@@ -31,7 +32,7 @@ class AssetsAccountsPage extends HookConsumerWidget {
     final showHidden = useState(false);
     final all = ref.watch(assetsAccountsWithBalanceProvider);
     final sides = ref.watch(assetsAccountsSidesProvider(showHidden.value));
-    final main = ref.watch(mainCurrencyProvider).value;
+    final main = ref.watch(defaultCurrencyProvider).value;
 
     return Scaffold(
       appBar: AppBar(
@@ -100,6 +101,9 @@ class _AssetsAccountList extends ConsumerWidget {
     final theme = Theme.of(context);
     final repository = ref.read(assetsAccountsRepositoryProvider);
     final allIds = [for (final a in all) a.account.id];
+    final shared = sharedSymbols([
+      for (final a in all) a.account.currency,
+    ], l10n.localeName);
     void move(List<String> group, int from, int to) {
       if (from != to) {
         repository.reorder(reorderIds(allIds, group, from, to));
@@ -120,7 +124,6 @@ class _AssetsAccountList extends ConsumerWidget {
               ? l10n.assetsAccountsLiabilities
               : l10n.assetsAccountsAssets,
           total: side.total,
-          mainCurrency: main,
         ),
       );
       groupOf.add(null);
@@ -145,7 +148,8 @@ class _AssetsAccountList extends ConsumerWidget {
               key: ValueKey(item.account.id),
               item: item,
               index: children.length,
-              mainCurrency: main,
+              defaultCurrency: main,
+              code: shared.contains(item.account.currency),
               onTap: () => context.push(Routes.assetsAccount(item.account.id)),
               onFavorite: (on) => repository.setFavorite(item.account.id, on),
               onMoveUp: i > 0 ? () => move(ids, i, i - 1) : null,

@@ -45,7 +45,7 @@ class ImportedTransaction {
   final String? category;
   final List<String> labels;
 
-  /// For an assets account the import creates; the main currency otherwise.
+  /// For an assets account the import creates; the default currency otherwise.
   final String? currency;
 
   TransactionType get resolvedType =>

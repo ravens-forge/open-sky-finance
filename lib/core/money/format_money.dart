@@ -5,6 +5,9 @@ const microsPerUnit = 1000000;
 
 final _lastDigit = RegExp('[0-9](?!.*[0-9])');
 
+/// A letter symbol glued to the number (`CHF18.00`).
+final _gluedCode = RegExp('^([A-Za-z]+)([0-9])');
+
 /// Formats [micros] as a currency amount in [locale], e.g. `€1,234.56` (en) or
 /// `1 234,56 €` (fr).
 ///
@@ -12,16 +15,21 @@ final _lastDigit = RegExp('[0-9](?!.*[0-9])');
 /// amount has more precision, so a stored value is never shown rounded.
 ///
 /// With `symbol: false` only the number is returned (`1 234,56`), for screen reader
-/// labels that say the currency name instead.
+/// labels that say the currency name instead. With `code: true` the ISO code
+/// stands in for the symbol (`ARS 1,250.00`), for amounts shown next to another
+/// currency with the same symbol (see [sharedSymbols]).
 String formatMoney(
   int micros, {
   required String currency,
   required String locale,
   bool symbol = true,
+  bool code = false,
 }) {
-  final format = symbol
-      ? NumberFormat.simpleCurrency(locale: locale, name: currency)
-      : NumberFormat.currency(locale: locale, name: currency, symbol: '');
+  final format = !symbol
+      ? NumberFormat.currency(locale: locale, name: currency, symbol: '')
+      : code
+      ? NumberFormat.currency(locale: locale, name: currency)
+      : NumberFormat.simpleCurrency(locale: locale, name: currency);
   final symbols = format.symbols;
   final digits = format.decimalDigits ?? 2;
   final abs = micros.abs();
@@ -36,7 +44,10 @@ String formatMoney(
     ..minimumFractionDigits = 0
     ..maximumFractionDigits = 0;
 
-  var text = format.format(abs ~/ microsPerUnit).trim();
+  var text = format
+      .format(abs ~/ microsPerUnit)
+      .trim()
+      .replaceFirstMapped(_gluedCode, (m) => '${m[1]}\u00A0${m[2]}');
   if (fraction.isNotEmpty) {
     final end = _lastDigit.firstMatch(text)!.end;
     text =
@@ -45,4 +56,22 @@ String formatMoney(
   }
   // en, es and fr all put the minus sign first.
   return micros < 0 ? '${symbols.MINUS_SIGN}$text' : text;
+}
+
+/// The currencies of [currencies] whose usual symbol another of them shares
+/// (`$` for USD and ARS, `kr` for SEK and NOK): shown together, they need
+/// their ISO code to be told apart.
+Set<String> sharedSymbols(Iterable<String> currencies, String locale) {
+  final bySymbol = <String, List<String>>{};
+  for (final c in {...currencies}) {
+    final symbol = NumberFormat.simpleCurrency(
+      locale: locale,
+      name: c,
+    ).currencySymbol;
+    (bySymbol[symbol] ??= []).add(c);
+  }
+  return {
+    for (final same in bySymbol.values)
+      if (same.length > 1) ...same,
+  };
 }

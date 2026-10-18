@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/report_currency.dart';
 import '../../../data/enums/category_kind.dart';
 import '../../../data/providers.dart';
 import '../../categories/providers/categories_providers.dart';
@@ -10,25 +10,25 @@ import '../models/net_income_summary.dart';
 
 part 'net_income_providers.g.dart';
 
-/// Income, expenses, net income and savings rate of [period], in the main
+/// Income, expenses, net income and savings rate of [period], in the report
 /// currency.
 @riverpod
 Stream<NetIncomeSummary> netIncomeSummary(
   Ref ref,
   NetIncomePeriod period,
 ) async* {
-  final converter = await ref.watch(currencyConverterProvider.future);
+  final currency = await ref.watch(reportCurrencyProvider.future);
   yield* ref
       .watch(incomeExpenseRepositoryProvider)
       .watchSummary(period.start, period.end)
       .map((ie) {
-        final income = converter.convert(ie.income);
-        final net = converter.convert(ie.net);
+        final income = ie.income[currency] ?? 0;
+        final net = ie.net[currency] ?? 0;
         return NetIncomeSummary(
           income: income,
-          expense: converter.convert(ie.expense),
+          expense: ie.expense[currency] ?? 0,
           net: net,
-          savingsRate: income.amount == 0 ? 0 : net.amount / income.amount,
+          savingsRate: income == 0 ? 0 : net / income,
         );
       });
 }
@@ -41,13 +41,12 @@ Stream<List<NetIncomeCategoryGroup>> netIncomeCategories(
   NetIncomePeriod period,
   CategoryKind kind,
 ) async* {
-  final converter = await ref.watch(currencyConverterProvider.future);
+  final currency = await ref.watch(reportCurrencyProvider.future);
   final groups = await ref.watch(categoryGroupsProvider.future);
   final categories = await ref.watch(categoriesProvider.future);
   final summary = await ref.watch(netIncomeSummaryProvider(period).future);
   final sectionTotal =
-      (kind == CategoryKind.income ? summary.income : summary.expense).amount
-          .abs();
+      (kind == CategoryKind.income ? summary.income : summary.expense).abs();
   yield* ref
       .watch(incomeExpenseRepositoryProvider)
       .watchCategoryTotals(kind, period.start, period.end)
@@ -56,7 +55,7 @@ Stream<List<NetIncomeCategoryGroup>> netIncomeCategories(
           totals,
           groups,
           categories,
-          converter,
+          currency,
           sectionTotal,
         ),
       );

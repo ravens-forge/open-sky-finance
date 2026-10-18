@@ -4,7 +4,7 @@ import 'package:flutter/semantics.dart';
 import '../../../app/theme.dart';
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
-import '../../../core/money/currency_converter.dart';
+import '../../../core/money/currency_order.dart';
 import '../../../core/money/format_money.dart';
 import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/category_avatar.dart';
@@ -16,14 +16,14 @@ class LabelTotalRow extends StatelessWidget {
   const LabelTotalRow({
     super.key,
     required this.total,
-    required this.converter,
+    required this.defaultCurrency,
     required this.onTap,
     required this.onRename,
     required this.onDelete,
   });
 
   final LabelTotal total;
-  final CurrencyConverter converter;
+  final String defaultCurrency;
   final VoidCallback onTap;
   final VoidCallback onRename;
   final VoidCallback onDelete;
@@ -34,7 +34,8 @@ class LabelTotalRow extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = FinanceColors.of(context).muted;
     final used = total.count > 0;
-    final converted = converter.convert(total.total);
+    // One amount fits: the first currency's, the others are a tap away.
+    final amounts = totalsInOrder(total.total, defaultCurrency);
     return Semantics(
       customSemanticsActions: {
         CustomSemanticsAction(label: l10n.actionRename): onRename,
@@ -82,28 +83,28 @@ class LabelTotalRow extends StatelessWidget {
                           color: muted,
                         ),
                       ),
-                      if (converted.notIncluded.isNotEmpty)
-                        Text(
-                          l10n.assetsAccountsNotIncluded(
-                            [
-                              for (final MapEntry(key: currency, value: micros)
-                                  in converted.notIncluded.entries)
-                                formatMoney(
-                                  micros,
-                                  currency: currency,
-                                  locale: l10n.localeName,
-                                ),
-                            ].join(', '),
-                          ),
-                          style: theme.textTheme.rowSubtitle,
-                        ),
                     ],
                   ),
-                  amount: AmountText(
-                    converted.amount,
-                    currency: converter.mainCurrency,
-                    approximate: converted.approximate,
-                    style: theme.textTheme.rowAmount,
+                  amount: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      AmountText(
+                        amounts.first.value,
+                        currency: amounts.first.key,
+                        style: theme.textTheme.rowAmount,
+                        code: sharedSymbols(
+                          amounts.map((a) => a.key),
+                          l10n.localeName,
+                        ).contains(amounts.first.key),
+                      ),
+                      if (amounts.length > 1)
+                        Text(
+                          l10n.labelsMoreCurrencies(amounts.length - 1),
+                          style: theme.textTheme.rowSubtitle.copyWith(
+                            color: muted,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),

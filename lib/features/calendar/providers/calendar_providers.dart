@@ -1,7 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/dates/year_month.dart';
-import '../../../core/money/currency_converter.dart';
 import '../../../data/models/label.dart';
 import '../../../data/models/transaction.dart';
 import '../../../data/providers.dart';
@@ -58,14 +57,10 @@ Future<List<CalendarReminderOccurrence>> calendarReminders(
   period,
 );
 
-/// Net worth on the Balance sheet as of the end of [asOf], in the main
+/// Net worth on the Balance sheet as of the end of [asOf], in the report
 /// currency.
 @riverpod
-Future<ConvertedTotal> calendarNetWorth(Ref ref, DateTime asOf) async {
+Future<int> calendarNetWorth(Ref ref, DateTime asOf) async {
   final sides = await ref.watch(balanceSheetSidesProvider(asOf).future);
-  return ConvertedTotal(
-    sides.fold(0, (sum, side) => sum + side.total.amount),
-    approximate: sides.any((side) => side.total.approximate),
-    notIncluded: const {},
-  );
+  return sides.fold<int>(0, (sum, side) => sum + side.total);
 }

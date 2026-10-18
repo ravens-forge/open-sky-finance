@@ -479,10 +479,10 @@ void main() {
   group('settings', () {
     test('read, write, remove', () async {
       final settings = db.settingsRepository;
-      await settings.set(SettingKeys.mainCurrency, 'EUR');
-      expect(await settings.get(SettingKeys.mainCurrency), 'EUR');
-      await settings.set(SettingKeys.mainCurrency, null);
-      expect(await settings.get(SettingKeys.mainCurrency), isNull);
+      await settings.set(SettingKeys.defaultCurrency, 'EUR');
+      expect(await settings.get(SettingKeys.defaultCurrency), 'EUR');
+      await settings.set(SettingKeys.defaultCurrency, null);
+      expect(await settings.get(SettingKeys.defaultCurrency), isNull);
     });
 
     test('home sections round-trip', () async {

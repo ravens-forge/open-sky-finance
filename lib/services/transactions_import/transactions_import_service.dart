@@ -107,7 +107,7 @@ class TransactionsImportService {
   Future<Result<ImportSummary, ImportFileError>> import(
     ParsedImport parsed, {
     required String appVersion,
-    required String mainCurrency,
+    required String defaultCurrency,
     required ImportNames names,
     String? assetsAccountId,
   }) async {
@@ -115,7 +115,7 @@ class TransactionsImportService {
       await backups.saveSafetyCopy(appVersion: appVersion);
       final summary = await repository.importAll(
         parsed.transactions,
-        mainCurrency: mainCurrency,
+        defaultCurrency: defaultCurrency,
         names: names,
         assetsAccountId: assetsAccountId,
       );

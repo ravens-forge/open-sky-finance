@@ -9,8 +9,7 @@ import 'transactions_day.dart';
 /// A period of the transactions list: the scheduled (future-dated) rows
 /// first, then the days, and the income and expenses of the whole period.
 ///
-/// Amounts stay per currency; the screen converts them to the main currency
-/// for display.
+/// Amounts stay per currency and are never converted.
 @immutable
 class TransactionsMonth {
   const TransactionsMonth({

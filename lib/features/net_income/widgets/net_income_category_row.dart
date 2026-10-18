@@ -28,7 +28,7 @@ class NetIncomeCategoryRow extends StatelessWidget {
         name: category.name ?? l10n.categoryNone,
         amount: Text(
           formatMoney(
-            category.total.amount.abs(),
+            category.total.abs(),
             currency: currency,
             locale: l10n.localeName,
           ),

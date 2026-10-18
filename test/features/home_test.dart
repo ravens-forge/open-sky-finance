@@ -30,7 +30,7 @@ void main() {
       tester,
       showHome: true,
       seed: (db) async {
-        await db.settingsRepository.set('main_currency', 'USD');
+        await db.settingsRepository.set('default_currency', 'USD');
         final wallet = await addAssetsAccount(db, 'Wallet', currency: 'USD');
         final now = DateTime.now();
         final lastMonth = DateTime(now.year, now.month - 1, 10);

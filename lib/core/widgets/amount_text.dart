@@ -39,8 +39,8 @@ class AmountText extends StatelessWidget {
     required this.currency,
     this.amountStyle = AmountStyle.signed,
     this.style,
-    this.approximate = false,
     this.fit = false,
+    this.code = false,
   });
 
   final int micros;
@@ -48,12 +48,13 @@ class AmountText extends StatelessWidget {
   final AmountStyle amountStyle;
   final TextStyle? style;
 
-  /// Converted from other currencies: shown with "≈".
-  final bool approximate;
-
   /// Shrinks to the available width instead of wrapping inside the number;
   /// for large figures under large text.
   final bool fit;
+
+  /// The ISO code instead of the symbol, next to another currency with the
+  /// same symbol.
+  final bool code;
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +64,7 @@ class AmountText extends StatelessWidget {
       micros.abs(),
       currency: currency,
       locale: l10n.localeName,
+      code: code,
     );
     final spoken = spokenMoney(micros.abs(), currency, l10n);
 
@@ -88,8 +90,8 @@ class AmountText extends StatelessWidget {
     };
 
     final widget = GlyphText(
-      approximate ? l10n.amountApproximate(text) : text,
-      semanticsLabel: approximate ? l10n.amountApproximate(label) : label,
+      text,
+      semanticsLabel: label,
       style: (style ?? const TextStyle()).copyWith(
         color: color,
         fontFeatures: const [FontFeature.tabularFigures()],

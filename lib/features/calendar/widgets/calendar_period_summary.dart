@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/l10n.dart';
-import '../../../core/money/currency_converter.dart';
 import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/large_text.dart';
 
@@ -15,11 +14,11 @@ class CalendarPeriodSummary extends StatelessWidget {
     required this.currency,
   });
 
-  final ConvertedTotal income;
+  final int income;
 
   /// Negative.
-  final ConvertedTotal expense;
-  final ConvertedTotal netWorth;
+  final int expense;
+  final int netWorth;
   final String currency;
 
   @override
@@ -32,11 +31,10 @@ class CalendarPeriodSummary extends StatelessWidget {
       (l10n.netIncomeExpenses, expense, AmountStyle.signed),
       (l10n.balanceSheetNetWorth, netWorth, AmountStyle.balance),
     ];
-    Widget amount(ConvertedTotal total, AmountStyle style) => AmountText(
-      total.amount,
+    Widget amount(int total, AmountStyle style) => AmountText(
+      total,
       currency: currency,
       amountStyle: style,
-      approximate: total.approximate,
       fit: true,
       style: theme.textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w600),
     );
@@ -62,24 +60,22 @@ class CalendarPeriodSummary extends StatelessWidget {
         ),
       );
     }
-    Widget figure(
-      (String, ConvertedTotal, AmountStyle) figure, {
-      bool first = false,
-    }) => Expanded(
-      child: Container(
-        padding: EdgeInsetsDirectional.only(start: first ? 0 : 12),
-        decoration: BoxDecoration(
-          border: first ? null : BorderDirectional(start: line),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(figure.$1, style: theme.textTheme.bodySmall),
-            amount(figure.$2, figure.$3),
-          ],
-        ),
-      ),
-    );
+    Widget figure((String, int, AmountStyle) figure, {bool first = false}) =>
+        Expanded(
+          child: Container(
+            padding: EdgeInsetsDirectional.only(start: first ? 0 : 12),
+            decoration: BoxDecoration(
+              border: first ? null : BorderDirectional(start: line),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(figure.$1, style: theme.textTheme.bodySmall),
+                amount(figure.$2, figure.$3),
+              ],
+            ),
+          ),
+        );
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),

@@ -30,7 +30,7 @@ class TransactionsImportRepository extends DatabaseAccessor<AppDatabase>
   /// it they are invalid.
   Future<ImportSummary> importAll(
     List<ImportedTransaction> rows, {
-    required String mainCurrency,
+    required String defaultCurrency,
     required ImportNames names,
     String? assetsAccountId,
   }) => transaction(() async {
@@ -62,7 +62,7 @@ class TransactionsImportRepository extends DatabaseAccessor<AppDatabase>
         AssetsAccountDraft(
           name: name,
           type: AssetsAccountType.bank,
-          currency: currency ?? mainCurrency,
+          currency: currency ?? defaultCurrency,
           openingBalance: opening?.amount ?? 0,
           openingBalanceDate: opening?.occurredAt ?? earliest,
         ),

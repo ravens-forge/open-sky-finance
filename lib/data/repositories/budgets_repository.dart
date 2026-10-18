@@ -50,7 +50,7 @@ ORDER BY is_group DESC, sort_order''',
     rollover: r.read<bool>('rollover'),
   );
 
-  /// Sets the monthly budget ([amount] micro-units of the main currency) of
+  /// Sets the monthly budget ([amount] micro-units of the default currency) of
   /// an expense category or group. Income is never budgeted.
   Future<Result<void, RepositoryDataError>> set(String id, int amount) =>
       transaction(() async {

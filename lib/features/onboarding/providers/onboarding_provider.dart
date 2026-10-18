@@ -43,7 +43,7 @@ class Onboarding extends _$Onboarding {
     state = const AsyncData(OnboardingSession.done);
   }
 
-  /// Creates the first assets account, makes its currency the main currency
+  /// Creates the first assets account, makes its currency the default currency
   /// and finishes.
   Future<Result<String, RepositoryDataError>> createFirstAssetsAccount(
     AssetsAccountDraft draft,
@@ -55,7 +55,7 @@ class Onboarding extends _$Onboarding {
       if (result is Ok) {
         await ref
             .read(settingsRepositoryProvider)
-            .set(SettingKeys.mainCurrency, draft.currency);
+            .set(SettingKeys.defaultCurrency, draft.currency);
       }
       return result;
     });

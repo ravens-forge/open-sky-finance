@@ -4,9 +4,11 @@ import 'package:intl/intl.dart';
 import '../../../app/theme.dart';
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
+import '../../../core/money/currency_order.dart';
 import '../../../core/money/format_money.dart';
 import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/budget_bar.dart';
+import '../../../core/widgets/info_note.dart';
 import '../../../core/widgets/info_tooltip.dart';
 import '../../../core/widgets/large_text.dart';
 import '../models/budget_overview.dart';
@@ -41,7 +43,6 @@ class BudgetTotalsHeader extends StatelessWidget {
     Widget figure(
       String label,
       int micros, {
-      bool approximate = false,
       Color? color,
       Widget? info,
       bool first = false,
@@ -63,7 +64,6 @@ class BudgetTotalsHeader extends StatelessWidget {
             micros,
             currency: overview.currency,
             amountStyle: AmountStyle.balance,
-            approximate: approximate,
             style: theme.textTheme.rowAmount.copyWith(color: color),
             fit: true,
           ),
@@ -85,15 +85,10 @@ class BudgetTotalsHeader extends StatelessWidget {
 
     final figures = [
       figure(l10n.budgetBudgeted, overview.budgeted, first: true),
-      figure(
-        l10n.budgetSpent,
-        overview.spent,
-        approximate: overview.approximate,
-      ),
+      figure(l10n.budgetSpent, overview.spent),
       figure(
         l10n.budgetRemaining,
         overview.remaining,
-        approximate: overview.approximate,
         // Negative amounts are drawn in `expense` by [AmountText].
         color: overview.remaining > 0 ? finance.income : null,
         info: InfoTooltip(
@@ -136,22 +131,27 @@ class BudgetTotalsHeader extends StatelessWidget {
                 ),
           style: theme.textTheme.bodySmall,
         ),
-        if (overview.notIncluded.isNotEmpty)
+        if (overview.notCounted.isNotEmpty)
+          // Told apart from the default currency by code where symbols match.
           Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              l10n.assetsAccountsNotIncluded(
+            padding: const EdgeInsets.only(top: 12),
+            child: InfoNote(
+              l10n.budgetNotCounted(
+                overview.currency,
                 [
                   for (final MapEntry(key: currency, value: micros)
-                      in overview.notIncluded.entries)
+                      in totalsInOrder(overview.notCounted, overview.currency))
                     formatMoney(
                       micros,
                       currency: currency,
                       locale: l10n.localeName,
+                      code: sharedSymbols([
+                        overview.currency,
+                        ...overview.notCounted.keys,
+                      ], l10n.localeName).contains(currency),
                     ),
-                ].join(', '),
+                ].join(' · '),
               ),
-              style: theme.textTheme.bodySmall,
             ),
           ),
       ],

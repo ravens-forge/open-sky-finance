@@ -163,8 +163,7 @@ class _BudgetList extends ConsumerWidget {
             currency: overview.currency,
             onTap: () => onOpen(line),
           ),
-        if (overview.notBudgeted.amount > 0 ||
-            overview.notBudgeted.notIncluded.isNotEmpty)
+        if (overview.notBudgeted > 0)
           BudgetNotBudgetedRow(
             total: overview.notBudgeted,
             currency: overview.currency,

@@ -21,7 +21,7 @@ void main() {
   /// Food › Groceries (−90) and Restaurants (−60), Transport › Fuel (−40),
   /// all on September 10, 2026, in euros.
   Future<void> seed(AppDatabase db) async {
-    await db.settingsRepository.set(SettingKeys.mainCurrency, 'EUR');
+    await db.settingsRepository.set(SettingKeys.defaultCurrency, 'EUR');
     final checking = await addAssetsAccount(db, 'Checking');
     food = await addCategoryGroup(db, 'Food');
     groceries = await addCategory(db, 'Groceries', groupId: food);

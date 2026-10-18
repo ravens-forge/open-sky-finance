@@ -30,8 +30,8 @@ class NetIncomeSummaryHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _row(l10n.netIncomeIncome, summary.income.amount, text.bodyLarge!),
-        _row(l10n.netIncomeExpenses, summary.expense.amount, text.bodyLarge!),
+        _row(l10n.netIncomeIncome, summary.income, text.bodyLarge!),
+        _row(l10n.netIncomeExpenses, summary.expense, text.bodyLarge!),
         Container(
           padding: const EdgeInsets.only(top: 10),
           decoration: BoxDecoration(
@@ -57,10 +57,9 @@ class NetIncomeSummaryHeader extends StatelessWidget {
                 ],
               ),
               AmountText(
-                summary.net.amount,
+                summary.net,
                 currency: currency,
                 amountStyle: AmountStyle.signed,
-                approximate: summary.net.approximate,
                 style: text.hero.copyWith(fontSize: 34),
                 fit: true,
               ),

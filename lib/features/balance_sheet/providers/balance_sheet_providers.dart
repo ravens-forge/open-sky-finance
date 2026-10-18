@@ -1,8 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/report_currency.dart';
 import '../../../core/dates/wall_clock.dart';
-import '../../../core/money/currency_converter.dart';
 import '../../../data/models/assets_account.dart';
 import '../../../data/providers.dart';
 import '../../../data/repositories/setting_keys.dart';
@@ -20,8 +19,9 @@ part 'balance_sheet_providers.g.dart';
 Stream<Map<String, int>> balanceSheetBalances(Ref ref, DateTime asOf) =>
     ref.watch(balancesRepositoryProvider).watchBalances(startOfNextDay(asOf));
 
-/// The non-hidden assets accounts with their balance as of [asOf]; hidden
-/// ones are left out entirely (the page shows a count and a link instead).
+/// The non-hidden assets accounts in the report currency with their balance
+/// as of [asOf]; hidden ones are left out entirely (the page shows a count
+/// and a link instead), other currencies are never converted.
 @riverpod
 Future<List<AssetsAccountWithBalance>> balanceSheetAccounts(
   Ref ref,
@@ -29,20 +29,23 @@ Future<List<AssetsAccountWithBalance>> balanceSheetAccounts(
 ) async {
   final accounts = await ref.watch(assetsAccountsProvider.future);
   final balances = await ref.watch(balanceSheetBalancesProvider(asOf).future);
+  final currency = await ref.watch(reportCurrencyProvider.future);
   return [
     for (final a in accounts)
-      if (!a.isHidden) AssetsAccountWithBalance(a, balances[a.id] ?? 0),
+      if (!a.isHidden && a.currency == currency)
+        AssetsAccountWithBalance(a, balances[a.id] ?? 0),
   ];
 }
 
 /// The Balance sheet page: assets and liabilities grouped by type, with
-/// subtotals in the main currency, as of [asOf].
+/// subtotals in the report currency, as of [asOf].
 @riverpod
-Future<List<BalanceSheetSide>> balanceSheetSides(Ref ref, DateTime asOf) async {
-  final accounts = await ref.watch(balanceSheetAccountsProvider(asOf).future);
-  final converter = await ref.watch(currencyConverterProvider.future);
-  return groupBalanceSheet(accounts, converter);
-}
+Future<List<BalanceSheetSide>> balanceSheetSides(
+  Ref ref,
+  DateTime asOf,
+) async => groupBalanceSheet(
+  await ref.watch(balanceSheetAccountsProvider(asOf).future),
+);
 
 /// How many assets accounts are hidden (left out of the sheet).
 @riverpod
@@ -68,11 +71,7 @@ Future<BalanceSheetBaseline> balanceSheetBaseline(
   final balances = await ref.watch(balanceSheetBalancesProvider(date).future);
   return BalanceSheetBaseline(
     date: date,
-    netWorth: ConvertedTotal(
-      sides.fold(0, (sum, side) => sum + side.total.amount),
-      approximate: sides.any((side) => side.total.approximate),
-      notIncluded: const {},
-    ),
+    netWorth: sides.fold(0, (sum, side) => sum + side.total),
     balances: balances,
   );
 }

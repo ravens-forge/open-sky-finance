@@ -20,7 +20,7 @@ class Budget {
   /// A group's budget covers every category inside it.
   final bool isGroup;
 
-  /// Positive micro-units per period, in the main currency.
+  /// Positive micro-units per period, in the default currency.
   final int amount;
   final BudgetPeriod period;
 

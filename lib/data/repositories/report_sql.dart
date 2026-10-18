@@ -3,16 +3,18 @@ import 'package:drift/drift.dart';
 import '../../core/dates/wall_clock.dart';
 
 // SQL shared by the aggregations. Every aggregation skips trashed transactions
-// and sums money per currency (convert totals with `CurrencyConverter`).
+// and sums money per currency; nothing is ever converted between currencies.
 // Periods are `from <= occurred_at < to` (local wall-clock); "now" is the start
 // of tomorrow, so scheduled transactions stay out of balances.
 
-/// Home chart accounts: the favorites, or every non-hidden one when none is.
+/// Home chart accounts, per currency: its favorites, or every non-hidden one
+/// of that currency when none of them is a favorite.
 const chartAccountsCte = '''
 chart_accounts AS (
-  SELECT id, exclude_from_net_worth FROM assets_accounts
-  WHERE is_favorite = 1 OR (is_hidden = 0
-    AND NOT EXISTS (SELECT 1 FROM assets_accounts WHERE is_favorite = 1))
+  SELECT id, exclude_from_net_worth FROM assets_accounts a
+  WHERE a.is_favorite = 1 OR (a.is_hidden = 0
+    AND NOT EXISTS (SELECT 1 FROM assets_accounts f
+      WHERE f.is_favorite = 1 AND f.currency = a.currency))
 )''';
 
 /// Each effect of a live transaction on an assets account, signed and in that

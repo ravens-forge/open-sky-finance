@@ -323,15 +323,18 @@ void main() {
       );
     });
 
-    test('sets only the main currency and keeps the other settings', () {
+    test('sets only the default currency and keeps the other settings', () {
       final snapshot = BluecoinsMapper.map(
         _read(bluecoinsFixture()),
         now: _now,
         appVersion: '1.0.0',
-        settings: {SettingKeys.mainCurrency: 'USD', SettingKeys.locale: 'fr'},
+        settings: {
+          SettingKeys.defaultCurrency: 'USD',
+          SettingKeys.locale: 'fr',
+        },
       ).snapshot;
       expect(snapshot.settings, {
-        SettingKeys.mainCurrency: 'EUR',
+        SettingKeys.defaultCurrency: 'EUR',
         SettingKeys.locale: 'fr',
       });
     });
@@ -527,7 +530,10 @@ WHERE deletedTransaction = 6 AND reminderTransaction IS NULL
         appVersion: '1.0.0',
       );
       expect(await balancesByName(db), first);
-      expect(await db.settingsRepository.get(SettingKeys.mainCurrency), 'EUR');
+      expect(
+        await db.settingsRepository.get(SettingKeys.defaultCurrency),
+        'EUR',
+      );
       // The replaced data went to a safety backup first.
       expect(Directory('${dir.path}/safety').listSync(), hasLength(1));
     });

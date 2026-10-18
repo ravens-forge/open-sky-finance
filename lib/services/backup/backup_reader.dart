@@ -63,8 +63,8 @@ AppSnapshot readBackup(JsonFields root, ProblemCollector problems) {
 Map<String, String> _settings(JsonFields? json) {
   if (json == null) return const {};
   final settings = <String, String>{};
-  if (json.has('mainCurrency')) {
-    settings[SettingKeys.mainCurrency] = json.currency('mainCurrency');
+  if (json.has('defaultCurrency')) {
+    settings[SettingKeys.defaultCurrency] = json.currency('defaultCurrency');
   }
   if (json.nullableString('themeMode') case final mode?) {
     if (!_themeModes.contains(mode)) json.invalid('themeMode');

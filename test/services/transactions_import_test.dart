@@ -162,7 +162,7 @@ void main() {
     ];
     final first = await db.transactionsImportRepository.importAll(
       rows,
-      mainCurrency: 'USD',
+      defaultCurrency: 'USD',
       names: _names,
     );
     expect(first.transactions, 3);
@@ -187,7 +187,7 @@ void main() {
 
     final again = await db.transactionsImportRepository.importAll(
       rows,
-      mainCurrency: 'USD',
+      defaultCurrency: 'USD',
       names: _names,
     );
     expect(again.transactions, 0);
@@ -231,7 +231,7 @@ void main() {
     final parsed = _ok(TransactionsCsv.read(csv, dayFirst: true));
     final summary = await target.transactionsImportRepository.importAll(
       parsed.transactions,
-      mainCurrency: 'USD',
+      defaultCurrency: 'USD',
       names: _names,
     );
     expect(summary.transactions, 1);

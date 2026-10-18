@@ -1,15 +1,15 @@
 import 'package:flutter/foundation.dart';
 
-import '../../../core/money/currency_converter.dart';
 import 'budget_line.dart';
 
-/// The Budget page for a month, in the main currency.
+/// The Budget page for a month, in the default currency: budgets only count
+/// spending in it.
 @immutable
 class BudgetOverview {
   const BudgetOverview({
     required this.lines,
     required this.notBudgeted,
-    required this.notIncluded,
+    required this.notCounted,
     required this.currency,
   });
 
@@ -17,10 +17,10 @@ class BudgetOverview {
   final List<BudgetLine> lines;
 
   /// Spending in expense categories no budget covers.
-  final ConvertedTotal notBudgeted;
+  final int notBudgeted;
 
-  /// Spending on budgets left out because its currency has no rate yet.
-  final Map<String, int> notIncluded;
+  /// Spending in other currencies, by currency: positive, never converted.
+  final Map<String, int> notCounted;
   final String currency;
 
   int get budgeted => lines.fold(0, (sum, l) => sum + l.budget);
@@ -28,5 +28,4 @@ class BudgetOverview {
 
   /// Negative once over budget.
   int get remaining => budgeted - spent;
-  bool get approximate => lines.any((l) => l.approximate);
 }

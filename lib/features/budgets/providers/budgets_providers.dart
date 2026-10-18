@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/default_currency.dart';
 import '../../../app/now.dart';
 import '../../../core/dates/year_month.dart';
 import '../../../data/enums/category_kind.dart';
@@ -26,12 +26,13 @@ Stream<List<BudgetProgress>> budgetProgress(Ref ref, YearMonth month) =>
 Stream<Map<String, int>> budgetUncovered(Ref ref, YearMonth month) =>
     ref.watch(budgetsRepositoryProvider).watchUncovered(month);
 
-/// The Budget page of [month], in the main currency.
+/// The Budget page of [month], in the default currency; spending in other
+/// currencies is only listed, never converted.
 @riverpod
 Future<BudgetOverview> budgetOverview(Ref ref, YearMonth month) async {
   final progress = await ref.watch(budgetProgressProvider(month).future);
   final uncovered = await ref.watch(budgetUncoveredProvider(month).future);
-  final converter = await ref.watch(currencyConverterProvider.future);
+  final currency = await ref.watch(defaultCurrencyProvider.future);
   final groups = {
     for (final g in await ref.watch(categoryGroupsProvider.future)) g.id: g,
   };
@@ -39,15 +40,20 @@ Future<BudgetOverview> budgetOverview(Ref ref, YearMonth month) async {
     for (final c in await ref.watch(categoriesProvider.future)) c.id: c,
   };
 
-  final notIncluded = <String, int>{};
+  final notCounted = <String, int>{};
+  void count(Map<String, int> spent) {
+    for (final MapEntry(key: other, value: micros) in spent.entries) {
+      if (other != currency) {
+        notCounted[other] = (notCounted[other] ?? 0) + micros;
+      }
+    }
+  }
+
+  count(uncovered);
   final lines = <BudgetLine>[];
   for (final p in progress) {
     final id = p.budget.targetId;
-    final spent = converter.convert(p.spent);
-    for (final MapEntry(key: currency, value: micros)
-        in spent.notIncluded.entries) {
-      notIncluded[currency] = (notIncluded[currency] ?? 0) + micros;
-    }
+    count(p.spent);
     final category = p.budget.isGroup ? null : categories[id];
     lines.add(
       BudgetLine(
@@ -57,8 +63,7 @@ Future<BudgetOverview> budgetOverview(Ref ref, YearMonth month) async {
         icon: category?.icon,
         color: category?.color,
         budget: p.budget.amount,
-        spent: math.max(0, spent.amount),
-        approximate: spent.approximate,
+        spent: math.max(0, p.spent[currency] ?? 0),
       ),
     );
   }
@@ -70,9 +75,12 @@ Future<BudgetOverview> budgetOverview(Ref ref, YearMonth month) async {
   });
   return BudgetOverview(
     lines: lines,
-    notBudgeted: converter.convert(uncovered),
-    notIncluded: notIncluded,
-    currency: converter.mainCurrency,
+    notBudgeted: uncovered[currency] ?? 0,
+    notCounted: {
+      for (final MapEntry(:key, :value) in notCounted.entries)
+        if (value > 0) key: value,
+    },
+    currency: currency,
   );
 }
 
@@ -80,7 +88,7 @@ Future<BudgetOverview> budgetOverview(Ref ref, YearMonth month) async {
 @riverpod
 Future<BudgetEditorData> budgetEditorData(Ref ref) async {
   final month = ref.watch(currentMonthProvider);
-  final converter = await ref.watch(currencyConverterProvider.future);
+  final currency = await ref.watch(defaultCurrencyProvider.future);
   final totals = await ref
       .watch(incomeExpenseRepositoryProvider)
       .watchCategoryTotals(CategoryKind.expense, month.start, month.end)
@@ -96,9 +104,9 @@ Future<BudgetEditorData> budgetEditorData(Ref ref) async {
     spent: {
       for (final categories in totals.values)
         for (final MapEntry(key: id, value: byCurrency) in categories.entries)
-          ?id: math.max(0, -converter.convert(byCurrency).amount),
+          ?id: math.max(0, -(byCurrency[currency] ?? 0)),
     },
     month: month,
-    currency: converter.mainCurrency,
+    currency: currency,
   );
 }

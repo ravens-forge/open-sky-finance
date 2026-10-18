@@ -3,10 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/report_currency.dart';
 import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
-import '../../../core/money/currency_converter.dart';
 import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_placeholder.dart';
@@ -38,17 +37,13 @@ class CalendarNetIncomeTab extends ConsumerWidget {
     final expenses = ref.watch(
       netIncomeCategoriesProvider(netIncome, CategoryKind.expense),
     );
-    final currency = ref.watch(mainCurrencyProvider).value;
+    final currency = ref.watch(reportCurrencyProvider).value;
 
-    Widget amount(ConvertedTotal total, AmountStyle style) => AmountText(
-      total.amount,
-      currency: currency!,
-      amountStyle: style,
-      approximate: total.approximate,
-    );
+    Widget amount(int total, AmountStyle style) =>
+        AmountText(total, currency: currency!, amountStyle: style);
     Iterable<Widget> section(
       String title,
-      ConvertedTotal total,
+      int total,
       List<NetIncomeCategoryGroup> groups,
     ) => [
       if (groups.isNotEmpty)
@@ -61,10 +56,9 @@ class CalendarNetIncomeTab extends ConsumerWidget {
         CalendarLedgerLine(
           name: g.name ?? l10n.categoryNone,
           amount: AmountText(
-            g.total.amount.abs(),
+            g.total.abs(),
             currency: currency!,
             amountStyle: AmountStyle.balance,
-            approximate: g.total.approximate,
           ),
         ),
     ];

@@ -99,7 +99,7 @@ abstract final class BackupCodec {
       'exportedAt': instant(s.exportedAt),
       'data': {
         'settings': {
-          'mainCurrency': settings[SettingKeys.mainCurrency],
+          'defaultCurrency': settings[SettingKeys.defaultCurrency],
           'themeMode': settings[SettingKeys.themeMode] ?? 'system',
           'locale': settings[SettingKeys.locale],
           'firstDayOfWeek': int.tryParse(

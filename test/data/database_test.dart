@@ -229,7 +229,7 @@ void main() {
       {for (final g in groups) g.id},
     );
     expect(categories.map((c) => c.name), contains('Loyer'));
-    expect(await db.settingsRepository.get(SettingKeys.mainCurrency), 'EUR');
+    expect(await db.settingsRepository.get(SettingKeys.defaultCurrency), 'EUR');
   });
 
   test('device currency follows the region', () {

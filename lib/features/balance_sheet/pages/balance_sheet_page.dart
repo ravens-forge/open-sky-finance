@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/report_currency.dart';
 import '../../../app/now.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
@@ -23,6 +23,7 @@ import '../widgets/balance_sheet_type_header.dart';
 import '../widgets/net_worth_header.dart';
 import '../../assets_accounts/widgets/assets_accounts_side_header.dart';
 import '../../shell/widgets/page_load_error.dart';
+import '../../shell/widgets/report_currency_row.dart';
 
 class BalanceSheetPage extends HookConsumerWidget {
   const BalanceSheetPage({super.key});
@@ -63,7 +64,7 @@ class BalanceSheetPage extends HookConsumerWidget {
     }
 
     final sides = ref.watch(balanceSheetSidesProvider(asOf.value));
-    final main = ref.watch(mainCurrencyProvider).value;
+    final main = ref.watch(reportCurrencyProvider).value;
     final hiddenCount = ref.watch(balanceSheetHiddenCountProvider).value ?? 0;
     final comparison =
         ref.watch(balanceSheetComparisonProvider).value ??
@@ -79,6 +80,7 @@ class BalanceSheetPage extends HookConsumerWidget {
 
     return Column(
       children: [
+        const ReportCurrencyRow(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
           child: SizedBox(
@@ -181,8 +183,8 @@ class _BalanceSheetList extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
       children: [
         NetWorthHeader(
-          assets: assets?.amount ?? 0,
-          liabilities: liabilities?.amount ?? 0,
+          assets: assets ?? 0,
+          liabilities: liabilities ?? 0,
           currency: main,
           baseline: baseline,
         ),
@@ -192,16 +194,14 @@ class _BalanceSheetList extends StatelessWidget {
             title: side.isLiability
                 ? l10n.assetsAccountsLiabilities
                 : l10n.assetsAccountsAssets,
-            total: side.total,
-            mainCurrency: main,
+            total: {main: side.total},
           ),
           for (final group in side.groups) ...[
             BalanceSheetTypeHeader(
               key: ValueKey(group.type),
               label: group.type.label(l10n),
-              amount: group.total.amount,
-              mainCurrency: main,
-              approximate: group.total.approximate,
+              amount: group.total,
+              currency: main,
             ),
             for (final item in group.accounts)
               BalanceSheetAccountRow(

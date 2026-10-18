@@ -3,12 +3,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/default_currency.dart';
 import '../../../app/now.dart';
 import '../../../app/routes.dart';
 import '../../../core/dates/year_month.dart';
 import '../../../core/l10n.dart';
-import '../../../core/money/currency_converter.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/info_tooltip.dart';
 import '../../../core/widgets/month_switcher.dart';
@@ -66,7 +65,7 @@ class LabelsPage extends HookConsumerWidget {
     }
 
     final totals = ref.watch(labelTotalsProvider(month.value));
-    final converter = ref.watch(currencyConverterProvider).value;
+    final fallback = ref.watch(defaultCurrencyProvider).value;
     return Column(
       children: [
         MonthSwitcher(
@@ -76,7 +75,7 @@ class LabelsPage extends HookConsumerWidget {
         ),
         const Divider(),
         Expanded(
-          child: switch ((totals, converter)) {
+          child: switch ((totals, fallback)) {
             (AsyncError(), _) => PageLoadError(
               providers: [labelTotalsProvider(month.value)],
             ),
@@ -87,13 +86,12 @@ class LabelsPage extends HookConsumerWidget {
                 actions: const [_NewLabelButton()],
               ),
             ),
-            (AsyncValue(:final value?), final CurrencyConverter converter) =>
-              _LabelList(
-                totals: value,
-                converter: converter,
-                onOpen: open,
-                onDelete: delete,
-              ),
+            (AsyncValue(:final value?), final String fallback) => _LabelList(
+              totals: value,
+              defaultCurrency: fallback,
+              onOpen: open,
+              onDelete: delete,
+            ),
             _ => PagePlaceholder(label: l10n.pageLabels),
           },
         ),
@@ -116,13 +114,13 @@ class _NewLabelButton extends StatelessWidget {
 class _LabelList extends StatelessWidget {
   const _LabelList({
     required this.totals,
-    required this.converter,
+    required this.defaultCurrency,
     required this.onOpen,
     required this.onDelete,
   });
 
   final List<LabelTotal> totals;
-  final CurrencyConverter converter;
+  final String defaultCurrency;
   final ValueChanged<Label> onOpen;
   final ValueChanged<Label> onDelete;
 
@@ -161,7 +159,7 @@ class _LabelList extends StatelessWidget {
         for (final total in totals)
           LabelTotalRow(
             total: total,
-            converter: converter,
+            defaultCurrency: defaultCurrency,
             onTap: () => onOpen(total.label),
             onRename: () => showLabelNameDialog(context, label: total.label),
             onDelete: () => onDelete(total.label),

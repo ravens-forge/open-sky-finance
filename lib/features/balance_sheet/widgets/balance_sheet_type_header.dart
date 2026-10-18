@@ -8,14 +8,12 @@ class BalanceSheetTypeHeader extends StatelessWidget {
     super.key,
     required this.label,
     required this.amount,
-    required this.mainCurrency,
-    required this.approximate,
+    required this.currency,
   });
 
   final String label;
   final int amount;
-  final String mainCurrency;
-  final bool approximate;
+  final String currency;
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +31,8 @@ class BalanceSheetTypeHeader extends StatelessWidget {
           Text(label, style: style),
           AmountText(
             amount,
-            currency: mainCurrency,
+            currency: currency,
             amountStyle: AmountStyle.balance,
-            approximate: approximate,
             style: style,
           ),
         ],

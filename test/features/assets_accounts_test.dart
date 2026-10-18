@@ -1,12 +1,10 @@
 import 'dart:async';
 
-import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/app/router.dart';
 import 'package:open_sky_finance/app/routes.dart';
-import 'package:open_sky_finance/core/money/currency_converter.dart';
 import 'package:open_sky_finance/core/reorder_ids.dart';
 import 'package:open_sky_finance/core/widgets/page_placeholder.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
@@ -119,7 +117,8 @@ void main() {
     expect(reorderIds(['a', 'b', 'y'], ['a', 'b'], 0, 1), ['b', 'a', 'y']);
   });
 
-  test('groups by side and type; subtotals skip hidden and excluded', () {
+  test('groups by side and type; subtotals per currency skip hidden and '
+      'excluded', () {
     final sides = groupAssetsAccounts([
       _account('loan', AssetsAccountType.loan, -m(500)),
       _account('bank', AssetsAccountType.bank, m(100)),
@@ -128,7 +127,7 @@ void main() {
       _account('house', AssetsAccountType.property, m(9), excluded: true),
       _account('usd', AssetsAccountType.bank, m(10), currency: 'USD'),
       _account('gbp', AssetsAccountType.bank, m(3), currency: 'GBP'),
-    ], CurrencyConverter('EUR', {'USD': Decimal.parse('0.9')}));
+    ]);
     expect([for (final s in sides) s.isLiability], [false, true]);
     expect(
       [for (final g in sides[0].groups) g.type],
@@ -142,10 +141,8 @@ void main() {
       [for (final a in sides[0].groups[0].accounts) a.account.id],
       ['bank', 'bank2', 'usd', 'gbp'],
     );
-    expect(sides[0].total.amount, m(129));
-    expect(sides[0].total.approximate, isTrue);
-    expect(sides[0].total.notIncluded, {'GBP': m(3)});
-    expect(sides[1].total.amount, -m(500));
+    expect(sides[0].total, {'EUR': m(120), 'USD': m(10), 'GBP': m(3)});
+    expect(sides[1].total, {'EUR': -m(500)});
   });
 
   test('credit usage only for credit cards with a limit', () {
@@ -215,7 +212,7 @@ void main() {
       container = await pumpApp(tester);
       db = container.read(appDatabaseProvider);
       await tester.runAsync(
-        () => db.settingsRepository.set(SettingKeys.mainCurrency, 'EUR'),
+        () => db.settingsRepository.set(SettingKeys.defaultCurrency, 'EUR'),
       );
     }
 

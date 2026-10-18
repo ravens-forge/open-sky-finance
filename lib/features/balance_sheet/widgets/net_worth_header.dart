@@ -18,14 +18,14 @@ class NetWorthHeader extends StatelessWidget {
     this.baseline,
   });
 
-  /// In the main currency; positive.
+  /// In the sheet's currency; positive.
   final int assets;
 
-  /// In the main currency; negative or zero.
+  /// In the sheet's currency; negative or zero.
   final int liabilities;
   final String currency;
 
-  /// Net worth to compare with, in the main currency.
+  /// Net worth to compare with, in the sheet's currency.
   final BalanceSheetBaseline? baseline;
 
   @override
@@ -66,8 +66,8 @@ class NetWorthHeader extends StatelessWidget {
         ),
         if (baseline case final baseline?)
           _Change(
-            change: assets + liabilities - baseline.netWorth.amount,
-            before: baseline.netWorth.amount,
+            change: assets + liabilities - baseline.netWorth,
+            before: baseline.netWorth,
             date: DateFormat.yMMMd(l10n.localeName).format(baseline.date),
             currency: currency,
           ),
