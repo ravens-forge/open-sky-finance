@@ -51,5 +51,8 @@ Two other version numbers exist and are **not** the app version: the Drift datab
 - Notifications on this device only: "Notify me" on a reminder sends a notification at its due date and time (no amounts on the lock screen), and "Budget alerts" in Settings says when this month's spending reaches a budget, once a month per budget. The app asks for permission when you turn one on.
 - Export to CSV, from Settings: every transaction (opening balances included, the Trash left out) for a spreadsheet, with Save to… or Share….
 - Import CSV or QIF, from Settings: transactions from a spreadsheet or another app are added to your data, never replacing it. A preview shows what will be added; assets accounts, categories and labels the file names are created when missing, transactions already in the app are skipped, and a safety backup is saved first.
+- Balance sheet compares with an earlier date: the same day last month by default, or the end of last month, the same day or end of last year, a date you pick, or nothing. Net worth shows how much it changed and by what percentage, and each assets account shows its earlier balance and its change, green when it raised net worth and red when it lowered it. The choice is kept.
+- Charts on Home and on an assets account show the values of a month in a row above the chart: tap anywhere in a month's column, or drag across, and the month stays selected; "View month" opens it. No more press and hold.
+- The calendar's Balance sheet tab follows the selected day or month, future dates included (scheduled transactions up to that day count), and keeps the figures on screen while the next ones load.
 
 [Unreleased]: https://github.com/ravens-forge/open-sky-finance/commits/main
