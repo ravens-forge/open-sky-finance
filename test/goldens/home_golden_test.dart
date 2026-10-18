@@ -21,7 +21,7 @@ void main() {
   // A section lifted over its dashed drop slot.
   appGolden(
     'home_dragging',
-    height: 1500,
+    height: 1700,
     showHome: true,
     seed: seedDemo,
     act: (tester, container, l10n) async {

@@ -12,6 +12,11 @@ abstract final class SettingKeys {
 
   /// Months shown by the Home charts: `6` (default) or `12`.
   static const homeChartMonths = 'home_chart_months';
+
+  /// What the Balance sheet compares with: a comparison kind's name, or
+  /// `date:yyyy-MM-dd` for a picked date. Device-only.
+  static const balanceSheetComparison = 'balance_sheet_comparison';
+
   static const onboardingSeenSteps = 'onboarding_seen_steps';
 
   /// `true` while automatic backups run. Device-only.

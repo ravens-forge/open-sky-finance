@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
 
 import '../../app/theme.dart';
@@ -10,10 +9,12 @@ import '../dates/year_month.dart';
 import '../l10n.dart';
 import '../money/format_money.dart';
 import 'chart_range.dart';
+import 'amount_text.dart';
 import 'chart_semantics.dart';
 import 'month_chart_axes.dart';
+import 'month_chart_frame.dart';
 
-class BalanceChart extends HookWidget {
+class BalanceChart extends StatelessWidget {
   const BalanceChart({
     super.key,
     required this.history,
@@ -30,7 +31,6 @@ class BalanceChart extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final touched = useState<int?>(null);
     final l10n = context.l10n;
     final locale = l10n.localeName;
     final theme = Theme.of(context);
@@ -44,12 +44,8 @@ class BalanceChart extends HookWidget {
     final values = [for (final s in spots) s.y];
     final low = values.reduce(math.min);
     final high = values.reduce(math.max);
-    final axes = MonthChartAxes(
-      context,
-      months,
-      // Room above the top point for its label.
-      ChartRange.around(low, high + (high - low) * 0.2),
-    );
+    // Room above the top point for its label.
+    final range = ChartRange.around(low, high + (high - low) * 0.2);
     // The point label rounds to whole units, like "€48,230".
     final whole = NumberFormat.simpleCurrency(
       locale: locale,
@@ -73,10 +69,6 @@ class BalanceChart extends HookWidget {
         ),
       ),
     );
-    final labelled = (touched.value ?? spots.length - 1).clamp(
-      0,
-      spots.length - 1,
-    );
 
     return ChartSemantics(
       label: describe(
@@ -90,54 +82,59 @@ class BalanceChart extends HookWidget {
       ),
       months: months,
       onMonthTap: onMonthTap,
-      child: SizedBox(
+      child: MonthChartFrame(
+        months: months,
         height: 160,
-        child: LineChart(
-          LineChartData(
-            // Half a month on each side keeps the end points off the edges.
-            minX: -0.5,
-            maxX: months.length - 0.5,
-            minY: axes.range.min,
-            maxY: axes.range.max,
-            borderData: axes.border,
-            gridData: axes.grid,
-            titlesData: axes.titles,
-            showingTooltipIndicators: [
-              if (spots.isNotEmpty)
-                ShowingTooltipIndicators([
-                  LineBarSpot(bar, 0, spots[labelled]),
-                ]),
-            ],
-            lineTouchData: LineTouchData(
-              handleBuiltInTouches: false,
-              touchCallback: (event, response) {
-                final spot = response?.lineBarSpots?.firstOrNull;
-                if (!event.isInterestedForInteractions) {
-                  touched.value = null;
-                } else if (spot != null) {
-                  touched.value = spot.x.round();
-                }
-                if (event is FlTapUpEvent && spot != null) {
-                  onMonthTap?.call(months[spot.x.round()]);
-                }
-              },
-              touchTooltipData: LineTouchTooltipData(
-                getTooltipColor: (_) => Colors.transparent,
-                tooltipPadding: EdgeInsets.zero,
-                fitInsideHorizontally: true,
-                fitInsideVertically: true,
-                getTooltipItems: (spots) => [
-                  for (final s in spots)
-                    LineTooltipItem(
-                      whole.format(s.y).replaceFirst('-', '−'),
-                      theme.textTheme.chartValue,
-                    ),
-                ],
-              ),
-            ),
-            lineBarsData: [bar],
+        onViewMonth: onMonthTap,
+        values: (i) => [
+          AmountText(
+            history[months[i]]!,
+            currency: currency,
+            amountStyle: AmountStyle.balance,
           ),
-        ),
+        ],
+        chart: (selected) {
+          final axes = MonthChartAxes(
+            context,
+            months,
+            range,
+            selected: selected,
+          );
+          return LineChart(
+            LineChartData(
+              // Half a month on each side keeps the end points off the edges.
+              minX: -0.5,
+              maxX: months.length - 0.5,
+              minY: axes.range.min,
+              maxY: axes.range.max,
+              borderData: axes.border,
+              gridData: axes.grid,
+              titlesData: axes.titles,
+              showingTooltipIndicators: [
+                ShowingTooltipIndicators([
+                  LineBarSpot(bar, 0, spots[selected]),
+                ]),
+              ],
+              lineTouchData: LineTouchData(
+                enabled: false,
+                touchTooltipData: LineTouchTooltipData(
+                  getTooltipColor: (_) => Colors.transparent,
+                  tooltipPadding: EdgeInsets.zero,
+                  fitInsideHorizontally: true,
+                  fitInsideVertically: true,
+                  getTooltipItems: (spots) => [
+                    for (final s in spots)
+                      LineTooltipItem(
+                        whole.format(s.y).replaceFirst('-', '−'),
+                        theme.textTheme.chartValue,
+                      ),
+                  ],
+                ),
+              ),
+              lineBarsData: [bar],
+            ),
+          );
+        },
       ),
     );
   }

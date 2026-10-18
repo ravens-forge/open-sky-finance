@@ -8,14 +8,16 @@ import '../../../core/dates/year_month.dart';
 import '../../../core/finance_colors.dart';
 import '../../../core/l10n.dart';
 import '../../../core/money/format_money.dart';
+import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/chart_range.dart';
 import '../../../core/widgets/chart_semantics.dart';
 import '../../../core/widgets/month_chart_axes.dart';
+import '../../../core/widgets/month_chart_frame.dart';
 import '../models/cash_flow_month.dart';
 import 'chart_legend_item.dart';
 
 /// Income bar (`income`) then expense bar (`expense`) per month, square ends,
-/// legend above. Tapping a month drills down.
+/// legend above, with a readout row; "View month" drills down.
 class CashFlowChart extends StatelessWidget {
   const CashFlowChart({
     super.key,
@@ -32,15 +34,12 @@ class CashFlowChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final locale = l10n.localeName;
-    final theme = Theme.of(context);
     final finance = FinanceColors.of(context);
     final top = months.fold(
       0.0,
       (top, m) => math.max(top, math.max(m.income, -m.expense) / microsPerUnit),
     );
-    final axes = MonthChartAxes(context, [
-      for (final m in months) m.month,
-    ], ChartRange.around(0, top));
+    final range = ChartRange.around(0, top);
     final monthLong = DateFormat.yMMMM(locale);
     final width = months.length > 6 ? 6.0 : 13.0;
     String money(int micros) =>
@@ -79,50 +78,45 @@ class CashFlowChart extends StatelessWidget {
           ),
           months: [for (final m in months) m.month],
           onMonthTap: onMonthTap,
-          child: SizedBox(
+          child: MonthChartFrame(
+            months: [for (final m in months) m.month],
             height: 160,
-            child: BarChart(
-              BarChartData(
-                borderData: axes.border,
-                gridData: axes.grid,
-                titlesData: axes.titles,
-                minY: axes.range.min,
-                maxY: axes.range.max,
-                extraLinesData: axes.baseline,
-                alignment: BarChartAlignment.spaceAround,
-                barTouchData: BarTouchData(
-                  touchCallback: (event, response) {
-                    final spot = response?.spot;
-                    if (event is FlTapUpEvent && spot != null) {
-                      onMonthTap(months[spot.touchedBarGroupIndex].month);
-                    }
-                  },
-                  touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => theme.colorScheme.inverseSurface,
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                      final m = months[groupIndex];
-                      return BarTooltipItem(
-                        rodIndex == 0
-                            ? '+${money(m.income)}'
-                            : '−${money(-m.expense)}',
-                        TextStyle(color: theme.colorScheme.onInverseSurface),
-                      );
-                    },
-                  ),
+            onViewMonth: onMonthTap,
+            values: (i) => [
+              AmountText(months[i].income, currency: currency),
+              AmountText(months[i].expense, currency: currency),
+            ],
+            chart: (selected) {
+              final axes = MonthChartAxes(
+                context,
+                [for (final m in months) m.month],
+                range,
+                selected: selected,
+              );
+              return BarChart(
+                BarChartData(
+                  borderData: axes.border,
+                  gridData: axes.grid,
+                  titlesData: axes.titles,
+                  minY: axes.range.min,
+                  maxY: axes.range.max,
+                  extraLinesData: axes.baseline,
+                  alignment: BarChartAlignment.spaceAround,
+                  barTouchData: BarTouchData(enabled: false),
+                  barGroups: [
+                    for (final (i, m) in months.indexed)
+                      BarChartGroupData(
+                        x: i,
+                        barsSpace: 2,
+                        barRods: [
+                          rod(m.income, finance.income),
+                          rod(-m.expense, finance.expense),
+                        ],
+                      ),
+                  ],
                 ),
-                barGroups: [
-                  for (final (i, m) in months.indexed)
-                    BarChartGroupData(
-                      x: i,
-                      barsSpace: 2,
-                      barRods: [
-                        rod(m.income, finance.income),
-                        rod(-m.expense, finance.expense),
-                      ],
-                    ),
-                ],
-              ),
-            ),
+              );
+            },
           ),
         ),
       ],

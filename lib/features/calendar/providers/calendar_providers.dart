@@ -1,6 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../app/now.dart';
 import '../../../core/dates/year_month.dart';
 import '../../../core/money/currency_converter.dart';
 import '../../../data/models/label.dart';
@@ -58,14 +57,6 @@ Future<List<CalendarReminderOccurrence>> calendarReminders(
   await ref.watch(calendarTransactionsProvider(period).future),
   period,
 );
-
-/// The day balances are taken at: the period's last day, or today when the
-/// period runs past it (what is scheduled has not happened yet).
-@riverpod
-DateTime calendarBalanceDate(Ref ref, CalendarPeriod period) {
-  final today = ref.watch(todayProvider);
-  return period.lastDay.isAfter(today) ? today : period.lastDay;
-}
 
 /// Net worth on the Balance sheet as of the end of [asOf], in the main
 /// currency.

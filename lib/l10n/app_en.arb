@@ -4034,7 +4034,7 @@
   },
   "calendarBalanceAsOf": "As of the end of {date}",
   "@calendarBalanceAsOf": {
-    "description": "Date of the balances in the Calendar's Balance sheet tab: the last day of the period, or today when it ends later",
+    "description": "Date of the balances in the Calendar's Balance sheet tab: the last day of the period, future days included",
     "placeholders": {
       "date": {
         "type": "String",
@@ -4501,5 +4501,99 @@
         "example": "3"
       }
     }
+  },
+  "chartViewMonth": "View month",
+  "@chartViewMonth": {
+    "description": "Link in a chart's readout row that opens the selected month"
+  },
+  "balanceSheetCompareWith": "Compare with",
+  "@balanceSheetCompareWith": {
+    "description": "Label of the Balance sheet comparison date, and the title of its choices"
+  },
+  "balanceSheetCompareSameDayLastMonth": "Same day last month",
+  "@balanceSheetCompareSameDayLastMonth": {
+    "description": "Balance sheet comparison: the same day one month before the \"As of\" date"
+  },
+  "balanceSheetCompareEndOfLastMonth": "End of last month",
+  "@balanceSheetCompareEndOfLastMonth": {
+    "description": "Balance sheet comparison: the last day of the month before the \"As of\" date"
+  },
+  "balanceSheetCompareSameDayLastYear": "Same day last year",
+  "@balanceSheetCompareSameDayLastYear": {
+    "description": "Balance sheet comparison: the same day one year before the \"As of\" date"
+  },
+  "balanceSheetCompareEndOfLastYear": "End of last year",
+  "@balanceSheetCompareEndOfLastYear": {
+    "description": "Balance sheet comparison: December 31 of the year before the \"As of\" date"
+  },
+  "balanceSheetComparePickDate": "Pick a date…",
+  "@balanceSheetComparePickDate": {
+    "description": "Balance sheet comparison: a date the user picks"
+  },
+  "balanceSheetCompareNone": "Don't compare",
+  "@balanceSheetCompareNone": {
+    "description": "Balance sheet comparison turned off"
+  },
+  "balanceSheetCompareOption": "{option} · {date}",
+  "@balanceSheetCompareOption": {
+    "description": "A comparison choice with the date it stands for",
+    "placeholders": {
+      "option": {
+        "type": "String",
+        "example": "Same day last month"
+      },
+      "date": {
+        "type": "String",
+        "example": "Aug 17, 2026"
+      }
+    }
+  },
+  "balanceSheetSince": "since {date}",
+  "@balanceSheetSince": {
+    "description": "After the change of net worth on the Balance sheet",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Aug 17, 2026"
+      }
+    }
+  },
+  "balanceSheetBalanceOn": "{date} {amount}",
+  "@balanceSheetBalanceOn": {
+    "description": "Under an assets account on the Balance sheet: its balance on the comparison date",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Aug 17"
+      },
+      "amount": {
+        "type": "String",
+        "example": "€8,120.00"
+      }
+    }
+  },
+  "balanceSheetChangeUp": "Up {amount}",
+  "@balanceSheetChangeUp": {
+    "description": "Spoken change of a balance that raised net worth",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "820.22 euros"
+      }
+    }
+  },
+  "balanceSheetChangeDown": "Down {amount}",
+  "@balanceSheetChangeDown": {
+    "description": "Spoken change of a balance that lowered net worth",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "53.50 euros"
+      }
+    }
+  },
+  "balanceSheetChangeNone": "No change",
+  "@balanceSheetChangeNone": {
+    "description": "Spoken when a balance did not change"
   }
 }

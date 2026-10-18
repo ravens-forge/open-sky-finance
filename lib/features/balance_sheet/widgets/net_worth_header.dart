@@ -5,6 +5,8 @@ import '../../../app/theme.dart';
 import '../../../core/l10n.dart';
 import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/info_tooltip.dart';
+import '../models/balance_sheet_baseline.dart';
+import 'balance_change.dart';
 import 'net_worth_proportion_bar.dart';
 
 class NetWorthHeader extends StatelessWidget {
@@ -13,6 +15,7 @@ class NetWorthHeader extends StatelessWidget {
     required this.assets,
     required this.liabilities,
     required this.currency,
+    this.baseline,
   });
 
   /// In the main currency; positive.
@@ -21,6 +24,9 @@ class NetWorthHeader extends StatelessWidget {
   /// In the main currency; negative or zero.
   final int liabilities;
   final String currency;
+
+  /// Net worth to compare with, in the main currency.
+  final BalanceSheetBaseline? baseline;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +64,13 @@ class NetWorthHeader extends StatelessWidget {
             ),
           ],
         ),
+        if (baseline case final baseline?)
+          _Change(
+            change: assets + liabilities - baseline.netWorth.amount,
+            before: baseline.netWorth.amount,
+            date: DateFormat.yMMMd(l10n.localeName).format(baseline.date),
+            currency: currency,
+          ),
         const SizedBox(height: 4),
         NetWorthProportionBar(assetsFraction: assetsFraction),
         const SizedBox(height: 6),
@@ -79,6 +92,47 @@ class NetWorthHeader extends StatelessWidget {
             ],
           ),
         ),
+      ],
+    );
+  }
+}
+
+/// "▲ +€1,730.15 (+3.7%) since Aug 17, 2026"; no percentage from zero.
+class _Change extends StatelessWidget {
+  const _Change({
+    required this.change,
+    required this.before,
+    required this.date,
+    required this.currency,
+  });
+
+  final int change;
+  final int before;
+  final String date;
+  final String currency;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final style = Theme.of(context).textTheme.bodyMedium;
+    final percent = NumberFormat.decimalPercentPattern(
+      locale: l10n.localeName,
+      decimalDigits: 1,
+    );
+    final share = before == 0 || change == 0
+        ? null
+        : '${change > 0 ? '+' : '−'}${percent.format((change / before).abs())}';
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 4,
+      children: [
+        BalanceChange(
+          change,
+          currency: currency,
+          suffix: share == null ? null : ' ($share)',
+          style: style,
+        ),
+        Text(l10n.balanceSheetSince(date), style: style),
       ],
     );
   }

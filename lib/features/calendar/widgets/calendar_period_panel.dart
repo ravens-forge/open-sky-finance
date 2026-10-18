@@ -5,6 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../app/main_currency.dart';
 import '../../../app/theme.dart';
 import '../../../core/l10n.dart';
+import '../../../core/money/currency_converter.dart';
+import '../../net_income/models/net_income_summary.dart';
 import '../../net_income/providers/net_income_providers.dart';
 import '../models/calendar_labels.dart';
 import '../models/calendar_period.dart';
@@ -50,16 +52,16 @@ class CalendarPeriodPanel extends HookConsumerWidget {
       tabs.addListener(listener);
       return () => tabs.removeListener(listener);
     }, [tabs]);
-    final summary = ref
-        .watch(netIncomeSummaryProvider(period.netIncomePeriod))
-        .value;
-    final netWorth = ref
-        .watch(
-          calendarNetWorthProvider(
-            ref.watch(calendarBalanceDateProvider(period)),
-          ),
-        )
-        .value;
+    // Each period is a new provider that starts out loading: the last
+    // figures stay meanwhile, so the row does not vanish and push the tab up.
+    final lastSummary = useRef<NetIncomeSummary?>(null);
+    final summary = lastSummary.value =
+        ref.watch(netIncomeSummaryProvider(period.netIncomePeriod)).value ??
+        lastSummary.value;
+    final lastNetWorth = useRef<ConvertedTotal?>(null);
+    final netWorth = lastNetWorth.value =
+        ref.watch(calendarNetWorthProvider(period.lastDay)).value ??
+        lastNetWorth.value;
     final currency = ref.watch(mainCurrencyProvider).value;
 
     return Column(
