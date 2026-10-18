@@ -27,7 +27,7 @@ final demo = <String, String>{};
 /// and three items in the Trash.
 Future<void> seedDemo(AppDatabase db) async {
   demo.clear();
-  await db.settingsRepository.set(SettingKeys.mainCurrency, 'EUR');
+  await db.settingsRepository.set(SettingKeys.defaultCurrency, 'EUR');
 
   Future<void> account(
     String name,

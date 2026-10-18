@@ -53,10 +53,9 @@ class NetIncomeGroupRow extends StatelessWidget {
             ],
           ),
           AmountText(
-            group.total.amount,
+            group.total,
             currency: currency,
             amountStyle: AmountStyle.signed,
-            approximate: group.total.approximate,
             style: theme.textTheme.bodyLarge!.copyWith(
               fontWeight: FontWeight.w700,
             ),

@@ -5,8 +5,9 @@ abstract final class SettingKeys {
   /// `en`, `es` or `fr`; missing = follow the device.
   static const locale = 'locale';
 
-  /// ISO 4217 code totals are shown in.
-  static const mainCurrency = 'main_currency';
+  /// ISO 4217 code preselected for new assets accounts and imports, the
+  /// currency reports open in and the currency of budgets.
+  static const defaultCurrency = 'default_currency';
   static const firstDayOfWeek = 'first_day_of_week';
   static const homeSections = 'home_sections';
 
@@ -62,7 +63,7 @@ abstract final class SettingKeys {
   /// Preferences written into backup files, and replaced by a restore; the
   /// rest belong to the device.
   static const backedUp = [
-    mainCurrency,
+    defaultCurrency,
     themeMode,
     locale,
     firstDayOfWeek,

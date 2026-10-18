@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/report_currency.dart';
 import '../../../app/theme.dart';
 import '../../../core/l10n.dart';
-import '../../../core/money/currency_converter.dart';
 import '../../net_income/models/net_income_summary.dart';
 import '../../net_income/providers/net_income_providers.dart';
+import '../../shell/widgets/report_currency_row.dart';
 import '../models/calendar_labels.dart';
 import '../models/calendar_period.dart';
 import '../models/calendar_tab.dart';
@@ -58,11 +58,11 @@ class CalendarPeriodPanel extends HookConsumerWidget {
     final summary = lastSummary.value =
         ref.watch(netIncomeSummaryProvider(period.netIncomePeriod)).value ??
         lastSummary.value;
-    final lastNetWorth = useRef<ConvertedTotal?>(null);
+    final lastNetWorth = useRef<int?>(null);
     final netWorth = lastNetWorth.value =
         ref.watch(calendarNetWorthProvider(period.lastDay)).value ??
         lastNetWorth.value;
-    final currency = ref.watch(mainCurrencyProvider).value;
+    final currency = ref.watch(reportCurrencyProvider).value;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -76,6 +76,8 @@ class CalendarPeriodPanel extends HookConsumerWidget {
             style: theme.textTheme.headlineSmall!.copyWith(fontSize: 22),
           ),
         ),
+        // The whole panel shows only this currency.
+        const ReportCurrencyRow(padding: EdgeInsets.only(top: 4)),
         const SizedBox(height: 6),
         TabBar(
           controller: tabs,

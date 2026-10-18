@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 
-import '../../../core/money/currency_converter.dart';
 import '../../../data/enums/assets_account_type.dart';
 import '../../assets_accounts/models/assets_account_with_balance.dart';
 
@@ -13,6 +12,6 @@ class BalanceSheetTypeGroup {
   });
 
   final AssetsAccountType type;
-  final ConvertedTotal total;
+  final int total;
   final List<AssetsAccountWithBalance> accounts;
 }

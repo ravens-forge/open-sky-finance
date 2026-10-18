@@ -2,10 +2,10 @@ import 'dart:math' as math;
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/default_currency.dart';
+import '../../../app/report_currency.dart';
 import '../../../app/now.dart';
 import '../../../core/dates/year_month.dart';
-import '../../../core/money/currency_converter.dart';
 import '../../../data/models/home_section.dart';
 import '../../../data/models/reminder.dart';
 import '../../../data/providers.dart';
@@ -33,11 +33,11 @@ Stream<int> homeChartMonths(Ref ref) => ref
     .watch(SettingKeys.homeChartMonths)
     .map((value) => value == '12' ? 12 : 6);
 
-/// Income and expenses of the chart assets accounts for the last [months]
-/// months, the current one last.
+/// Income and expenses of the chart assets accounts in the report currency
+/// for the last [months] months, the current one last.
 @riverpod
 Stream<List<CashFlowMonth>> homeCashFlow(Ref ref, int months) async* {
-  final converter = await ref.watch(currencyConverterProvider.future);
+  final currency = await ref.watch(reportCurrencyProvider.future);
   final now = ref.watch(currentMonthProvider);
   yield* ref
       .watch(incomeExpenseRepositoryProvider)
@@ -47,18 +47,18 @@ Stream<List<CashFlowMonth>> homeCashFlow(Ref ref, int months) async* {
           for (final MapEntry(key: month, value: totals) in flow.entries)
             CashFlowMonth(
               month,
-              income: converter.convert(totals.income).amount,
-              expense: converter.convert(totals.expense).amount,
+              income: totals.income[currency] ?? 0,
+              expense: totals.expense[currency] ?? 0,
             ),
         ],
       );
 }
 
-/// Month-end net worth of the chart assets accounts for the last [months]
-/// months; the current month ends today.
+/// Month-end net worth of the chart assets accounts in the report currency
+/// for the last [months] months; the current month ends today.
 @riverpod
 Stream<Map<YearMonth, int>> homeNetWorth(Ref ref, int months) async* {
-  final converter = await ref.watch(currencyConverterProvider.future);
+  final currency = await ref.watch(reportCurrencyProvider.future);
   final now = ref.watch(currentMonthProvider);
   yield* ref
       .watch(balancesRepositoryProvider)
@@ -69,40 +69,42 @@ Stream<Map<YearMonth, int>> homeNetWorth(Ref ref, int months) async* {
       )
       .map(
         (history) => history.map(
-          (month, totals) => MapEntry(month, converter.convert(totals).amount),
+          (month, totals) => MapEntry(month, totals[currency] ?? 0),
         ),
       );
 }
 
-/// Net worth of the chart assets accounts today.
+/// Net worth of the chart assets accounts in the report currency today.
 @riverpod
-Stream<ConvertedTotal> homeNetWorthToday(Ref ref) async* {
-  final converter = await ref.watch(currencyConverterProvider.future);
+Stream<int> homeNetWorthToday(Ref ref) async* {
+  final currency = await ref.watch(reportCurrencyProvider.future);
   final now = ref.watch(currentMonthProvider);
   yield* ref
       .watch(balancesRepositoryProvider)
       .watchNetWorthHistory(now, now, before: ref.watch(tomorrowProvider))
-      .map((history) => converter.convert(history[now]!));
+      .map((history) => history[now]![currency] ?? 0);
 }
 
-/// Net income of the chart assets accounts this month.
+/// Net income of the chart assets accounts in the report currency this
+/// month.
 @riverpod
-Stream<ConvertedTotal> homeNetIncomeThisMonth(Ref ref) async* {
-  final converter = await ref.watch(currencyConverterProvider.future);
+Stream<int> homeNetIncomeThisMonth(Ref ref) async* {
+  final currency = await ref.watch(reportCurrencyProvider.future);
   final now = ref.watch(currentMonthProvider);
   yield* ref
       .watch(incomeExpenseRepositoryProvider)
       .watchCashFlow(now, now.plus(1))
-      .map((flow) => converter.convert(flow[now]!.net));
+      .map((flow) => flow[now]!.net[currency] ?? 0);
 }
 
-/// This month's spending per budget and what is left, in the main currency.
+/// This month's spending per budget and what is left. Budgets are in the
+/// default currency and count only spending in it.
 @riverpod
 Future<BudgetSummary> homeBudgetSummary(Ref ref) async {
   final progress = await ref.watch(
     budgetProgressProvider(ref.watch(currentMonthProvider)).future,
   );
-  final converter = await ref.watch(currencyConverterProvider.future);
+  final currency = await ref.watch(defaultCurrencyProvider.future);
   final names = {
     for (final g in await ref.watch(categoryGroupsProvider.future))
       g.id: g.name,
@@ -113,7 +115,7 @@ Future<BudgetSummary> homeBudgetSummary(Ref ref) async {
       for (final p in progress)
         BudgetSlice(
           name: names[p.budget.targetId] ?? '',
-          spent: math.max(0, converter.convert(p.spent).amount),
+          spent: math.max(0, p.spent[currency] ?? 0),
         ),
     ],
     budgeted: progress.fold(0, (sum, p) => sum + p.budget.amount),

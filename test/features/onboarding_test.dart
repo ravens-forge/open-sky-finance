@@ -121,28 +121,37 @@ void main() {
       expect(await seen(), unorderedEquals(_v1));
     });
 
-    test('first assets account sets the main currency and finishes', () async {
-      final container = start();
-      await container.read(onboardingProvider.future);
+    test(
+      'first assets account sets the default currency and finishes',
+      () async {
+        final container = start();
+        await container.read(onboardingProvider.future);
 
-      final result = await container
-          .read(onboardingProvider.notifier)
-          .createFirstAssetsAccount(
-            AssetsAccountDraft(
-              name: 'Checking',
-              type: AssetsAccountType.bank,
-              currency: 'CHF',
-              openingBalance: m(250),
-              openingBalanceDate: DateTime(2026, 9, 19),
-            ),
-          );
+        final result = await container
+            .read(onboardingProvider.notifier)
+            .createFirstAssetsAccount(
+              AssetsAccountDraft(
+                name: 'Checking',
+                type: AssetsAccountType.bank,
+                currency: 'CHF',
+                openingBalance: m(250),
+                openingBalanceDate: DateTime(2026, 9, 19),
+              ),
+            );
 
-      final id = ok(result);
-      expect((await db.assetsAccountsRepository.findById(id))!.currency, 'CHF');
-      expect(await db.settingsRepository.get(SettingKeys.mainCurrency), 'CHF');
-      expect(container.read(onboardingProvider).value!.steps, isEmpty);
-      expect(await seen(), unorderedEquals(_v1));
-    });
+        final id = ok(result);
+        expect(
+          (await db.assetsAccountsRepository.findById(id))!.currency,
+          'CHF',
+        );
+        expect(
+          await db.settingsRepository.get(SettingKeys.defaultCurrency),
+          'CHF',
+        );
+        expect(container.read(onboardingProvider).value!.steps, isEmpty);
+        expect(await seen(), unorderedEquals(_v1));
+      },
+    );
 
     test('invalid first assets account is refused', () async {
       final container = start();

@@ -3,13 +3,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/report_currency.dart';
 import '../../../app/now.dart';
 import '../../../app/routes.dart';
 import '../../../app/theme.dart';
 import '../../../core/dates/year_month.dart';
 import '../../../core/l10n.dart';
-import '../../../core/money/currency_converter.dart';
 import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_placeholder.dart';
@@ -27,6 +26,7 @@ import '../widgets/net_income_group_row.dart';
 import '../widgets/net_income_period_switcher.dart';
 import '../widgets/net_income_summary_header.dart';
 import '../../shell/widgets/page_load_error.dart';
+import '../../shell/widgets/report_currency_row.dart';
 
 class NetIncomePage extends HookConsumerWidget {
   const NetIncomePage({super.key});
@@ -120,7 +120,7 @@ class NetIncomePage extends HookConsumerWidget {
     final expenses = ref.watch(
       netIncomeCategoriesProvider(period, CategoryKind.expense),
     );
-    final currency = ref.watch(mainCurrencyProvider).value;
+    final currency = ref.watch(reportCurrencyProvider).value;
 
     return Column(
       children: [
@@ -129,6 +129,7 @@ class NetIncomePage extends HookConsumerWidget {
           onChanged: (p) => state.value = p,
           onPick: pick,
         ),
+        const ReportCurrencyRow(),
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
           child: Align(
@@ -213,7 +214,7 @@ class _NetIncomeBody extends StatelessWidget {
     BuildContext context,
     String title,
     List<NetIncomeCategoryGroup> groups,
-    ConvertedTotal total,
+    int total,
   ) {
     if (groups.isEmpty) return const SizedBox.shrink();
     final theme = Theme.of(context);
@@ -240,10 +241,9 @@ class _NetIncomeBody extends StatelessWidget {
                   child: Text(title, style: theme.textTheme.sectionTitle),
                 ),
                 AmountText(
-                  total.amount,
+                  total,
                   currency: currency,
                   amountStyle: AmountStyle.signed,
-                  approximate: total.approximate,
                   style: theme.textTheme.bodyLarge!.copyWith(
                     fontWeight: FontWeight.w700,
                   ),

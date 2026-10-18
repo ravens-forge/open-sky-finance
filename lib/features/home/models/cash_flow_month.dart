@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 
 import '../../../core/dates/year_month.dart';
 
-/// Income and expenses of one month in the main currency, for the Home
-/// charts. Display values: never store them.
+/// Income and expenses of one month in the report currency, for the Home
+/// charts.
 @immutable
 class CashFlowMonth {
   const CashFlowMonth(

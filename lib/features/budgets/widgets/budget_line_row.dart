@@ -78,9 +78,7 @@ class BudgetLineRow extends StatelessWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: line.approximate
-                                ? l10n.amountApproximate(spent)
-                                : spent,
+                            text: spent,
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                           TextSpan(

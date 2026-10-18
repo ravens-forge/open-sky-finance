@@ -59,7 +59,7 @@ final _upperCase = RegExp(r'(?<!^)[A-Z]');
 /// Pure Dart, for a background isolate.
 abstract final class BluecoinsMapper {
   /// [settings] are the current backed-up settings: the import keeps them
-  /// and only sets the main currency. Balances and ids use [now].
+  /// and only sets the default currency. Balances and ids use [now].
   static BluecoinsImport map(
     BluecoinsTables source, {
     required DateTime now,
@@ -113,7 +113,7 @@ class _Mapping {
       snapshot: AppSnapshot(
         appVersion: appVersion,
         exportedAt: now,
-        settings: {...settings, ..._mainCurrency()},
+        settings: {...settings, ..._defaultCurrency()},
         assetsAccounts: accounts.values.toList(),
         categoryGroups: groups.values.toList(),
         categories: categories.values.toList(),
@@ -463,17 +463,17 @@ class _Mapping {
   }
 
   /// `SETTINGSTABLE` row 1, or else the first assets account's currency.
-  Map<String, String> _mainCurrency() {
+  Map<String, String> _defaultCurrency() {
     for (final s in source.settings) {
       if (_int(s['settingsTableID']) != 1) continue;
       final currency = _text(s['defaultSettings']).trim().toUpperCase();
       if (_currency.hasMatch(currency)) {
-        return {SettingKeys.mainCurrency: currency};
+        return {SettingKeys.defaultCurrency: currency};
       }
     }
     return {
       if (accounts.values.firstOrNull case final first?)
-        SettingKeys.mainCurrency: first.currency,
+        SettingKeys.defaultCurrency: first.currency,
     };
   }
 }

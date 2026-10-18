@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/report_currency.dart';
 import '../../../app/now.dart';
 import '../../../app/theme.dart';
 import '../../../core/l10n.dart';
-import '../../../core/money/currency_converter.dart';
 import '../../../core/widgets/amount_text.dart';
 import '../providers/home_providers.dart';
 
@@ -20,7 +19,7 @@ class SummarySection extends ConsumerWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final line = BorderSide(color: theme.colorScheme.outlineVariant);
-    final currency = ref.watch(mainCurrencyProvider).value;
+    final currency = ref.watch(reportCurrencyProvider).value;
     final netWorth = ref.watch(homeNetWorthTodayProvider).value;
     final netIncome = ref.watch(homeNetIncomeThisMonthProvider).value;
     final month = DateFormat.MMM(l10n.localeName)
@@ -28,7 +27,7 @@ class SummarySection extends ConsumerWidget {
 
     Widget figure(
       String label,
-      ConvertedTotal? total,
+      int? total,
       AmountStyle style,
       EdgeInsetsDirectional padding,
     ) => Padding(
@@ -40,10 +39,9 @@ class SummarySection extends ConsumerWidget {
           Text(label, style: theme.textTheme.bodySmall),
           if (total != null && currency != null)
             AmountText(
-              total.amount,
+              total,
               currency: currency,
               amountStyle: style,
-              approximate: total.approximate,
               style: theme.textTheme.summaryFigure,
               fit: true,
             ),

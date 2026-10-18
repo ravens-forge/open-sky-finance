@@ -34,20 +34,17 @@ class BudgetsEmptyState extends ConsumerWidget {
               ),
             ],
           ),
-          if (overview != null && spent != null && spent.amount > 0)
+          if (overview != null && spent != null && spent > 0)
             Padding(
               padding: const EdgeInsets.fromLTRB(32, 0, 32, 24),
               child: InfoNote(
-                l10n.budgetEmptyUnbudgeted(() {
-                  final amount = formatMoney(
-                    spent.amount,
+                l10n.budgetEmptyUnbudgeted(
+                  formatMoney(
+                    spent,
                     currency: overview.currency,
                     locale: l10n.localeName,
-                  );
-                  return spent.approximate
-                      ? l10n.amountApproximate(amount)
-                      : amount;
-                }()),
+                  ),
+                ),
               ),
             ),
         ],

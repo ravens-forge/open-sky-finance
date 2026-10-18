@@ -1,8 +1,8 @@
+import 'package:decimal/decimal.dart';
 import 'package:drift/drift.dart';
 
 import '../../core/dates/wall_clock.dart';
 import '../../core/ids.dart';
-import '../../core/money/currency_converter.dart';
 import '../../core/result.dart';
 import '../database/app_database.dart';
 import '../database/tables/transaction_labels_table.dart';
@@ -191,7 +191,7 @@ class TransactionsRepository extends DatabaseAccessor<AppDatabase>
           return (null, RepositoryDataError.toAmountRequired);
         }
         if (toAmount <= 0) return (null, RepositoryDataError.invalidAmount);
-        exchangeRate = rate(toAmount, d.amount).toString();
+        exchangeRate = _rate(toAmount, d.amount).toString();
       }
     } else {
       if (d.toAssetsAccountId != null || d.toAmount != null) {
@@ -301,3 +301,10 @@ GROUP BY title ORDER BY uses DESC, last_used DESC LIMIT ?2''',
     ];
   }
 }
+
+/// Units received per unit paid; stored with the transfer, never used for
+/// totals.
+Decimal _rate(int received, int paid) =>
+    (Decimal.fromInt(received) / Decimal.fromInt(paid)).toDecimal(
+      scaleOnInfinitePrecision: 20,
+    );

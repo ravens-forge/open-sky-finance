@@ -24,6 +24,6 @@ class BudgetEditorData {
   final Map<String, int> spent;
   final YearMonth month;
 
-  /// The main currency.
+  /// The default currency.
   final String currency;
 }

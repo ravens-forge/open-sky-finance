@@ -16,7 +16,7 @@ class AssetsAccountEditorData {
   /// `null` when creating.
   final AssetsAccount? account;
 
-  /// The account's, or the main currency for a new one.
+  /// The account's, or the default currency for a new one.
   final String currency;
   final int openingBalance;
   final DateTime openingBalanceDate;

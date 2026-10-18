@@ -1,4 +1,3 @@
-import 'package:decimal/decimal.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/core/dates/year_month.dart';
@@ -322,25 +321,15 @@ void main() {
     expect(await db.transactionsRepository.titleSuggestions('100__'), isEmpty);
   });
 
-  test('rates come from the latest transfer with the main currency', () async {
+  test('chart accounts fall back per currency, never converted', () async {
+    // A EUR favorite leaves out B, but not U: USD has no favorite.
+    await db.assetsAccountsRepository.setFavorite(a, true);
+    final march = YearMonth(2026, 3);
     expect(
-      await db.exchangeRatesRepository
-          .watchRates('EUR', DateTime(2026, 3, 25))
-          .first,
-      isEmpty,
-    );
-    expect(
-      (await db.exchangeRatesRepository
-              .watchRates('EUR', DateTime(2026, 4))
-              .first)['USD']!
-          .toStringAsFixed(6),
-      '0.909091',
-    );
-    expect(
-      await db.exchangeRatesRepository
-          .watchRates('USD', DateTime(2026, 4))
-          .first,
-      {'EUR': Decimal.parse('1.1')},
+      (await db.balancesRepository
+          .watchNetWorthHistory(march, march, before: DateTime(2026, 4))
+          .first)[march],
+      {'EUR': m(100 - 30 - 20 - 110), 'USD': m(121)},
     );
   });
 }

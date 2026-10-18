@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/default_currency.dart';
 import '../../../app/now.dart';
 import '../../../data/providers.dart';
 import '../models/assets_account_editor_data.dart';
@@ -19,7 +19,7 @@ Future<AssetsAccountEditorData> assetsAccountEditorData(
   if (account == null) {
     return AssetsAccountEditorData(
       account: null,
-      currency: await ref.watch(mainCurrencyProvider.future),
+      currency: await ref.watch(defaultCurrencyProvider.future),
       openingBalance: 0,
       openingBalanceDate: today,
       transactionCount: 0,

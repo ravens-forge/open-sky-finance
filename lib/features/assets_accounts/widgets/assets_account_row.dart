@@ -20,7 +20,8 @@ class AssetsAccountRow extends StatelessWidget {
     super.key,
     required this.item,
     required this.index,
-    required this.mainCurrency,
+    required this.defaultCurrency,
+    this.code = false,
     required this.onTap,
     required this.onFavorite,
     this.onMoveUp,
@@ -33,7 +34,11 @@ class AssetsAccountRow extends StatelessWidget {
   final int index;
 
   /// Other currencies are named under the name.
-  final String mainCurrency;
+  final String defaultCurrency;
+
+  /// The balance with its ISO code: another listed currency shares its
+  /// symbol.
+  final bool code;
   final VoidCallback onTap;
   final ValueChanged<bool> onFavorite;
   final VoidCallback? onMoveUp;
@@ -98,7 +103,7 @@ class AssetsAccountRow extends StatelessWidget {
                           Text(
                             [
                               account.type.label(l10n),
-                              if (account.currency != mainCurrency)
+                              if (account.currency != defaultCurrency)
                                 account.currency,
                               if (account.isHidden) l10n.assetsAccountHidden,
                               if (account.excludeFromNetWorth)
@@ -113,6 +118,7 @@ class AssetsAccountRow extends StatelessWidget {
                         currency: account.currency,
                         amountStyle: AmountStyle.balance,
                         style: theme.textTheme.rowAmount,
+                        code: code,
                       ),
                     ),
                   ),

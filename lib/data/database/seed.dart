@@ -125,5 +125,5 @@ Future<void> seedDefaults(
     ]);
   });
 
-  await db.settingsRepository.set(SettingKeys.mainCurrency, currency);
+  await db.settingsRepository.set(SettingKeys.defaultCurrency, currency);
 });

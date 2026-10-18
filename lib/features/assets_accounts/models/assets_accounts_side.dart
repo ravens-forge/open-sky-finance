@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 
-import '../../../core/money/currency_converter.dart';
 import '../../../data/enums/assets_account_type.dart';
 import 'assets_account_type_group.dart';
 import 'assets_account_with_balance.dart';
@@ -15,7 +14,9 @@ class AssetsAccountsSide {
   });
 
   final bool isLiability;
-  final ConvertedTotal total;
+
+  /// Micro-units by currency, never converted.
+  final Map<String, int> total;
   final List<AssetsAccountTypeGroup> groups;
 }
 
@@ -24,14 +25,13 @@ class AssetsAccountsSide {
 /// those excluded from net worth.
 List<AssetsAccountsSide> groupAssetsAccounts(
   List<AssetsAccountWithBalance> accounts,
-  CurrencyConverter converter,
 ) => [
   for (final isLiability in const [false, true])
     if (accounts.where((a) => a.account.type.isLiability == isLiability)
         case final side when side.isNotEmpty)
       AssetsAccountsSide(
         isLiability: isLiability,
-        total: converter.convert(_sumByCurrency(side)),
+        total: _sumByCurrency(side),
         groups: [
           for (final type in AssetsAccountType.values)
             if (side.where((a) => a.account.type == type).toList()

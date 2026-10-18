@@ -123,7 +123,7 @@ void main() {
   testWidgets('a used-up budget alerts once a month', (tester) async {
     Future<void> seed(AppDatabase db) async {
       await db.settingsRepository.set(SettingKeys.budgetAlerts, 'true');
-      await db.settingsRepository.set(SettingKeys.mainCurrency, 'EUR');
+      await db.settingsRepository.set(SettingKeys.defaultCurrency, 'EUR');
       final wallet = await addAssetsAccount(db, 'Wallet');
       final food = await addCategoryGroup(db, 'Food');
       final groceries = await addCategory(db, 'Groceries', groupId: food);

@@ -21,7 +21,7 @@ import '../providers/onboarding_provider.dart';
 import 'onboarding_step_layout.dart';
 
 /// Name, type, currency and current balance of the first assets account; its
-/// currency becomes the main currency. "Skip for now" keeps the seeded Cash
+/// currency becomes the default currency. "Skip for now" keeps the seeded Cash
 /// assets account.
 class FirstAssetsAccountStep extends HookConsumerWidget {
   const FirstAssetsAccountStep({super.key, required this.onSkip});

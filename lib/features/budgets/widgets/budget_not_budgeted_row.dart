@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/l10n.dart';
-import '../../../core/money/currency_converter.dart';
 import '../../../core/money/format_money.dart';
 import '../../../core/widgets/info_tooltip.dart';
 import '../../../core/widgets/trailing_amount.dart';
@@ -14,7 +13,7 @@ class BudgetNotBudgetedRow extends StatelessWidget {
     required this.onAdd,
   });
 
-  final ConvertedTotal total;
+  final int total;
   final String currency;
   final VoidCallback onAdd;
 
@@ -23,12 +22,7 @@ class BudgetNotBudgetedRow extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final locale = l10n.localeName;
-    final amount = formatMoney(
-      total.amount,
-      currency: currency,
-      locale: locale,
-    );
-    final shown = total.approximate ? l10n.amountApproximate(amount) : amount;
+    final shown = formatMoney(total, currency: currency, locale: locale);
     final text = l10n.budgetNotBudgeted(shown);
     final at = text.indexOf(shown);
 
@@ -69,17 +63,6 @@ class BudgetNotBudgetedRow extends StatelessWidget {
                 ),
               ],
             ),
-            if (total.notIncluded.isNotEmpty)
-              Text(
-                l10n.assetsAccountsNotIncluded(
-                  [
-                    for (final MapEntry(key: currency, value: micros)
-                        in total.notIncluded.entries)
-                      formatMoney(micros, currency: currency, locale: locale),
-                  ].join(', '),
-                ),
-                style: theme.textTheme.bodySmall,
-              ),
           ],
         ),
         amount: OutlinedButton(

@@ -744,7 +744,7 @@
   "@firstAssetsAccountIntro": {
     "description": "Paragraph under the first assets account onboarding step title"
   },
-  "firstAssetsAccountCurrencyNote": "Each assets account has its own currency. This one also becomes your main currency for totals.",
+  "firstAssetsAccountCurrencyNote": "Each assets account has its own currency. This one also becomes your default currency.",
   "@firstAssetsAccountCurrencyNote": {
     "description": "Note under the currency of the first assets account"
   },
@@ -808,23 +808,45 @@
   "@assetsAccountsEmpty": {
     "description": "Assets accounts page with no assets account"
   },
-  "assetsAccountsNotIncluded": "Not included: {amounts} · no exchange rate yet",
-  "@assetsAccountsNotIncluded": {
-    "description": "Under a subtotal: balances in currencies without an exchange rate, left out of it",
+  "currenciesMore": "{count, plural, =1{+1 more currency} other{+{count} more currencies}}",
+  "@currenciesMore": {
+    "description": "Button under a total with one line per currency: shows the folded ones",
     "placeholders": {
-      "amounts": {
-        "type": "String",
-        "example": "$1,250.00"
+      "count": {
+        "type": "int",
+        "example": "3"
       }
     }
   },
-  "amountApproximate": "≈ {amount}",
-  "@amountApproximate": {
-    "description": "A total converted from other currencies with the latest transfer rate",
+  "currenciesShowFewer": "Show fewer",
+  "@currenciesShowFewer": {
+    "description": "Button under an unfolded multi-currency total: folds it again"
+  },
+  "reportCurrency": "Currency",
+  "@reportCurrency": {
+    "description": "Label of the row choosing the one currency reports show, and title of its sheet"
+  },
+  "reportCurrencyIntro": "Reports show one currency at a time. Amounts are never converted.",
+  "@reportCurrencyIntro": {
+    "description": "Intro of the sheet choosing the currency of reports"
+  },
+  "reportCurrencyCount": "{count, plural, =1{1 assets account} other{{count} assets accounts}}",
+  "@reportCurrencyCount": {
+    "description": "Under a currency in the currency sheet: how many assets accounts use it",
     "placeholders": {
-      "amount": {
-        "type": "String",
-        "example": "€62,410.00"
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "reportCurrencyDefaultCount": "{count, plural, =1{Default · 1 assets account} other{Default · {count} assets accounts}}",
+  "@reportCurrencyDefaultCount": {
+    "description": "Under the default currency in the currency sheet: how many assets accounts use it",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
       }
     }
   },
@@ -1842,6 +1864,16 @@
       }
     }
   },
+  "labelsMoreCurrencies": "{count, plural, =1{+1 currency} other{+{count} currencies}}",
+  "@labelsMoreCurrencies": {
+    "description": "Under a label's amount: other currencies it also has, shown when it is opened",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
   "labelsEmpty": "No labels yet",
   "@labelsEmpty": {
     "description": "Title of the empty Labels page"
@@ -2188,6 +2220,44 @@
       }
     }
   },
+  "homeBudgetOtherCurrency": "Budgets are in {currency}, your default currency. They don't count spending in {shown}.",
+  "@homeBudgetOtherCurrency": {
+    "description": "Budget summary on Home while another currency is shown; both are ISO codes",
+    "placeholders": {
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      },
+      "shown": {
+        "type": "String",
+        "example": "USD"
+      }
+    }
+  },
+  "homeBudgetShowCurrency": "Show {currency}",
+  "@homeBudgetShowCurrency": {
+    "description": "Button switching Home to the default currency, where budgets are",
+    "placeholders": {
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      }
+    }
+  },
+  "homeFavoriteOtherCurrency": "{name} · {currency}",
+  "@homeFavoriteOtherCurrency": {
+    "description": "Favorite chip of an assets account in another currency than the default one",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "US checking"
+      },
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      }
+    }
+  },
   "homeBudgetDetails": "Details",
   "@homeBudgetDetails": {
     "description": "Link from the budget summary to the Budget page"
@@ -2416,13 +2486,47 @@
   "@settingsAbout": {
     "description": "Settings section heading with privacy, bug reports, support and version"
   },
-  "settingsMainCurrency": "Main currency",
-  "@settingsMainCurrency": {
-    "description": "Main currency setting label"
+  "settingsDefaultCurrency": "Default currency",
+  "@settingsDefaultCurrency": {
+    "description": "Default currency setting label: preselected for new assets accounts, the one reports open in and the one of budgets"
   },
-  "settingsMainCurrencyHint": "{currency} · used for totals and reports",
-  "@settingsMainCurrencyHint": {
-    "description": "Subtitle of the main currency setting; {currency} is an ISO code",
+  "settingsDefaultCurrencyHint": "{currency} · for new assets accounts, reports and budgets",
+  "@settingsDefaultCurrencyHint": {
+    "description": "Subtitle of the default currency setting; {currency} is an ISO code",
+    "placeholders": {
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      }
+    }
+  },
+  "defaultCurrencyChangeTitle": "Use {currency} as default currency?",
+  "@defaultCurrencyChangeTitle": {
+    "description": "Title of the dialog confirming a new default currency while budgets exist; {currency} is an ISO code",
+    "placeholders": {
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      }
+    }
+  },
+  "defaultCurrencyChangeBody": "{count, plural, =1{Your budget will be in {currency} and count only spending in {currency}. Its amount stays the same: nothing is converted.} other{Your {count} budgets will be in {currency} and count only spending in {currency}. Their amounts stay the same: nothing is converted.}}",
+  "@defaultCurrencyChangeBody": {
+    "description": "Body of the dialog confirming a new default currency; {count} budgets exist, {currency} is the new ISO code",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      },
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      }
+    }
+  },
+  "defaultCurrencyChangeUse": "Use {currency}",
+  "@defaultCurrencyChangeUse": {
+    "description": "Button confirming the new default currency",
     "placeholders": {
       "currency": {
         "type": "String",
@@ -3874,6 +3978,20 @@
       }
     }
   },
+  "budgetNotCounted": "Budgets are in {currency}. Not counted, spent in other currencies: {amounts}",
+  "@budgetNotCounted": {
+    "description": "Note under the budget totals; {amounts} is the spending in each other currency, never converted",
+    "placeholders": {
+      "currency": {
+        "type": "String",
+        "example": "EUR"
+      },
+      "amounts": {
+        "type": "String",
+        "example": "£240.00 · $724.00"
+      }
+    }
+  },
   "budgetNotBudgetedInfoLabel": "About not budgeted spending",
   "@budgetNotBudgetedInfoLabel": {
     "description": "Spoken label of the info icon beside Not budgeted"
@@ -3904,7 +4022,7 @@
       }
     }
   },
-  "budgetEditIntro": "Monthly amounts in {currency}, your main currency. A budget on a group covers every category inside it. Leave a field empty for no budget.",
+  "budgetEditIntro": "Monthly amounts in {currency}, your default currency. Only spending in {currency} counts. A budget on a group covers every category inside it. Leave a field empty for no budget.",
   "@budgetEditIntro": {
     "description": "Note at the top of Edit budgets",
     "placeholders": {

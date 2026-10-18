@@ -13,6 +13,7 @@ import '../providers/home_controller.dart';
 import '../providers/home_providers.dart';
 import '../widgets/home_section_view.dart';
 import '../../shell/widgets/page_load_error.dart';
+import '../../shell/widgets/report_currency_row.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -54,21 +55,28 @@ class HomePage extends ConsumerWidget {
     void move(int from, int to) => controller.move(visible, from, to);
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
-      child: ReorderableSections(
-        onReorder: move,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final (i, id) in visible.indexed)
-            HomeSectionView(
-              key: ValueKey(id),
-              id: id,
-              place: HomeSectionPlace(
-                i,
-                onMoveUp: i > 0 ? () => move(i, i - 1) : null,
-                onMoveDown: i < visible.length - 1
-                    ? () => move(i, i + 1)
-                    : null,
-              ),
-            ),
+          // Every section shows only this currency.
+          const ReportCurrencyRow(padding: EdgeInsets.symmetric(vertical: 4)),
+          ReorderableSections(
+            onReorder: move,
+            children: [
+              for (final (i, id) in visible.indexed)
+                HomeSectionView(
+                  key: ValueKey(id),
+                  id: id,
+                  place: HomeSectionPlace(
+                    i,
+                    onMoveUp: i > 0 ? () => move(i, i - 1) : null,
+                    onMoveDown: i < visible.length - 1
+                        ? () => move(i, i + 1)
+                        : null,
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );

@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../../../core/widgets/budget_bar.dart';
 
 /// A budgeted group or category with what was spent on it in a month, in
-/// the main currency.
+/// the default currency.
 @immutable
 class BudgetLine {
   const BudgetLine({
@@ -14,7 +14,6 @@ class BudgetLine {
     required this.color,
     required this.budget,
     required this.spent,
-    required this.approximate,
   });
 
   /// The group or the category.
@@ -31,9 +30,6 @@ class BudgetLine {
 
   /// Micro-units, ≥ 0.
   final int spent;
-
-  /// Another currency was converted into [spent].
-  final bool approximate;
 
   BudgetState get state => budgetState(spent, budget);
 

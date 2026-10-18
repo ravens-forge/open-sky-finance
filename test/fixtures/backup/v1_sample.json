@@ -5,7 +5,7 @@
   "exportedAt": "2026-09-10T19:14:00.000Z",
   "data": {
     "settings": {
-      "mainCurrency": "EUR",
+      "defaultCurrency": "EUR",
       "themeMode": "system",
       "locale": null,
       "firstDayOfWeek": 1,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/report_currency.dart';
 import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
 import '../models/home_section_place.dart';
@@ -23,7 +23,7 @@ class NetIncomeSection extends ConsumerWidget {
     final l10n = context.l10n;
     final months = ref.watch(homeChartMonthsProvider).value ?? 6;
     final flow = ref.watch(homeCashFlowProvider(months)).value;
-    final currency = ref.watch(mainCurrencyProvider).value;
+    final currency = ref.watch(reportCurrencyProvider).value;
     return HomeSectionFrame(
       title: l10n.homeSectionNetIncome,
       place: place,

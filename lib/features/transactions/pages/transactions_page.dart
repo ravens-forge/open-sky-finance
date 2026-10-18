@@ -6,14 +6,13 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../../app/main_currency.dart';
 import '../../../app/now.dart';
 import '../../../app/routes.dart';
 import '../../../core/dates/wall_clock.dart';
 import '../../../core/dates/year_month.dart';
 import '../../../core/l10n.dart';
-import '../../../core/money/currency_converter.dart';
 import '../../../core/widgets/amount_text.dart';
+import '../../../core/widgets/currency_totals.dart';
 import '../../../core/widgets/day_header.dart';
 import '../../../core/widgets/month_switcher.dart';
 import '../../../core/widgets/page_placeholder.dart';
@@ -85,7 +84,6 @@ class TransactionsPage extends HookConsumerWidget {
     final month = ref.watch(
       transactionsMonthProvider(selected.value, filter.value),
     );
-    final converter = ref.watch(currencyConverterProvider).value;
     // Each keystroke is a new filter, so a new provider that starts out
     // loading. The previous result stays meanwhile, and with it the search
     // field inside the list, so the keyboard stays open.
@@ -100,20 +98,18 @@ class TransactionsPage extends HookConsumerWidget {
         ),
         const Divider(),
         Expanded(
-          child: switch ((month, shown, converter)) {
-            (AsyncError(), _, _) => PageLoadError(
+          child: switch ((month, shown)) {
+            (AsyncError(), _) => PageLoadError(
               providers: [
                 transactionsMonthProvider(selected.value, filter.value),
               ],
             ),
-            (_, final shown?, final CurrencyConverter converter) =>
-              _TransactionList(
-                month: shown,
-                converter: converter,
-                selected: selected,
-                filter: filter,
-                search: search,
-              ),
+            (_, final shown?) => _TransactionList(
+              month: shown,
+              selected: selected,
+              filter: filter,
+              search: search,
+            ),
             _ => PagePlaceholder(label: l10n.pageTransactions),
           },
         ),
@@ -126,14 +122,12 @@ class TransactionsPage extends HookConsumerWidget {
 class _TransactionList extends ConsumerWidget {
   const _TransactionList({
     required this.month,
-    required this.converter,
     required this.selected,
     required this.filter,
     required this.search,
   });
 
   final TransactionsMonth month;
-  final CurrencyConverter converter;
   final ValueNotifier<YearMonth> selected;
   final ValueNotifier<TransactionFilter> filter;
   final TextEditingController search;
@@ -177,14 +171,9 @@ class _TransactionList extends ConsumerWidget {
     final tomorrow = ref.watch(tomorrowProvider);
     final day = DateFormat.MMMMEEEEd(l10n.localeName);
 
-    Widget total(Map<String, int> net) {
-      final converted = converter.convert(net);
-      return AmountText(
-        converted.amount,
-        currency: converter.mainCurrency,
-        approximate: converted.approximate,
-      );
-    }
+    // One line per currency, never converted.
+    Widget total(Map<String, int> net) =>
+        CurrencyTotals(net, amountStyle: AmountStyle.signed);
 
     final rule = BorderSide(
       color: Theme.of(context).colorScheme.outlineVariant,
@@ -226,7 +215,7 @@ class _TransactionList extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 96),
       children: [
-        TransactionsSummaryRow(totals: month.totals, converter: converter),
+        TransactionsSummaryRow(totals: month.totals),
         // An empty period offers its next steps instead of a search.
         if (!month.isEmpty || filtered)
           TransactionsSearchBar(

@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/default_currency.dart';
 import '../../../core/logging.dart';
 import '../../../core/result.dart';
 import '../../../data/models/import_names.dart';
@@ -130,7 +130,7 @@ class TransactionsImportController extends _$TransactionsImportController {
   }) async => (await _service).import(
     preview.parsed,
     appVersion: await _appVersion,
-    mainCurrency: await ref.read(mainCurrencyProvider.future) ?? 'USD',
+    defaultCurrency: await ref.read(defaultCurrencyProvider.future) ?? 'USD',
     names: names,
     assetsAccountId: assetsAccountId,
   );

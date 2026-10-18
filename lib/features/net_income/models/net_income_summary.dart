@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart';
 
-import '../../../core/money/currency_converter.dart';
-
 @immutable
 class NetIncomeSummary {
   const NetIncomeSummary({
@@ -11,11 +9,12 @@ class NetIncomeSummary {
     required this.savingsRate,
   });
 
-  final ConvertedTotal income;
+  /// Micro-units of the report currency.
+  final int income;
 
   /// Negative.
-  final ConvertedTotal expense;
-  final ConvertedTotal net;
+  final int expense;
+  final int net;
 
   /// Net income as a share of income; 0 with no income.
   final double savingsRate;

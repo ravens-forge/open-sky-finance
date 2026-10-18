@@ -39,7 +39,7 @@ Future<void> _fill(AppDatabase db) async {
     (SettingKeys.themeMode, 'dark'),
     (SettingKeys.locale, 'fr'),
     (SettingKeys.firstDayOfWeek, '7'),
-    (SettingKeys.mainCurrency, 'USD'),
+    (SettingKeys.defaultCurrency, 'USD'),
     (SettingKeys.homeSections, '[]'),
     (SettingKeys.onboardingSeenSteps, '["welcome"]'),
     (SettingKeys.autoBackupEnabled, 'true'),
@@ -103,7 +103,7 @@ void main() {
       SettingKeys.locale: 'fr',
       SettingKeys.firstDayOfWeek: '7',
       // Seeded again; the onboarding sets it once more.
-      SettingKeys.mainCurrency: 'CHF',
+      SettingKeys.defaultCurrency: 'CHF',
     }, reason: 'automatic backups off, onboarding and last backup reset');
   });
 

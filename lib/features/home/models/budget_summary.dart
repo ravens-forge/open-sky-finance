@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'budget_slice.dart';
 
 /// The budget summary pie: spending per budget this month and what is left,
-/// in the main currency.
+/// in the default currency.
 @immutable
 class BudgetSummary {
   const BudgetSummary({required this.slices, required this.budgeted});

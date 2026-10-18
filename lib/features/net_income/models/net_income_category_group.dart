@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart' hide Category;
 
-import '../../../core/money/currency_converter.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/category_group.dart';
 
@@ -18,7 +17,7 @@ class NetIncomeCategory {
 
   /// `null` is uncategorized: the widget shows `l10n.categoryNone`.
   final String? name;
-  final ConvertedTotal total;
+  final int total;
 
   /// 0–1 of the section total.
   final double share;
@@ -41,20 +40,21 @@ class NetIncomeCategoryGroup {
 
   /// `null` is uncategorized: the widget shows `l10n.categoryNone`.
   final String? name;
-  final ConvertedTotal total;
+  final int total;
   final double share;
   final List<NetIncomeCategory> categories;
 }
 
-/// Builds the Income or Expenses section from [totals] (group id → category
-/// id → currency → amount, as [IncomeExpenseRepository.watchCategoryTotals]
-/// returns), descending by amount; shares are of [sectionTotal] (the
-/// section's overall converted total, positive).
+/// Builds the Income or Expenses section in [currency] from [totals] (group
+/// id → category id → currency → amount, as
+/// [IncomeExpenseRepository.watchCategoryTotals] returns), descending by
+/// amount; categories without amounts in [currency] are left out, nothing is
+/// converted. Shares are of [sectionTotal] (the section's total, positive).
 List<NetIncomeCategoryGroup> groupNetIncomeCategories(
   Map<String?, Map<String?, Map<String, int>>> totals,
   List<CategoryGroup> groups,
   List<Category> categories,
-  CurrencyConverter converter,
+  String currency,
   int sectionTotal,
 ) {
   final groupNames = {for (final g in groups) g.id: g.name};
@@ -64,15 +64,16 @@ List<NetIncomeCategoryGroup> groupNetIncomeCategories(
 
   final result = [
     for (final MapEntry(key: groupId, value: byCategory) in totals.entries)
-      _group(
-        groupId,
-        byCategory,
-        groupNames,
-        categoryNames,
-        converter,
-        shareOf,
-      ),
-  ]..sort((a, b) => b.total.amount.abs().compareTo(a.total.amount.abs()));
+      if (byCategory.values.any((c) => c.containsKey(currency)))
+        _group(
+          groupId,
+          byCategory,
+          groupNames,
+          categoryNames,
+          currency,
+          shareOf,
+        ),
+  ]..sort((a, b) => b.total.abs().compareTo(a.total.abs()));
   return result;
 }
 
@@ -81,35 +82,26 @@ NetIncomeCategoryGroup _group(
   Map<String?, Map<String, int>> byCategory,
   Map<String, String> groupNames,
   Map<String, String> categoryNames,
-  CurrencyConverter converter,
+  String currency,
   double Function(int) shareOf,
 ) {
-  final total = converter.convert(_sumAll(byCategory));
   final categories = [
     for (final MapEntry(key: categoryId, value: byCurrency)
         in byCategory.entries)
-      NetIncomeCategory(
-        categoryId: categoryId,
-        name: categoryId == null ? null : categoryNames[categoryId],
-        total: converter.convert(byCurrency),
-        share: shareOf(converter.convert(byCurrency).amount),
-      ),
-  ]..sort((a, b) => b.total.amount.abs().compareTo(a.total.amount.abs()));
+      if (byCurrency[currency] case final total?)
+        NetIncomeCategory(
+          categoryId: categoryId,
+          name: categoryId == null ? null : categoryNames[categoryId],
+          total: total,
+          share: shareOf(total),
+        ),
+  ]..sort((a, b) => b.total.abs().compareTo(a.total.abs()));
+  final total = categories.fold(0, (sum, c) => sum + c.total);
   return NetIncomeCategoryGroup(
     groupId: groupId,
     name: groupId == null ? null : groupNames[groupId],
     total: total,
-    share: shareOf(total.amount),
+    share: shareOf(total),
     categories: categories,
   );
-}
-
-Map<String, int> _sumAll(Map<String?, Map<String, int>> byCategory) {
-  final sums = <String, int>{};
-  for (final byCurrency in byCategory.values) {
-    for (final MapEntry(:key, :value) in byCurrency.entries) {
-      sums[key] = (sums[key] ?? 0) + value;
-    }
-  }
-  return sums;
 }

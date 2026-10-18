@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/report_currency.dart';
 import '../../../app/routes.dart';
 import '../../../core/l10n.dart';
 import '../../../core/widgets/amount_text.dart';
@@ -33,7 +33,7 @@ class CalendarBalanceSheetTab extends HookConsumerWidget {
     // A future day adds what is scheduled up to it, like the Balance sheet.
     final asOf = period.lastDay;
     final sides = ref.watch(balanceSheetSidesProvider(asOf));
-    final currency = ref.watch(mainCurrencyProvider).value;
+    final currency = ref.watch(reportCurrencyProvider).value;
     // Each date is a new provider that starts out loading, and balances sum
     // the whole history: the last sheet stays meanwhile instead of a flash.
     final last = useRef<List<BalanceSheetSide>?>(null);
@@ -62,10 +62,9 @@ class CalendarBalanceSheetTab extends HookConsumerWidget {
                   ? l10n.assetsAccountsLiabilities
                   : l10n.assetsAccountsAssets,
               amount: AmountText(
-                side.total.amount,
+                side.total,
                 currency: currency,
                 amountStyle: AmountStyle.balance,
-                approximate: side.total.approximate,
               ),
               heading: true,
             ),
@@ -83,10 +82,9 @@ class CalendarBalanceSheetTab extends HookConsumerWidget {
           CalendarTotalLine(
             label: l10n.balanceSheetNetWorth,
             amount: AmountText(
-              sides.fold(0, (sum, side) => sum + side.total.amount),
+              sides.fold(0, (sum, side) => sum + side.total),
               currency: currency,
               amountStyle: AmountStyle.balance,
-              approximate: sides.any((side) => side.total.approximate),
             ),
             link: SectionLink(
               l10n.calendarOpenBalanceSheet,

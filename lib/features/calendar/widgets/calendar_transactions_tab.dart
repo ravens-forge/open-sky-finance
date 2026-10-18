@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/now.dart';
+import '../../../app/report_currency.dart';
 import '../../../app/routes.dart';
 import '../../../core/dates/wall_clock.dart';
 import '../../../core/l10n.dart';
@@ -19,7 +20,8 @@ import '../models/calendar_period.dart';
 import '../providers/calendar_providers.dart';
 
 /// The period's transactions, newest first, under a header per day when the
-/// period has more than one. A tap opens the editor.
+/// period has more than one; with several currencies, only those moving money
+/// in the report currency. A tap opens the editor.
 class CalendarTransactionsTab extends ConsumerWidget {
   const CalendarTransactionsTab({super.key, required this.period});
 
@@ -33,6 +35,9 @@ class CalendarTransactionsTab extends ConsumerWidget {
     final categories = ref.watch(categoriesByIdProvider);
     final accounts = ref.watch(assetsAccountsProvider);
     final tomorrow = ref.watch(tomorrowProvider);
+    final currency = ref.watch(reportCurrencyProvider).value;
+    final several =
+        (ref.watch(reportCurrenciesProvider).value?.length ?? 0) > 1;
 
     return switch ((transactions, labels, categories, accounts)) {
       (AsyncError(), _, _, _) ||
@@ -46,31 +51,48 @@ class CalendarTransactionsTab extends ConsumerWidget {
           assetsAccountsProvider,
         ],
       ),
-      (AsyncValue(value: []), _, _, _) => EmptyState(
-        title: l10n.calendarNoTransactions,
-      ),
       (
         AsyncValue(value: final transactions?),
         AsyncValue(value: final labels?),
         AsyncValue(value: final categories?),
         AsyncValue(value: final accounts?),
       ) =>
-        _list(
-          context,
-          transactions,
-          (Transaction t) => TransactionListRow(
-            key: ValueKey(t.id),
-            transaction: t,
-            categories: categories,
-            assetsAccounts: {for (final a in accounts) a.id: a},
-            labels: labels[t.id] ?? const [],
-            scheduled: !t.occurredAt.isBefore(tomorrow),
-            onTap: () => context.push(Routes.transaction(t.id)),
+        switch (several
+            ? _inCurrency(transactions, {
+                for (final a in accounts) a.id: a.currency,
+              }, currency)
+            : transactions) {
+          [] => EmptyState(title: l10n.calendarNoTransactions),
+          final shown => _list(
+            context,
+            shown,
+            (Transaction t) => TransactionListRow(
+              key: ValueKey(t.id),
+              transaction: t,
+              categories: categories,
+              assetsAccounts: {for (final a in accounts) a.id: a},
+              labels: labels[t.id] ?? const [],
+              scheduled: !t.occurredAt.isBefore(tomorrow),
+              onTap: () => context.push(Routes.transaction(t.id)),
+            ),
           ),
-        ),
+        },
       _ => PagePlaceholder(label: l10n.pageCalendar, rows: 3),
     };
   }
+
+  /// What moves money in [currency]: either side of a transfer counts.
+  static List<Transaction> _inCurrency(
+    List<Transaction> transactions,
+    Map<String, String> currencyOf,
+    String? currency,
+  ) => [
+    for (final t in transactions)
+      if (currencyOf[t.assetsAccountId] == currency ||
+          (t.transfer != null &&
+              currencyOf[t.transfer!.assetsAccountId] == currency))
+        t,
+  ];
 
   Widget _list(
     BuildContext context,

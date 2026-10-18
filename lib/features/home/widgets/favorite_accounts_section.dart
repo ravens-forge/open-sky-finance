@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/default_currency.dart';
 import '../../../core/l10n.dart';
 import '../../../core/widgets/ledger_chip.dart';
 import '../../assets_accounts/providers/assets_accounts_providers.dart';
@@ -20,6 +21,7 @@ class FavoriteAccountsSection extends ConsumerWidget {
     final l10n = context.l10n;
     final accounts = ref.watch(assetsAccountsProvider).value;
     final favorites = [...?accounts?.where((a) => a.isFavorite)];
+    final fallback = ref.watch(defaultCurrencyProvider).value;
     return HomeSectionFrame(
       title: l10n.homeSectionFavoriteAccounts,
       place: place,
@@ -45,7 +47,12 @@ class FavoriteAccountsSection extends ConsumerWidget {
               runSpacing: 6,
               children: [
                 for (final a in favorites)
-                  LedgerChip.label(a.name, icon: Icons.star),
+                  LedgerChip.label(
+                    fallback == null || a.currency == fallback
+                        ? a.name
+                        : l10n.homeFavoriteOtherCurrency(a.name, a.currency),
+                    icon: Icons.star,
+                  ),
               ],
             ),
     );

@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../app/main_currency.dart';
+import '../../../app/default_currency.dart';
+import '../../../app/report_currency.dart';
 import '../../../app/now.dart';
 import '../../../app/routes.dart';
 import '../../../core/dates/wall_clock.dart';
@@ -26,7 +27,8 @@ class BudgetSummarySection extends ConsumerWidget {
     final l10n = context.l10n;
     final locale = l10n.localeName;
     final summary = ref.watch(homeBudgetSummaryProvider).value;
-    final currency = ref.watch(mainCurrencyProvider).value;
+    final currency = ref.watch(defaultCurrencyProvider).value;
+    final shown = ref.watch(reportCurrencyProvider).value;
     void openBudgets() => context.go(Routes.budgets);
     return HomeSectionFrame(
       title: l10n.homeSectionBudgetSummary,
@@ -37,6 +39,17 @@ class BudgetSummarySection extends ConsumerWidget {
         ),
       ),
       child: switch ((summary, currency)) {
+        // Budgets are only in the default currency: never another's figures.
+        (_?, final currency?) when shown != null && shown != currency =>
+          ChartEmptyNote(
+            l10n.homeBudgetOtherCurrency(currency, shown),
+            action: OutlinedButton(
+              onPressed: () => ref
+                  .read(reportCurrencyChoiceProvider.notifier)
+                  .pick(currency),
+              child: Text(l10n.homeBudgetShowCurrency(currency)),
+            ),
+          ),
         (final summary?, final currency?) when summary.budgeted > 0 => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: 12,

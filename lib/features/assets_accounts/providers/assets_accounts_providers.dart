@@ -1,6 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../app/main_currency.dart';
 import '../../../app/now.dart';
 import '../../../data/models/assets_account.dart';
 import '../../../data/providers.dart';
@@ -32,16 +31,15 @@ Future<List<AssetsAccountWithBalance>> assetsAccountsWithBalance(
 }
 
 /// The Assets accounts page: assets and liabilities grouped by type, with
-/// subtotals in the main currency.
+/// subtotals per currency.
 @riverpod
 Future<List<AssetsAccountsSide>> assetsAccountsSides(
   Ref ref,
   bool showHidden,
 ) async {
   final accounts = await ref.watch(assetsAccountsWithBalanceProvider.future);
-  final converter = await ref.watch(currencyConverterProvider.future);
   return groupAssetsAccounts([
     for (final a in accounts)
       if (showHidden || !a.account.isHidden) a,
-  ], converter);
+  ]);
 }

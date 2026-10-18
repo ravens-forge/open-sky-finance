@@ -178,8 +178,9 @@ presentation → providers → services/repositories → Drift.
   their rows are `…TableRow` classes (`TransactionTableRow`) and never leave `data/database`:
   repositories map them to domain objects (`Transaction`) with `toDomain()`, and
   `…TableRow.fromDomain(…)` maps back. Domain objects group related columns into value objects (`Money`,
-  `TransferDestination`, `ReminderSchedule`, `Timestamps`); rows stay flat. Aggregations sum money **per currency**; convert
-  totals with `CurrencyConverter` (`core/money/`).
+  `TransferDestination`, `ReminderSchedule`, `Timestamps`); rows stay flat. Aggregations sum money **per currency** and totals are
+  never converted: lists show one line per currency (`CurrencyTotals`), reports
+  one currency at a time (`reportCurrencyProvider`).
 - Schema history lives in `drift_schemas/`; `make-migrations` also regenerates
   `test/drift/` (committed, since CI only runs `build_runner`).
 - **Generated files are not committed.** `*.g.dart`, `*.drift.dart` and generated
