@@ -826,5 +826,19 @@
   "importErrorEmpty": "Aucune transaction n'a été trouvée dans ce fichier. Vos données n'ont pas été modifiées.",
   "importFailedTitle": "L'importation a échoué",
   "importFailedBody": "Rien n'a été ajouté et vos données n'ont pas été modifiées. Réessayez.",
-  "settingsRemindersNotifying": "{count, plural, =1{Notifications activées pour 1 rappel} other{Notifications activées pour {count} rappels}}"
+  "settingsRemindersNotifying": "{count, plural, =1{Notifications activées pour 1 rappel} other{Notifications activées pour {count} rappels}}",
+  "chartViewMonth": "Voir le mois",
+  "balanceSheetCompareWith": "Comparer avec",
+  "balanceSheetCompareSameDayLastMonth": "Même jour le mois dernier",
+  "balanceSheetCompareEndOfLastMonth": "Fin du mois dernier",
+  "balanceSheetCompareSameDayLastYear": "Même jour l'an dernier",
+  "balanceSheetCompareEndOfLastYear": "Fin de l'année dernière",
+  "balanceSheetComparePickDate": "Choisir une date…",
+  "balanceSheetCompareNone": "Ne pas comparer",
+  "balanceSheetCompareOption": "{option} · {date}",
+  "balanceSheetSince": "depuis le {date}",
+  "balanceSheetBalanceOn": "{date} : {amount}",
+  "balanceSheetChangeUp": "En hausse de {amount}",
+  "balanceSheetChangeDown": "En baisse de {amount}",
+  "balanceSheetChangeNone": "Aucun changement"
 }

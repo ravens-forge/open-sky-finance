@@ -12,10 +12,13 @@ import '../../../core/l10n.dart';
 import '../../../core/labels.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_placeholder.dart';
+import '../models/balance_sheet_baseline.dart';
+import '../models/balance_sheet_comparison.dart';
 import '../models/balance_sheet_side.dart';
 import '../providers/balance_sheet_drill_down.dart';
 import '../providers/balance_sheet_providers.dart';
 import '../widgets/balance_sheet_account_row.dart';
+import '../widgets/balance_sheet_compare_row.dart';
 import '../widgets/balance_sheet_type_header.dart';
 import '../widgets/net_worth_header.dart';
 import '../../assets_accounts/widgets/assets_accounts_side_header.dart';
@@ -62,6 +65,17 @@ class BalanceSheetPage extends HookConsumerWidget {
     final sides = ref.watch(balanceSheetSidesProvider(asOf.value));
     final main = ref.watch(mainCurrencyProvider).value;
     final hiddenCount = ref.watch(balanceSheetHiddenCountProvider).value ?? 0;
+    final comparison =
+        ref.watch(balanceSheetComparisonProvider).value ??
+        BalanceSheetComparison.initial;
+    final compareDate = comparison.dateFor(asOf.value);
+    // A new date starts out loading: the last baseline stays meanwhile.
+    final lastBaseline = useRef<BalanceSheetBaseline?>(null);
+    final baseline = compareDate == null
+        ? null
+        : lastBaseline.value =
+              ref.watch(balanceSheetBaselineProvider(compareDate)).value ??
+              lastBaseline.value;
 
     return Column(
       children: [
@@ -90,6 +104,16 @@ class BalanceSheetPage extends HookConsumerWidget {
             ),
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 4),
+          child: SizedBox(
+            width: double.infinity,
+            child: BalanceSheetCompareRow(
+              comparison: comparison,
+              asOf: asOf.value,
+            ),
+          ),
+        ),
         const Divider(height: 1),
         Expanded(
           child: switch ((sides, main)) {
@@ -112,6 +136,7 @@ class BalanceSheetPage extends HookConsumerWidget {
                 sides: sides,
                 main: main,
                 hiddenCount: hiddenCount,
+                baseline: baseline,
               ),
             _ => PagePlaceholder(label: l10n.pageBalanceSheet),
           },
@@ -126,17 +151,23 @@ class _BalanceSheetList extends StatelessWidget {
     required this.sides,
     required this.main,
     required this.hiddenCount,
+    this.baseline,
   });
 
   final List<BalanceSheetSide> sides;
   final String main;
   final int hiddenCount;
+  final BalanceSheetBaseline? baseline;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
+    final baseline = this.baseline;
+    final beforeDate = baseline == null
+        ? null
+        : DateFormat.MMMd(l10n.localeName).format(baseline.date);
     final assets = sides
         .where((s) => !s.isLiability)
         .map((s) => s.total)
@@ -153,6 +184,7 @@ class _BalanceSheetList extends StatelessWidget {
           assets: assets?.amount ?? 0,
           liabilities: liabilities?.amount ?? 0,
           currency: main,
+          baseline: baseline,
         ),
         for (final side in sides) ...[
           AssetsAccountsSideHeader(
@@ -177,6 +209,8 @@ class _BalanceSheetList extends StatelessWidget {
                 item: item,
                 onTap: () =>
                     context.push(Routes.assetsAccount(item.account.id)),
+                before: baseline?.balances[item.account.id] ?? 0,
+                beforeDate: beforeDate,
               ),
           ],
         ],

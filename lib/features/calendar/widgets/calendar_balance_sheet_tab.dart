@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -9,18 +10,18 @@ import '../../../core/l10n.dart';
 import '../../../core/widgets/amount_text.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/page_placeholder.dart';
+import '../../balance_sheet/models/balance_sheet_side.dart';
 import '../../balance_sheet/providers/balance_sheet_drill_down.dart';
 import '../../balance_sheet/providers/balance_sheet_providers.dart';
 import '../../home/widgets/section_link.dart';
 import '../../shell/widgets/page_load_error.dart';
 import '../models/calendar_period.dart';
-import '../providers/calendar_providers.dart';
 import 'calendar_ledger.dart';
 import 'calendar_total_line.dart';
 
 /// Assets and liabilities as of the end of the period, with subtotals and
 /// net worth, and a link to the Balance sheet at that date.
-class CalendarBalanceSheetTab extends ConsumerWidget {
+class CalendarBalanceSheetTab extends HookConsumerWidget {
   const CalendarBalanceSheetTab({super.key, required this.period});
 
   final CalendarPeriod period;
@@ -29,16 +30,21 @@ class CalendarBalanceSheetTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final asOf = ref.watch(calendarBalanceDateProvider(period));
+    // A future day adds what is scheduled up to it, like the Balance sheet.
+    final asOf = period.lastDay;
     final sides = ref.watch(balanceSheetSidesProvider(asOf));
     final currency = ref.watch(mainCurrencyProvider).value;
+    // Each date is a new provider that starts out loading, and balances sum
+    // the whole history: the last sheet stays meanwhile instead of a flash.
+    final last = useRef<List<BalanceSheetSide>?>(null);
+    final shown = last.value = sides.value ?? last.value;
 
-    return switch ((sides, currency)) {
-      (AsyncError(), _) => PageLoadError(
+    return switch ((sides, shown, currency)) {
+      (AsyncError(), _, _) => PageLoadError(
         providers: [balanceSheetSidesProvider(asOf)],
       ),
-      (AsyncValue(value: []), _) => EmptyState(title: l10n.assetsAccountsEmpty),
-      (AsyncValue(value: final sides?), final String currency) => Column(
+      (_, [], _) => EmptyState(title: l10n.assetsAccountsEmpty),
+      (_, final sides?, final String currency) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(

@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/app/router.dart';
 import 'package:open_sky_finance/app/routes.dart';
-import 'package:open_sky_finance/core/dates/year_month.dart';
 import 'package:open_sky_finance/core/widgets/home_section_header.dart';
 import 'package:open_sky_finance/data/enums/home_section_id.dart';
 import 'package:open_sky_finance/data/enums/transaction_type.dart';
@@ -92,8 +92,10 @@ void main() {
     tester,
   ) async {
     await start(tester);
-    expect(find.text('\$1,787.50'), findsOneWidget); // net worth
-    expect(find.text('−\$12.50'), findsOneWidget); // net income this month
+    // Net worth, also in its chart's readout (the latest month).
+    expect(find.text('\$1,787.50'), findsNWidgets(2));
+    // Net income this month, also in both readouts (the latest month).
+    expect(find.text('−\$12.50'), findsNWidgets(3));
     expect(find.byType(CashFlowChart), findsOneWidget);
     expect(find.byType(NetIncomeChart), findsOneWidget);
     expect(find.text('+\$1,787.50 in 6 months'), findsOneWidget);
@@ -103,10 +105,34 @@ void main() {
     await settle(tester);
     expect(find.text('Last 12 months'), findsNWidgets(3));
 
-    final now = YearMonth.of(DateTime.now());
-    tester
-        .widget<CashFlowChart>(find.byType(CashFlowChart))
-        .onMonthTap(now.plus(-1));
+    // A tap anywhere in last month's column selects it, and it stays.
+    final chart = find.descendant(
+      of: find.byType(CashFlowChart),
+      matching: find.byType(BarChart),
+    );
+    await tester.ensureVisible(chart);
+    final box = tester.getRect(chart);
+    const months = 12;
+    final slot = (box.width - 44) / months;
+    await tester.tapAt(
+      Offset(box.left + 44 + (months - 1.5) * slot, box.top + 8),
+    );
+    await tester.pump();
+    final readout = find.byType(CashFlowChart);
+    expect(
+      find.descendant(of: readout, matching: find.text('+\$3,000.00')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: readout, matching: find.text('−\$1,200.00')),
+      findsOneWidget,
+    );
+    final viewMonth = find.descendant(
+      of: readout,
+      matching: find.text('View month'),
+    );
+    await tester.ensureVisible(viewMonth);
+    await tester.tap(viewMonth);
     await settle(tester);
     expect(find.text('Rent'), findsOneWidget);
     expect(find.text('Bakery'), findsNothing);

@@ -2,10 +2,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../app/main_currency.dart';
 import '../../../core/dates/wall_clock.dart';
+import '../../../core/money/currency_converter.dart';
 import '../../../data/models/assets_account.dart';
 import '../../../data/providers.dart';
+import '../../../data/repositories/setting_keys.dart';
 import '../../assets_accounts/models/assets_account_with_balance.dart';
 import '../../assets_accounts/providers/assets_accounts_providers.dart';
+import '../models/balance_sheet_baseline.dart';
+import '../models/balance_sheet_comparison.dart';
 import '../models/balance_sheet_side.dart';
 
 part 'balance_sheet_providers.g.dart';
@@ -45,4 +49,30 @@ Future<List<BalanceSheetSide>> balanceSheetSides(Ref ref, DateTime asOf) async {
 Future<int> balanceSheetHiddenCount(Ref ref) async {
   final accounts = await ref.watch(assetsAccountsProvider.future);
   return accounts.where((AssetsAccount a) => a.isHidden).length;
+}
+
+/// The date the Balance sheet compares with, kept between visits.
+@riverpod
+Stream<BalanceSheetComparison> balanceSheetComparison(Ref ref) => ref
+    .watch(settingsRepositoryProvider)
+    .watch(SettingKeys.balanceSheetComparison)
+    .map(BalanceSheetComparison.decode);
+
+/// Net worth and balances at the end of [date], to compare with.
+@riverpod
+Future<BalanceSheetBaseline> balanceSheetBaseline(
+  Ref ref,
+  DateTime date,
+) async {
+  final sides = await ref.watch(balanceSheetSidesProvider(date).future);
+  final balances = await ref.watch(balanceSheetBalancesProvider(date).future);
+  return BalanceSheetBaseline(
+    date: date,
+    netWorth: ConvertedTotal(
+      sides.fold(0, (sum, side) => sum + side.total.amount),
+      approximate: sides.any((side) => side.total.approximate),
+      notIncluded: const {},
+    ),
+    balances: balances,
+  );
 }

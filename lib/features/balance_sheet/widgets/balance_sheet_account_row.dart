@@ -9,19 +9,28 @@ import '../../../core/widgets/leader_row.dart';
 import '../../assets_accounts/models/assets_account_with_balance.dart';
 import '../../assets_accounts/models/credit_usage.dart';
 import '../../assets_accounts/widgets/credit_usage_bar.dart';
+import 'balance_change.dart';
 
 /// One assets account: name, dotted leader, balance in its own currency; a
 /// credit card with a limit adds its usage below, an account excluded from
-/// net worth is marked as such.
+/// net worth is marked as such. When comparing, its balance [before] (on
+/// [beforeDate]) and how it changed since go under the amount, unless it
+/// did not change.
 class BalanceSheetAccountRow extends StatelessWidget {
   const BalanceSheetAccountRow({
     super.key,
     required this.item,
     required this.onTap,
+    this.before,
+    this.beforeDate,
   });
 
   final AssetsAccountWithBalance item;
   final VoidCallback onTap;
+  final int? before;
+
+  /// Already formatted, e.g. "Aug 17".
+  final String? beforeDate;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +59,30 @@ class BalanceSheetAccountRow extends StatelessWidget {
             ),
             onTap: onTap,
           ),
+          if ((before, beforeDate) case (final before?, final date?)
+              when before != balance)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 10,
+                children: [
+                  Text(
+                    l10n.balanceSheetBalanceOn(
+                      date,
+                      '${before < 0 ? '−' : ''}${money(before.abs())}',
+                    ),
+                    style: theme.textTheme.bodySmall,
+                  ),
+                  BalanceChange(
+                    balance - before,
+                    currency: account.currency,
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
           if (account.excludeFromNetWorth)
             Padding(
               padding: const EdgeInsets.only(bottom: 6),

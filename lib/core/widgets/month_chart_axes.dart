@@ -9,22 +9,34 @@ import 'chart_range.dart';
 
 /// Grid, borders and axis titles shared by the monthly charts: dashed
 /// `outline` grid lines on the round steps of [range], no border, compact
-/// values on the left and month names below, the current month in bold ink.
+/// values on the left and month names below, the current month in bold ink
+/// and the [selected] one in bold `primary`.
 /// Twelve months label every other one. Axis labels grow with the text
 /// scale up to 130 % only: past that they collide, and the chart's semantic
 /// summary and drill-down lists carry the same numbers.
 class MonthChartAxes {
-  MonthChartAxes(BuildContext context, this.months, this.range)
+  MonthChartAxes(BuildContext context, this.months, this.range, {this.selected})
     : _theme = Theme.of(context),
       _locale = context.l10n.localeName,
       _muted = FinanceColors.of(context).muted,
-      _scaler = MediaQuery.textScalerOf(context)
-          .clamp(maxScaleFactor: maxChartTextScale);
+      _scaler = _scalerOf(context);
 
   static const maxChartTextScale = 1.3;
 
+  /// Width of the value labels on the left, which the plot starts after.
+  static double leftReserved(BuildContext context) =>
+      _scalerOf(context).scale(44);
+
+  /// Height of the month names below the plot.
+  static double bottomReserved(BuildContext context) =>
+      _scalerOf(context).scale(22);
+
+  static TextScaler _scalerOf(BuildContext context) =>
+      MediaQuery.textScalerOf(context).clamp(maxScaleFactor: maxChartTextScale);
+
   final List<YearMonth> months;
   final ChartRange range;
+  final int? selected;
   final ThemeData _theme;
   final String _locale;
   final Color _muted;
@@ -82,7 +94,12 @@ class MonthChartAxes {
               meta: meta,
               child: Text(
                 monthName.format(months[i].start),
-                style: i == last
+                style: i == selected
+                    ? _axis.copyWith(
+                        color: _theme.colorScheme.primary,
+                        fontWeight: FontWeight.w700,
+                      )
+                    : i == last
                     ? _axis.copyWith(
                         color: _theme.colorScheme.onSurface,
                         fontWeight: FontWeight.w700,

@@ -12,7 +12,13 @@ import 'package:open_sky_finance/features/calendar/models/calendar_mode.dart';
 import 'package:open_sky_finance/features/calendar/models/calendar_period.dart';
 import 'package:open_sky_finance/features/calendar/models/calendar_selection.dart';
 import 'package:open_sky_finance/features/net_income/models/net_income_period.dart';
+import 'package:open_sky_finance/core/widgets/page_placeholder.dart';
+import 'package:open_sky_finance/data/enums/transaction_type.dart';
+import 'package:open_sky_finance/data/models/transaction_draft.dart';
+import 'package:open_sky_finance/data/database/app_database.dart';
+import 'package:open_sky_finance/features/calendar/widgets/calendar_period_summary.dart';
 
+import '../data/test_db.dart';
 import '../pump_app.dart';
 
 const _monday = DateTime.monday;
@@ -159,6 +165,7 @@ void main() {
     Future<ProviderContainer> open(
       WidgetTester tester, {
       int? firstDayOfWeek,
+      Future<void> Function(AppDatabase db)? seed,
     }) async {
       // Tall enough for the grid and the panel without scrolling.
       tester.view
@@ -176,6 +183,7 @@ void main() {
               '$firstDayOfWeek',
             );
           }
+          await seed?.call(db);
         },
       );
       unawaited(container.read(routerProvider).push(Routes.calendar));
@@ -255,6 +263,68 @@ void main() {
       await tester.tap(find.text('Add'));
       await settle(tester);
       expect(find.text('Sep 20, 2026'), findsOneWidget);
+      semantics.dispose();
+    });
+    testWidgets('Balance sheet follows the selected day and month, keeping '
+        'the last figures while the next load', (tester) async {
+      final semantics = tester.ensureSemantics();
+      await open(
+        tester,
+        seed: (db) async {
+          final checking = await addAssetsAccount(
+            db,
+            'Checking',
+            currency: 'USD',
+          );
+          // The 25th is scheduled: after today, the 17th.
+          for (final (day, units) in [(5, 100), (10, 50), (25, 20)]) {
+            await db.transactionsRepository.save(
+              TransactionDraft(
+                type: TransactionType.income,
+                occurredAt: DateTime(2026, 9, day, 9),
+                amount: m(units),
+                assetsAccountId: checking,
+              ),
+            );
+          }
+        },
+      );
+      await tapText(tester, 'Balance sheet');
+      expect(find.text('As of the end of Sep 17, 2026'), findsOneWidget);
+      expect(find.text('\$150.00'), findsWidgets);
+
+      await tapDay(tester, 'September 7');
+      expect(find.text('As of the end of Sep 7, 2026'), findsOneWidget);
+      expect(find.text('\$100.00'), findsWidgets);
+
+      // The frame right after a tap still shows the last sheet and summary.
+      final cell = find.bySemanticsLabel(RegExp(r'^September 3(,|$)'));
+      await tester.ensureVisible(cell);
+      await tester.tap(cell);
+      await tester.pump();
+      expect(find.byType(PagePlaceholder), findsNothing);
+      expect(find.byType(CalendarPeriodSummary), findsOneWidget);
+      await settle(tester);
+      expect(find.text('As of the end of Sep 3, 2026'), findsOneWidget);
+      expect(find.text('\$150.00'), findsNothing);
+
+      // A future day counts what is scheduled up to it.
+      await tapDay(tester, 'September 25');
+      expect(find.text('As of the end of Sep 25, 2026'), findsOneWidget);
+      expect(find.text('\$170.00'), findsWidgets);
+
+      await tapText(tester, 'Month');
+      expect(find.text('As of the end of Sep 30, 2026'), findsOneWidget);
+      await tester.tap(find.byTooltip('Next month'));
+      await settle(tester);
+      expect(find.text('As of the end of Oct 31, 2026'), findsOneWidget);
+      expect(find.text('\$170.00'), findsWidgets);
+      await tester.tap(find.byTooltip('Previous month'));
+      await settle(tester);
+      await tester.tap(find.byTooltip('Previous month'));
+      await settle(tester);
+      expect(find.text('As of the end of Aug 31, 2026'), findsOneWidget);
+      expect(find.text('\$100.00'), findsNothing);
       semantics.dispose();
     });
   });
