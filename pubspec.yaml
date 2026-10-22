@@ -50,7 +50,7 @@ dev_dependencies:
 
   # Code generation: Drift tables/DAOs and Riverpod providers
   build_runner: ^2.16.1
-  drift_dev: ^2.35.0
+  drift_dev: ^2.35.1
   riverpod_generator: ^4.0.9
 
   # Generate launcher icons and native splash from assets/branding/launcher/
