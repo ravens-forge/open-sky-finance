@@ -1,0 +1,9 @@
+Primera versión de Open Sky Finance.
+
+• Cuentas, categorías, etiquetas y transacciones ilimitadas
+• Ingresos, gastos y transferencias entre monedas
+• Página principal configurable con gráficos
+• Hoja de balance, ganancia neta, presupuestos mensuales y calendario
+• Recordatorios y transacciones programadas
+• Papelera, copias de seguridad JSON e importación desde Bluecoins
+• Español, inglés y francés, modo claro y oscuro

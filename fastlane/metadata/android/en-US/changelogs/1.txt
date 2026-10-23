@@ -1,0 +1,9 @@
+First release of Open Sky Finance.
+
+• Unlimited assets accounts, categories, labels and transactions
+• Income, expenses and transfers between currencies
+• Configurable home page with charts
+• Balance sheet, net income, monthly budgets and calendar
+• Reminders and scheduled transactions
+• Trash, JSON backups and Bluecoins import
+• English, Spanish and French, light and dark mode

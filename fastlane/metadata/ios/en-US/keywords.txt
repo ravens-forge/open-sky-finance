@@ -1,0 +1,1 @@
+budget,money,expenses,tracker,ledger,net worth,offline,privacy,bills,savings,income,reminders

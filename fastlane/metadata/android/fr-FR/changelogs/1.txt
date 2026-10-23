@@ -1,0 +1,9 @@
+Première version d'Open Sky Finance.
+
+• Comptes, catégories, étiquettes et transactions illimités
+• Revenus, dépenses et virements entre devises
+• Page d'accueil personnalisable avec graphiques
+• Bilan, résultat net, budgets mensuels et calendrier
+• Rappels et transactions planifiées
+• Corbeille, sauvegardes JSON et import Bluecoins
+• Français, anglais et espagnol, mode clair et sombre

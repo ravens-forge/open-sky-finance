@@ -74,5 +74,8 @@
 		</array>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<!-- Encrypted backups use AES-256-GCM in Dart, not the OS's encryption. -->
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<true/>
 	</dict>
 </plist>

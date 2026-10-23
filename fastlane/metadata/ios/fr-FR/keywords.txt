@@ -1,0 +1,1 @@
+budget,argent,dépenses,revenus,comptabilité,patrimoine,épargne,factures,confidentialité
