@@ -14,8 +14,11 @@ Open Sky Finance is a free and open-source personal finance app built with Flutt
 
 Everything stays on your device. There is no server, no sign-up, no user profile, no analytics and no network access.
 
-> **Status:** pre-alpha. The app is being built; the documentation is written first.
-> There is no release yet.
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" alt="Home page with favorite assets accounts, net worth, net income and a cash flow chart" width="250">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" alt="Transactions page for September with scheduled transactions and daily totals" width="250">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" alt="Balance sheet with net worth, assets and their change since last month" width="250">
+</p>
 
 ## Key features
 

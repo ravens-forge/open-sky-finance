@@ -1,0 +1,1 @@
+presupuesto,dinero,gastos,ingresos,contabilidad,patrimonio,ahorro,facturas,privacidad,offline

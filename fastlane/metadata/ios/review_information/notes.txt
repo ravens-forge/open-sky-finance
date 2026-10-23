@@ -1,0 +1,1 @@
+Open Sky Finance needs no account or sign-in and works fully offline. All data stays on the device; the first launch shows a short, skippable onboarding.
