@@ -13,7 +13,10 @@ import 'package:open_sky_finance/features/calendar/models/calendar_period.dart';
 import 'package:open_sky_finance/features/calendar/models/calendar_selection.dart';
 import 'package:open_sky_finance/features/net_income/models/net_income_period.dart';
 import 'package:open_sky_finance/core/widgets/page_placeholder.dart';
+import 'package:open_sky_finance/data/enums/reminder_frequency.dart';
 import 'package:open_sky_finance/data/enums/transaction_type.dart';
+import 'package:open_sky_finance/data/models/reminder_draft.dart';
+import 'package:open_sky_finance/data/models/reminder_schedule.dart';
 import 'package:open_sky_finance/data/models/transaction_draft.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
 import 'package:open_sky_finance/features/calendar/widgets/calendar_period_summary.dart';
@@ -247,6 +250,55 @@ void main() {
       await tapText(tester, 'Today');
       expect(find.text('SEPTEMBER 2026'), findsOneWidget);
       expect(find.text('Thursday, September 17'), findsOneWidget);
+      semantics.dispose();
+    });
+
+    testWidgets('Reminders lists what is due in the period, and Record '
+        'turns it into a transaction', (tester) async {
+      final semantics = tester.ensureSemantics();
+      await open(
+        tester,
+        seed: (db) async {
+          final wallet = await addAssetsAccount(db, 'Wallet');
+          ok(
+            await db.remindersRepository.save(
+              ReminderDraft(
+                template: TransactionDraft(
+                  type: TransactionType.expense,
+                  occurredAt: DateTime(2026, 9, 17),
+                  amount: -m(850),
+                  assetsAccountId: wallet,
+                  title: 'Rent',
+                ),
+                schedule: ReminderSchedule(
+                  frequency: ReminderFrequency.monthly,
+                  startDate: DateTime(2026, 9, 17),
+                  nextDueAt: DateTime(2026, 9, 17),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+      expect(find.text('Rent'), findsNothing);
+      await tapText(tester, 'Reminders');
+      expect(find.text('Rent'), findsOneWidget);
+
+      await tester.tap(find.text('Record'));
+      await settle(tester);
+      expect(find.text('Record'), findsNothing);
+      // On the row and in the message that offers Undo.
+      expect(find.text('Recorded'), findsNWidgets(2));
+      await tapText(tester, 'Transactions');
+      expect(find.text('Rent'), findsOneWidget);
+
+      // The next one is due in a month.
+      await tapDay(tester, 'September 20');
+      await tapText(tester, 'Reminders');
+      expect(find.text('No reminders due in this period'), findsOneWidget);
+      await tapText(tester, 'Month');
+      expect(find.text('Rent'), findsOneWidget);
+      expect(find.text('Record'), findsNothing);
       semantics.dispose();
     });
 

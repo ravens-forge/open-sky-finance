@@ -1,0 +1,1 @@
+• Corrigé : une catégorie que rien n'utilise peut maintenant être supprimée

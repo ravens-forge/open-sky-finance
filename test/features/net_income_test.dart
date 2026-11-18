@@ -2,11 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/app/router.dart';
 import 'package:open_sky_finance/app/routes.dart';
+import 'package:open_sky_finance/core/dates/year_month.dart';
 import 'package:open_sky_finance/data/database/app_database.dart';
 import 'package:open_sky_finance/data/enums/category_kind.dart';
 import 'package:open_sky_finance/data/enums/transaction_type.dart';
 import 'package:open_sky_finance/data/models/transaction_draft.dart';
 import 'package:open_sky_finance/data/providers.dart';
+import 'package:open_sky_finance/features/net_income/models/net_income_period.dart';
 
 import '../data/test_db.dart';
 import '../pump_app.dart';
@@ -19,6 +21,48 @@ void main() {
     container.read(routerProvider).go(path);
     await settle(tester);
   }
+
+  test('periods roll over the year, and a range includes both its days', () {
+    final q1 = NetIncomePeriod.quarter(2026, 1);
+    expect((q1.start, q1.end), (DateTime(2026), DateTime(2026, 4)));
+    expect(q1.previous, NetIncomePeriod.quarter(2025, 4));
+    final q4 = NetIncomePeriod.quarter(2026, 4);
+    expect((q4.start, q4.end), (DateTime(2026, 10), DateTime(2027)));
+    expect(q4.next, NetIncomePeriod.quarter(2027, 1));
+    expect(q4.previous, NetIncomePeriod.quarter(2026, 3));
+    expect(
+      [
+        for (final month in [1, 3, 4, 9, 12])
+          NetIncomePeriod.quarterOf(YearMonth(2026, month)),
+      ],
+      [1, 1, 2, 3, 4],
+    );
+
+    final year = NetIncomePeriod.year(2026);
+    expect((year.start, year.end), (DateTime(2026), DateTime(2027)));
+    expect(year.next, NetIncomePeriod.year(2027));
+    expect(year.previous, NetIncomePeriod.year(2025));
+
+    final january = NetIncomePeriod.month(YearMonth(2026, 1));
+    expect(january.previous, NetIncomePeriod.month(YearMonth(2025, 12)));
+    expect(january.next.start, DateTime(2026, 2));
+    // The same dates as a range are another period.
+    expect(
+      january,
+      isNot(NetIncomePeriod.range(DateTime(2026), DateTime(2026, 1, 31))),
+    );
+
+    final range = NetIncomePeriod.range(
+      DateTime(2026, 9, 3, 15),
+      DateTime(2026, 9, 5, 8),
+    );
+    expect(
+      (range.start, range.end),
+      (DateTime(2026, 9, 3), DateTime(2026, 9, 6)),
+    );
+    expect(range.previous, range);
+    expect(range.next, range);
+  });
 
   testWidgets(
     'totals, savings rate, groups with their categories, drill-down',

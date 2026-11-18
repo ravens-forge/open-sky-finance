@@ -37,7 +37,11 @@ class _DeleteCategoryDialog extends HookConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
     final target = useState(_Target.other);
     final otherId = useState<String?>(null);
-    final canDelete = target.value != _Target.other || otherId.value != null;
+    // Nothing to move from an unused category: no choice to wait for.
+    final canDelete =
+        usage.isUnused ||
+        target.value != _Target.other ||
+        otherId.value != null;
     return LedgerDialog(
       kind: DialogKind.warning,
       title: l10n.categoryDeleteTitle(category.name),

@@ -249,6 +249,109 @@ void main() {
       expect(saved!.categoryId, rent);
     });
 
+    testWidgets('a group is created, renamed and hidden, then deleted '
+        'after confirming', (tester) async {
+      await start(tester);
+      Future<List<CategoryGroup>> groups() async => (await tester.runAsync(
+        () => db.categoriesRepository.watchGroups().first,
+      ))!;
+      final name = find.widgetWithText(TextField, 'Name');
+
+      await open(tester, Routes.newCategoryGroup(CategoryKind.expense));
+      await tester.tap(find.text('Save'));
+      await settle(tester);
+      expect(find.text('Enter a name'), findsOneWidget);
+      expect(await groups(), isEmpty);
+
+      await tester.enterText(name, 'Travel');
+      await tester.tap(find.text('Save'));
+      await settle(tester);
+      final created = (await groups()).single;
+      expect(created.name, 'Travel');
+      expect(created.kind, CategoryKind.expense);
+      expect(created.isHidden, isFalse);
+
+      await open(tester, Routes.categoryGroup(created.id));
+      await tester.enterText(name, 'Trips');
+      await tester.tap(find.text('Hidden'));
+      await tester.tap(find.text('Save'));
+      await settle(tester);
+      final changed = (await groups()).single;
+      expect(changed.id, created.id);
+      expect(changed.name, 'Trips');
+      expect(changed.isHidden, isTrue);
+
+      await open(tester, Routes.categoryGroup(created.id));
+      await tester.scrollUntilVisible(
+        find.text('Delete group'),
+        200,
+        scrollable: _page,
+      );
+      await tester.tap(find.text('Delete group'));
+      await settle(tester);
+      expect(find.text('Delete “Trips”?'), findsOneWidget);
+      await tester.tap(find.text('Cancel').last);
+      await settle(tester);
+      expect(await groups(), hasLength(1));
+
+      await tester.tap(find.text('Delete group'));
+      await settle(tester);
+      await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+      await settle(tester);
+      expect(await groups(), isEmpty);
+    });
+
+    testWidgets('an unused category is deleted without questions; a used '
+        'one can leave its transactions uncategorized', (tester) async {
+      await start(tester);
+      final food = await _addGroup(tester, db, 'Food');
+      final groceries = await _addCategory(
+        tester,
+        db,
+        'Groceries',
+        groupId: food,
+      );
+      final rent = await _addCategory(tester, db, 'Rent', groupId: food);
+      final transaction = await _addTransaction(tester, db, groceries);
+      Future<List<String>> names() async => [
+        for (final c in (await tester.runAsync(
+          () => db.categoriesRepository.watchCategories().first,
+        ))!)
+          c.name,
+      ];
+      Future<void> delete(String id) async {
+        await open(tester, Routes.category(id));
+        await tester.scrollUntilVisible(
+          find.byType(DestructiveButton),
+          200,
+          scrollable: _page,
+        );
+        await tester.tap(find.byType(DestructiveButton));
+        await settle(tester);
+      }
+
+      final confirm = find.widgetWithText(FilledButton, 'Delete');
+
+      await delete(rent);
+      expect(find.text('To another category'), findsNothing);
+      await tester.tap(confirm);
+      await settle(tester);
+      expect(await names(), ['Groceries']);
+
+      await delete(groceries);
+      // Nowhere to move them yet: Delete waits for a choice.
+      expect(tester.widget<FilledButton>(confirm).onPressed, isNull);
+      await tester.tap(find.text('Uncategorized'));
+      await settle(tester);
+      await tester.tap(confirm);
+      await settle(tester);
+      expect(await names(), isEmpty);
+      final kept = await tester.runAsync(
+        () => db.transactionsRepository.findById(transaction),
+      );
+      expect(kept!.categoryId, isNull);
+    });
+
     testWidgets('the picker searches and lists groups as headings', (
       tester,
     ) async {

@@ -202,6 +202,55 @@ void main() {
       expect(saved.autoPost, isFalse);
     });
 
+    testWidgets('the schedule repeats every few periods and ends after a '
+        'number of times or on a date', (tester) async {
+      await start(tester);
+      await open(tester, Routes.newReminder);
+      await tester.enterText(find.byType(TextField).first, '45');
+      await tester.enterText(find.byType(TextField).at(1), 'Gym');
+      await settle(tester);
+      await tester.ensureVisible(find.text('Weekly'));
+      await tester.tap(find.text('Weekly'));
+      await settle(tester);
+
+      await tester.tap(find.byTooltip('More').first);
+      await settle(tester);
+      expect(find.text('2 weeks'), findsOneWidget);
+      expect(
+        find.text('Next dates: Sep 17 · Oct 1 · Oct 15, 2026'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('After a number of times'));
+      await settle(tester);
+      expect(find.text('12 times'), findsOneWidget);
+      await tester.tap(find.byTooltip('Fewer').last);
+      await settle(tester);
+      await tester.tap(find.byTooltip('Fewer').last);
+      await settle(tester);
+      // Ten times, every two weeks: the last three are not previewed.
+      expect(find.text('10 times'), findsOneWidget);
+
+      // An end date replaces the number of times.
+      await tester.tap(find.text('On a date'));
+      await settle(tester);
+      await tester.tap(find.text('30'));
+      await tester.tap(find.text('OK'));
+      await settle(tester);
+      expect(find.text('Sep 30, 2026'), findsOneWidget);
+      expect(find.text('10 times'), findsNothing);
+      // Only one occurrence fits before the end.
+      expect(find.text('Next dates: Sep 17, 2026'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(FilledButton, 'Save'));
+      await settle(tester);
+      final schedule = (await reminders(tester)).single.schedule;
+      expect(schedule.frequency, ReminderFrequency.weekly);
+      expect(schedule.interval, 2);
+      expect(schedule.endDate, DateTime(2026, 9, 30));
+      expect(schedule.remainingOccurrences, isNull);
+    });
+
     testWidgets('its page pauses it with Save changes and deletes it after '
         'confirming', (tester) async {
       late String id;

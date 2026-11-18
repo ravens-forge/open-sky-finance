@@ -2,7 +2,7 @@ name: open_sky_finance
 description: "Free, offline-first personal finance app with no limits, no ads and no accounts."
 publish_to: "none"
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.13.3

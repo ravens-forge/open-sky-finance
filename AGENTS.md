@@ -204,15 +204,34 @@ presentation → providers → services/repositories → Drift.
 
 ## Testing
 
-| Layer         | Test type     | Notes |
-| ------------- | ------------- | ----- |
-| core/money    | unit          | Parsing edge cases, rounding, negatives, in en/es/fr |
-| l10n          | unit          | Same keys and placeholders in all ARB files |
-| Repositories  | unit          | In-memory Drift database |
-| Migrations    | unit          | Drift schema verifier |
-| Backup codec  | unit          | Round-trip: snapshot → JSON → snapshot is identical |
-| Bluecoins     | unit          | Synthetic `.fydb` built at test time from a committed SQL script |
-| Screens       | widget/golden | Key flows; goldens (`test/goldens/`, tag `golden`) in en light and dark, es, fr and fr at 200 % text scale, taken and checked on Windows; every screen passes the tap target, label and contrast guidelines in both themes (`test/features/accessibility_test.dart`) |
+Tests follow the layers of the app, one folder each. A test goes in the lowest layer
+that can show the behaviour, and is named as a sentence about what the user or the data
+gets, not about the code.
+
+| Folder           | What it proves | How |
+| ---------------- | -------------- | --- |
+| `test/core/`     | Pure helpers and shared widgets: money parsing and formatting in en/es/fr, dates, sort keys | Plain unit and widget tests, no database |
+| `test/data/`     | Repositories, SQL constraints and reports: invariants of transactions and transfers, balances, reminder occurrences, the Trash, erase | In-memory Drift database (`testDb()`) |
+| `test/drift/`    | Migrations | Drift schema verifier |
+| `test/services/` | Backup codec, encryption and restore, automatic backups, Bluecoins, CSV and QIF: round trips, size limits, rejected files, and that a failure leaves the data untouched | Real temporary files; Bluecoins from a synthetic `.fydb` built from a committed SQL script |
+| `test/features/` | One file per feature: its models first, then its screens as the flows a user follows through the whole app | `pumpApp()` on an in-memory database with a fixed clock |
+| `test/goldens/`  | How screens look (tag `golden`): en light and dark, es, fr and fr at 200 % text scale, taken and checked on Windows | `appGolden()` |
+| `test/l10n/`     | Same keys and placeholders in all ARB files | Unit |
+
+Rules:
+
+- **Behaviour before coverage.** A flow gets its happy path, its validation or error
+  path, and its way back (Cancel, Undo, Change). Anything that replaces or deletes data
+  also gets a test that a failure or a cancel changed nothing.
+- **Fakes only at the platform boundary**: the file dialogs (`FakeFilePicker`), the
+  backup folder (`FakeBackupFolder`), notifications (`FakeNotifications`) and the clock
+  (`pumpApp(now: …)`). Repositories and the database are always the real ones.
+- **A bug fix starts with the test that fails without it.**
+- Screen tests find widgets by the English text a user reads, and check the result in
+  the database when the flow writes.
+- Every screen passes the tap target, label and contrast guidelines in both themes
+  (`test/features/accessibility_test.dart`).
+- Fixtures are synthetic (`test/fixtures/`).
 
 See also: [CONTRIBUTING.md](CONTRIBUTING.md) for setup and pull request rules, and
 [SECURITY.md](SECURITY.md) for the privacy guarantees the code must keep true.

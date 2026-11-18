@@ -1,18 +1,25 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:open_sky_finance/core/result.dart';
+import 'package:open_sky_finance/data/database/app_database.dart';
 import 'package:open_sky_finance/data/enums/transaction_type.dart';
 import 'package:open_sky_finance/data/models/import_names.dart';
+import 'package:open_sky_finance/data/models/import_summary.dart';
 import 'package:open_sky_finance/data/models/imported_transaction.dart';
 import 'package:open_sky_finance/data/models/transaction_draft.dart';
+import 'package:open_sky_finance/services/backup/backup_service.dart';
 import 'package:open_sky_finance/services/transactions_import/csv_table.dart';
 import 'package:open_sky_finance/services/transactions_import/import_values.dart';
 import 'package:open_sky_finance/services/transactions_import/models/import_file_error.dart';
+import 'package:open_sky_finance/services/transactions_import/models/import_format.dart';
 import 'package:open_sky_finance/services/transactions_import/models/parsed_import.dart';
 import 'package:open_sky_finance/services/transactions_import/qif_reader.dart';
 import 'package:open_sky_finance/services/transactions_import/transactions_csv.dart';
+import 'package:open_sky_finance/services/transactions_import/transactions_import_service.dart';
 
 import '../data/test_db.dart';
 
@@ -242,5 +249,165 @@ void main() {
         )
         .getSingle();
     expect(balance.read<int>('s'), m(100) - m(12.34));
+  });
+
+  group('service', () {
+    (AppDatabase, TransactionsImportService, Directory) setUp() {
+      final db = testDb();
+      final dir = Directory.systemTemp.createTempSync('import_test');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      return (
+        db,
+        TransactionsImportService(
+          backups: BackupService(
+            backups: db.backupRepository,
+            settings: db.settingsRepository,
+            safetyFolder: Directory('${dir.path}/safety'),
+            shareFolder: Directory('${dir.path}/share'),
+          ),
+          snapshots: db.backupRepository,
+          repository: db.transactionsImportRepository,
+        ),
+        dir,
+      );
+    }
+
+    Future<Result<ParsedImport, ImportFileError>> load(
+      TransactionsImportService service,
+      List<int> bytes,
+    ) => service.load(
+      size: bytes.length,
+      read: () async => Uint8List.fromList(bytes),
+      dayFirst: true,
+    );
+
+    ImportFileError? error(Result<ParsedImport, ImportFileError> r) =>
+        switch (r) {
+          Ok() => null,
+          Err(:final error) => error,
+        };
+
+    test('files over the size limit are never read', () async {
+      final (_, service, _) = setUp();
+      final result = await service.load(
+        size: TransactionsImportService.maxSize + 1,
+        read: () => fail('read'),
+        dayFirst: true,
+      );
+      expect(error(result), ImportFileError.tooLarge);
+    });
+
+    test('QIF by its header, CSV otherwise, Latin-1 when not UTF-8', () async {
+      final (_, service, _) = setUp();
+      final qif = _ok(
+        await load(
+          service,
+          File('test/fixtures/import/sample.qif').readAsBytesSync(),
+        ),
+      );
+      expect(qif.format, ImportFormat.qif);
+
+      final csv = _ok(
+        await load(
+          service,
+          latin1.encode('Date;Payee;Amount\n17/09/2026;Café;-3,20\n'),
+        ),
+      );
+      expect(csv.format, ImportFormat.csv);
+      expect(csv.transactions.single.title, 'Café');
+      expect(csv.needsAssetsAccount, isTrue);
+    });
+
+    test('binary and unreadable files are refused', () async {
+      final (_, service, _) = setUp();
+      expect(
+        error(await load(service, [0x50, 0x4b, 3, 4, 0, 0, 0, 0])),
+        ImportFileError.notReadable,
+      );
+      expect(
+        error(
+          await service.load(
+            size: null,
+            read: () => throw const FileSystemException('gone'),
+            dayFirst: true,
+          ),
+        ),
+        ImportFileError.failed,
+      );
+      expect(error(await load(service, [])), isNotNull);
+    });
+
+    test('the export is named by date and leaves the Trash out', () async {
+      final (db, service, _) = setUp();
+      final bank = await addAssetsAccount(db, 'Bank');
+      Future<String> add(String title) async => ok(
+        await db.transactionsRepository.save(
+          TransactionDraft(
+            type: TransactionType.expense,
+            occurredAt: DateTime(2026, 9, 10),
+            amount: -m(5),
+            assetsAccountId: bank,
+            title: title,
+          ),
+        ),
+      );
+      await add('Kept');
+      await db.transactionsRepository.trash(await add('Thrown away'));
+
+      final file = await service.exportCsv(
+        appVersion: '1',
+        now: DateTime(2026, 9, 17, 10, 30, 5),
+      );
+      expect(file.name, 'open-sky-finance-transactions-20260917-103005.csv');
+      final text = utf8.decode(file.bytes);
+      expect(text, contains('Kept'));
+      expect(text, isNot(contains('Thrown away')));
+    });
+
+    test('import saves a safety copy first, and adds nothing without '
+        'one', () async {
+      final (db, service, dir) = setUp();
+      await addAssetsAccount(db, 'Bank');
+      final parsed = ParsedImport(
+        format: ImportFormat.csv,
+        transactions: [
+          ImportedTransaction(
+            occurredAt: DateTime(2026, 9, 3),
+            amount: -m(50),
+            title: 'Shop',
+            assetsAccount: 'Bank',
+          ),
+        ],
+        unreadable: 0,
+      );
+      Future<Result<ImportSummary, ImportFileError>> import() => service.import(
+        parsed,
+        appVersion: '1',
+        defaultCurrency: 'EUR',
+        names: _names,
+      );
+      Future<int> count() async =>
+          (await db
+                  .customSelect(
+                    "SELECT COUNT(*) AS n FROM transactions WHERE title = 'Shop'",
+                  )
+                  .getSingle())
+              .read<int>('n');
+
+      // A file where the safety folder should be: no copy can be saved.
+      final blocker = File('${dir.path}/safety')..writeAsStringSync('');
+      expect(
+        (await import() as Err<ImportSummary, ImportFileError>).error,
+        ImportFileError.failed,
+      );
+      expect(await count(), 0);
+
+      blocker.deleteSync();
+      final summary =
+          (await import() as Ok<ImportSummary, ImportFileError>).value;
+      expect(summary.transactions, 1);
+      expect(await count(), 1);
+      expect(Directory('${dir.path}/safety').listSync(), hasLength(1));
+    });
   });
 }

@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Two other version numbers exist and are **not** the app version: the Drift database `schemaVersion` and the backup format `schemaVersion`. Note changes to either one here.
 
+## [1.0.1] - 2026-11-18
+
+### Fixed
+
+- A category that nothing uses can be deleted: its Delete button stayed disabled.
+
 ## [1.0.0] - 2026-10-18
 
 ### Added
@@ -56,4 +62,5 @@ Two other version numbers exist and are **not** the app version: the Drift datab
 - Charts on Home and on an assets account show the values of a month in a row above the chart: tap anywhere in a month's column, or drag across, and the month stays selected; "View month" opens it. No more press and hold.
 - The calendar's Balance sheet tab follows the selected day or month, future dates included (scheduled transactions up to that day count), and keeps the figures on screen while the next ones load.
 
+[1.0.1]: https://github.com/ravens-forge/open-sky-finance/releases/tag/v1.0.1
 [1.0.0]: https://github.com/ravens-forge/open-sky-finance/releases/tag/v1.0.0

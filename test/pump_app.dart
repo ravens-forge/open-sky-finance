@@ -79,6 +79,22 @@ Future<ProviderContainer> pumpApp(
   return container;
 }
 
+/// Lets real work (isolates, files) run until [finder] shows up.
+Future<void> settleUntil(WidgetTester tester, Finder finder) =>
+    settleWhen(tester, () => finder.evaluate().isNotEmpty);
+
+/// Lets real work (isolates, files) run until [done].
+Future<void> settleWhen(WidgetTester tester, bool Function() done) async {
+  for (var i = 0; i < 100 && !done(); i++) {
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 50)),
+    );
+    // Some time too, for the timers of the test's own clock.
+    await tester.pump(const Duration(milliseconds: 10));
+  }
+  await settle(tester);
+}
+
 /// Lets the database answer, then finishes animations.
 Future<void> settle(WidgetTester tester) async {
   for (var i = 0; i < 3; i++) {
